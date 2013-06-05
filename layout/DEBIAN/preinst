@@ -1,0 +1,12 @@
+#!/bin/sh
+
+chk=$(uname -m)
+
+if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]];then
+	echo "Preparing."
+	cd /System/Library/PrivateFrameworks/ACTFramework.framework
+	mkdir -p Backup
+	mv firebreak-Configuration.plist Backup/firebreak-Configuration.plist
+	mv firebreak-ConfigurationDebug.plist Backup/firebreak-ConfigurationDebug.plist
+fi
+

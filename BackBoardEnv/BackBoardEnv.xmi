@@ -1,0 +1,50 @@
+#import "../definitions.h"
+
+static NSDictionary *prefDict = nil;
+static BOOL shouldInject = NO;
+
+static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	[prefDict release];
+	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+}
+
+@interface SBApplicationIcon : NSObject
+- (NSString *)applicationBundleID;
+@end
+
+%hook SBApplicationIcon
+
+- (void)launch
+{
+	NSString *app = [self applicationBundleID];
+	if ([app isEqualToString:@"com.apple.camera"])
+		shouldInject = YES;
+	else
+		shouldInject = NO;
+	%orig;
+}
+
+%end
+
+%hook BKSApplicationLaunchSettings
+
+- (void)setEnvironment:(NSDictionary *)arg1
+{ 
+	if (shouldInject && Bool(prefDict, @"PanoEnabled", NO)) {
+		NSMutableDictionary *dict = [arg1 mutableCopy];
+		[dict setObject:[NSString stringWithString:@"/usr/lib/libPano.dylib"] forKey:@"DYLD_INSERT_LIBRARIES"];
+		[dict setObject:[NSString stringWithString:@"1"] forKey:@"DYLD_FORCE_FLAT_NAMESPACE"];
+ 	 	%orig((NSDictionary *)dict);
+  		[dict release];
+  	}
+  	else %orig;
+}
+
+%end
+
+%ctor {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	[pool release];
+}

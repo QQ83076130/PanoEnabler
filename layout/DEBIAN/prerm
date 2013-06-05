@@ -1,0 +1,15 @@
+#!/bin/sh
+
+declare -a cydia
+cydia=($CYDIA)
+chk=$(uname -m)
+
+if [[ "$chk" != iPod5* ]] && [[ "$chk" != iPhone4* ]] && [[ "$chk" != iPhone5* ]];then
+	if [[ $1 == remove ]]; then
+   		PanoRemover
+
+    	if [[ ${CYDIA+@} ]]; then
+        	eval "echo 'finish:reboot' >&${cydia[0]}"
+    	fi
+	fi
+fi

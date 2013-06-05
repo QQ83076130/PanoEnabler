@@ -1,0 +1,17 @@
+#!/bin/sh
+
+declare -a cydia
+cydia=($CYDIA)
+chk=$(uname -m)
+
+if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]];then
+	echo "Preparing."
+	cd /System/Library/PrivateFrameworks/ACTFramework.framework
+	mv Backup/firebreak-Configuration.plist firebreak-Configuration.plist
+	mv Backup/firebreak-ConfigurationDebug.plist firebreak-ConfigurationDebug.plist
+	rm -r Backup
+fi
+
+exit 0
+
+
