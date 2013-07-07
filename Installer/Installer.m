@@ -1,8 +1,6 @@
 #import "../definitions.h"
 #include <sys/sysctl.h>
 
-#define num(intValue) [NSNumber numberWithInteger:intValue]
-
 @interface PanoInstaller : NSObject @end
 
 
@@ -83,7 +81,7 @@
 
 - (BOOL)addPanoProperties
 {
-	NSString *model = [self model];
+	//NSString *model = [self model];
 	NSString *modelFile = [self modelFile];
     NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
     NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
@@ -138,7 +136,7 @@
     [root setObject:tuningParameters forKey:@"TuningParameters"];
     [root writeToFile:platformPathWithFile atomically:YES];
     
-    NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
+    /*NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
     NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
     if (avRoot == nil) return NO;
     NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
@@ -171,7 +169,7 @@
 		[avCap replaceObjectAtIndex:0 withObject:index0];
 		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 		[avRoot writeToFile:avSession atomically:YES];
-    }
+    }*/
     
     return YES;
 }
