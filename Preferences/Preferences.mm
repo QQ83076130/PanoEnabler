@@ -826,5 +826,3 @@ id $PSViewController$initForContentSize$(PSRootController *self, SEL _cmd, CGRec
 static __attribute__((constructor)) void __PanoModInit() {
     PanoModAddMethod(PSViewController, initForContentSize:, $PSViewController$initForContentSize$, "@@:{ff}");
 }
-
-// vim:ft=objc
