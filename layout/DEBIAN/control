@@ -1,6 +1,6 @@
 Package: com.PS.PanoMod
 Name: PanoMod
-Depends: mobilesubstrate, preferenceloader, gsc.still-camera, firmware (>= 6.0)
+Depends: mobilesubstrate, preferenceloader, gsc.still-camera, firmware (>= 6.0), firmware (<< 7.0)
 Version: 1.0
 Architecture: iphoneos-arm
 Description: Enable Panorama and customize it.

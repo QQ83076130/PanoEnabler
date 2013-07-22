@@ -1,12 +1,6 @@
 #import "../definitions.h"
 
-static NSDictionary *prefDict = nil;
 static BOOL shouldInject = NO;
-
-static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-	[prefDict release];
-	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
-}
 
 @interface SBApplicationIcon : NSObject
 - (NSString *)applicationBundleID;
@@ -16,11 +10,10 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 
 - (void)launch
 {
+	shouldInject = NO;
 	NSString *app = [self applicationBundleID];
 	if ([app isEqualToString:@"com.apple.camera"])
 		shouldInject = YES;
-	else
-		shouldInject = NO;
 	%orig;
 }
 
@@ -33,8 +26,8 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	if (shouldInject && Bool(prefDict, @"PanoEnabled", NO)) {
 		NSLog(@"BackBoardEnv: Adding Panorama Capability to Camera.app");
 		NSMutableDictionary *dict = [arg1 mutableCopy];
-		[dict setObject:[NSString stringWithString:@"/usr/lib/libPano.dylib"] forKey:@"DYLD_INSERT_LIBRARIES"];
-		[dict setObject:[NSString stringWithString:@"1"] forKey:@"DYLD_FORCE_FLAT_NAMESPACE"];
+		[dict setObject:@"/usr/lib/libPano.dylib" forKey:@"DYLD_INSERT_LIBRARIES"];
+		[dict setObject:@"1" forKey:@"DYLD_FORCE_FLAT_NAMESPACE"];
  	 	%orig((NSDictionary *)dict);
   		[dict release];
   	}

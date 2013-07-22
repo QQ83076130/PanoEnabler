@@ -608,6 +608,30 @@
 			<string>PSGroupCell</string>
 			<key>isStaticText</key>
 			<true/>
+			<key>label</key>
+			<string>Enable Grid</string>
+			<key>footerText</key>
+			<string>Ability to show grid in Panorama mode.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>panoGrid</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>isStaticText</key>
+			<true/>
 			<key>id</key>
 			<string>blueButtonDesc</string>
 			<key>label</key>
@@ -753,7 +777,7 @@ There are 3 modes of torch mode set in Panorama capture:
 			<key>isStaticText</key>
 			<true/>
 			<key>label</key>
-			<string>Level View</string>
+			<string>Blue line in the middle</string>
 			<key>footerText</key>
 			<string>The blue horizontal line in the middle of screen</string>
 		</dict>

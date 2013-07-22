@@ -4,6 +4,5 @@ export ARCHS = armv7 armv7s
 TWEAK_NAME = actHack
 actHack_FILES = actHack.xm
 actHack_FRAMEWORKS = AVFoundation UIKit
-## actHack_PRIVATE_FRAMEWORKS = IOSurface
 
 include $(THEOS_MAKE_PATH)/tweak.mk

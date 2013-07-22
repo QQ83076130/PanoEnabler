@@ -131,6 +131,8 @@
     [root setObject:tuningParameters forKey:@"TuningParameters"];
     [root writeToFile:platformPathWithFile atomically:YES];
     
+    [[NSFileManager defaultManager] removeItemAtPath:firebreakFile error:nil];
+    
     /*if (isiPod4 || isiPhone3GS || isiPhone4 || isiPad2) {
     
     	NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
