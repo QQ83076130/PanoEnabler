@@ -141,9 +141,9 @@
     	NSMutableDictionary *createDict = [[NSMutableDictionary alloc] init];
     	NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
     	NSString *model = [self model];
-		setPanoProperty(insideDict, @"ACTFrameHeight", isSlow ? 720 : 1936)
-		setPanoProperty(insideDict, @"ACTFrameWidth", isSlow ? 960 : 2592)
-		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isSlow ? 4000 : 10800)
+		setPanoProperty(insideDict, @"ACTFrameHeight", isNon5MP ? 720 : 1936)
+		setPanoProperty(insideDict, @"ACTFrameWidth", isNon5MP ? 960 : 2592)
+		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNon5MP ? 4000 : 10800)
 		setPanoProperty(insideDict, @"ACTPanoramaDefaultDirection", 1)
 		setPanoProperty(insideDict, @"ACTPanoramaMaxFrameRate", 15)
 		setPanoProperty(insideDict, @"ACTPanoramaMinFrameRate", 15)
@@ -151,7 +151,7 @@
 		setPanoProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
 		setPanoProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
 		setPanoProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
-		[createDict setObject:insideDict forKey:[self modelAP]];
+		[createDict setObject:insideDict forKey:model];
 		[createDict writeToFile:firebreakFile atomically:YES];
 		[insideDict release];
 		[createDict release];

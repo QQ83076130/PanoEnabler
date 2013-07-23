@@ -7,7 +7,7 @@
 #define isiPad2 		([model isEqualToString:@"iPad2,1"] || [model isEqualToString:@"iPad2,2"] || [model isEqualToString:@"iPad2,3"] || [model isEqualToString:@"iPad2,4"])
 #define isiPadMini1G	([model hasPrefix:@"iPad2"] && !isiPad2)
 #define isiPad3or4 		[model hasPrefix:@"iPad3"]
-#define isSlow 			(isiPad2 || isiPhone3GS || isiPod4 || isiPhone4)
+#define isNon5MP 		(isiPad2 || isiPhone3GS || isiPod4 || isiPhone4)
 #define isA4			(isiPhone3GS || isiPod4 || isiPhone4)
 
 #define PreferencesChangedNotification "com.PS.actHack.prefs"

@@ -67,7 +67,7 @@ static NSString *Model()
 - (id)devicePropertiesDictionary
 {
 	NSString *model = Model();
-	if (isSlow && Bool(prefDict, @"PanoEnabled", NO)) {
+	if (isNon5MP && Bool(prefDict, @"PanoEnabled", NO)) {
 		NSLog(@"PanoMod: Adding Panorama Preset to non-5MP Camera iDevice.");
 		NSMutableDictionary *avRoot = [(NSDictionary *)%orig mutableCopy];
 		if (avRoot == nil) return %orig;
