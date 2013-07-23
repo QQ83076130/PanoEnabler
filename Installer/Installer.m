@@ -151,7 +151,7 @@
 		setPanoProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
 		setPanoProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
 		setPanoProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
-		[createDict setObject:insideDict forKey:model];
+		[createDict setObject:insideDict forKey:[self modelAP]];
 		[createDict writeToFile:firebreakFile atomically:YES];
 		[insideDict release];
 		[createDict release];
