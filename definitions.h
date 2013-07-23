@@ -18,11 +18,3 @@
 #define Bool(dict, key, defaultBoolValue) ([dict objectForKey:key] ? [[dict objectForKey:key] boolValue] : defaultBoolValue)
 #define setPanoProperty(dict, key, intValue) [dict setObject:[NSNumber numberWithInteger:intValue] forKey:key];
 #define num(intValue) [NSNumber numberWithInteger:intValue]
-
-static NSDictionary *prefDict = nil;
-
-static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
-{
-	[prefDict release];
-	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
-}

@@ -1,6 +1,13 @@
 #import "../definitions.h"
 #import <substrate.h>
-#include <sys/sysctl.h>
+
+static NSDictionary *prefDict = nil;
+
+static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
+	[prefDict release];
+	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+}
 
 static NSMutableDictionary *theDict = nil;
 

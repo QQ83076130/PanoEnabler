@@ -1,7 +1,16 @@
 #import "../definitions.h"
 #import <substrate.h>
 #import <AVFoundation/AVFoundation.h>
+
 #include <sys/sysctl.h>
+
+static NSDictionary *prefDict = nil;
+
+static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
+	[prefDict release];
+	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+}
 
 // Flashorama
 #define FMisOn Bool(prefDict, @"FMisOn", NO)

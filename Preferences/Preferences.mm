@@ -1,10 +1,20 @@
 #import "../definitions.h"
-#include <objc/runtime.h>
-#include <sys/sysctl.h>
 #import <UIKit/UIKit.h>
 #import <Preferences/PSViewController.h>
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
+
+#include <objc/runtime.h>
+#include <sys/sysctl.h>
+
+@interface PSViewController (PanoMod)
+- (void)setView:(id)view;
+@end
+
+@interface PSListController (PanoMod)
+- (void)viewWillAppear:(BOOL)animated;
+- (void)viewDidUnload;
+@end
 
 #define kFontSize 14.0f
 #define CELL_CONTENT_MARGIN 20.0f
@@ -557,21 +567,15 @@ Then Customize the interface and properties of Panorama with PanoMod."
 @synthesize PanoDarkFixDescSpec, PanoDarkFixSwitchSpec;
 @synthesize FMDescSpec, FMSwitchSpec;
 
-
-- (NSString *)getSysInfoByName:(char *)typeSpecifier
+- (NSString *)model
 {
     size_t size;
-    sysctlbyname(typeSpecifier, NULL, &size, NULL, 0);
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     char* answer = (char *)malloc(size);
-    sysctlbyname(typeSpecifier, answer, &size, NULL, 0);
+    sysctlbyname("hw.machine", answer, &size, NULL, 0);
     NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
     free(answer);
     return results;
-}
-
-- (NSString *)model
-{
-    return [self getSysInfoByName:"hw.machine"];
 }
 
 - (void)hideKeyboard
