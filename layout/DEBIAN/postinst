@@ -5,5 +5,6 @@ chk=$(uname -m)
 if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]];then
 	rm -f /Library/MobileSubstrate/DynamicLibraries/BackBoardEnv*
 	rm -f /usr/lib/libPano.dylib
+else
+	cp /Library/PanoModUI/*.png /System/Library/PrivateFrameworks/PhotoLibrary.framework
 fi
-
