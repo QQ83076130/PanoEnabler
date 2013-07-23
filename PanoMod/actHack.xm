@@ -171,7 +171,7 @@ static NSString *Model()
 {
 	if (autoOff && FMisOn) {
 		NSLog(@"Flashorama: Auto turn on Torch.");
-		[[%c(PLCameraController) sharedInstance] torch:1];
+		[self torch:1];
 	}
 	%orig;
 }
@@ -181,7 +181,7 @@ static NSString *Model()
 {
 	if (autoOff && FMisOn) {
 		NSLog(@"Flashorama: Auto turn off Torch.");
-		[[%c(PLCameraController) sharedInstance] torch:2];
+		[self torch:2];
 	}
 	%orig;
 }
