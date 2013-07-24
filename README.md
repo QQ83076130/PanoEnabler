@@ -6,9 +6,12 @@ Enable Panorama and Customize it.
 Compatibility
 ===========
 
+- iPhone 3GS (Bad compatibility or slow)
+- iPhone 4 (Reduced panoramic capture resolution)
 - iPhone 4S
 - iPhone 5
-- iPod touch 5G (Not 16 GB Model)
+- iPod touch 4G
+- iPod touch 5G (Not for 16 GB Model)
 - iPad 2
 - iPad 3
 - iPad 4
@@ -19,9 +22,8 @@ Tested in iOS 6.0.0 - 6.1.2
 IMPORTANT
 ===========
 
-- Doesn't work in A4 or lower iDevices due to iOS compatibility reason.
-- You can tell me to improve any of codes or if you found out how to make it work with A4 iDevices.
-- Not very good code may cause bug(s), report to me if you face them.
+- Doesn't fully working in A4 iDevices due to iOS compatibility reason and you can only get about 30% sizes of Panoramic image because I replace the actual image one that won't be generated with its thumbnail.
+- You can tell me to improve any codes or if you found out how to make it work with A4 iDevices.
 - Thanks for all Beta Testers for this tweak !
 
 Contact
