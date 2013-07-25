@@ -720,7 +720,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	if (isiPhone5 || isiPad3or4) {
 		resetValue(15, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
 	}
-	else if (isiPod5 || isiPadMini1G || isiPad2 || isiPhone3GS) {
+	else if (isiPod5 || isiPadMini1G || isiPad2 || isiPod4 || isiPhone3GS) {
 		resetValue(13, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
 	}
 	else if (isiPhone4S || isiPhone4) {

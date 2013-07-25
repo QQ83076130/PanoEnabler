@@ -80,10 +80,20 @@ static NSString *Model()
    	
    		NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
    		NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
-    	NSDictionary *res = [NSDictionary dictionaryWithObjectsAndKeys:
+   		NSDictionary *res = nil;
+    	if (isiPod4 || isiPhone4 ||	isiPad2 || isiPhone3GS) {
+    		if (!isiPhone3GS) {
+    			res = [NSDictionary dictionaryWithObjectsAndKeys:
     									num(960), @"Width",
     									@"420f", @"PixelFormatType",
     									num(720), @"Height", nil];
+    		} else {
+    			res = [NSDictionary dictionaryWithObjectsAndKeys:
+    									num(480), @"Width",
+    									@"420f", @"PixelFormatType",
+    									num(360), @"Height", nil];
+    		}
+    	}
     	[liveSourceOptions setObject:res forKey:@"Sensor"];
    		[liveSourceOptions setObject:res forKey:@"Capture"];
     	[liveSourceOptions setObject:res forKey:@"Preview"];
