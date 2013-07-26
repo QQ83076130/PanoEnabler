@@ -81,7 +81,7 @@
 
 - (BOOL)addPanoProperties
 {
-	//NSString *model = [self model];
+	NSString *model = [self model];
 	NSString *modelFile = [self modelFile];
     NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
     NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
@@ -140,10 +140,9 @@
     	NSLog(@"Adding firebreak-Configuration.plist to system.");
     	NSMutableDictionary *createDict = [[NSMutableDictionary alloc] init];
     	NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
-    	NSString *model = [self model];
-		setPanoProperty(insideDict, @"ACTFrameHeight", isNon5MP ? 720 : 1936)
-		setPanoProperty(insideDict, @"ACTFrameWidth", isNon5MP ? 960 : 2592)
-		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNon5MP ? 4000 : 10800)
+		setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? 720 : 1936)
+		setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? 960 : 2592)
+		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800)
 		setPanoProperty(insideDict, @"ACTPanoramaDefaultDirection", 1)
 		setPanoProperty(insideDict, @"ACTPanoramaMaxFrameRate", 15)
 		setPanoProperty(insideDict, @"ACTPanoramaMinFrameRate", 15)
@@ -157,7 +156,7 @@
 		[createDict release];
 	}
     
-    /*NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
+    NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
     NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
     if (avRoot == nil) return NO;
     NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
@@ -169,7 +168,7 @@
    	
    	NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
    	NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
-    if (isiPod4 || isiPhone4 ||	isiPad2 || isiPhone3GS) {
+    if (isNeedConfigDevice) {
     	NSDictionary *res = nil;
     	if (!isiPhone3GS) {
     		res = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -190,7 +189,7 @@
 		[avCap replaceObjectAtIndex:0 withObject:index0];
 		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 		[avRoot writeToFile:avSession atomically:YES];
-    }*/
+    }
     
     return YES;
 }
@@ -204,7 +203,10 @@
 
 	NSLog(@"Adding Panorama Properties.");
     success = [self addPanoProperties];
-    if (!success) { NSLog(@"Failed adding Panorama Properties."); return success; }
+    if (!success) {
+    	NSLog(@"Failed adding Panorama Properties.");
+    	return success;
+    }
 
     NSLog(@"Done!");
     return success;
