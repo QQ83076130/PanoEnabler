@@ -32,7 +32,7 @@ static BOOL shouldInject = NO;
 - (void)setEnvironment:(NSDictionary *)arg1
 { 
 	if (shouldInject && Bool(prefDict, @"PanoEnabled", NO)) {
-		NSLog(@"BackBoardEnv: Adding Panorama Capability to Camera.app");
+		DebugLog(@"BackBoardEnv: Adding Panorama Capability to Camera.app");
 		NSMutableDictionary *dict = [arg1 mutableCopy];
 		[dict setObject:@"/usr/lib/libPano.dylib" forKey:@"DYLD_INSERT_LIBRARIES"];
 		[dict setObject:@"1" forKey:@"DYLD_FORCE_FLAT_NAMESPACE"];
