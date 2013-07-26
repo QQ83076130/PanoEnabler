@@ -23,7 +23,7 @@ IMPORTANT
 ===========
 
 - Doesn't fully working in A4 iDevices due to iOS compatibility reason and you can only get about 30% sizes of Panoramic image because I replace the actual image one that won't be generated with its thumbnail.
-- You can tell me to improve any codes or if you found out how to make it work with A4 iDevices.
+- You can tell me to improve any codes or if you found out how to make it fully working in A4 iDevices.
 - Thanks for all Beta Testers for this tweak !
 
 Contact
