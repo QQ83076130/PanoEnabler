@@ -133,7 +133,7 @@
     
     [[NSFileManager defaultManager] removeItemAtPath:firebreakFile error:nil];
     
-    /*if (isiPod4 || isiPhone3GS || isiPhone4 || isiPad2) {
+    if (isNeedConfigDevice) {
     
     	NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
     	NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
@@ -149,7 +149,7 @@
 		[avCap replaceObjectAtIndex:0 withObject:index0];
 		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 		[avRoot writeToFile:avSession atomically:YES];
-    }*/
+    }
     
     return YES;
 }
