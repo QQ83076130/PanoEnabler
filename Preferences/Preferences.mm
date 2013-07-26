@@ -150,7 +150,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 		case 3: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 4: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
 		case 5: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 6: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.2 (Not tested in 6.1.3)"]; break;
+		case 6: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.2"]; break;
     }
 
     return cell;
@@ -278,17 +278,17 @@ Then Customize the interface and properties of Panorama with PanoMod."
   			case 7:
   				[cell.textLabel setText:@"This might be useless function, all it does is enabling ability to zoom in Panorama mode but doesn't affect in resulted image."]; break;
   			case 8:
-  				[cell.textLabel setText:@"Like Enable Zoom, if you want grid to show in Panorama mode."]; break;
+  				[cell.textLabel setText:@"If you want grid to show in Panorama mode."]; break;
   			case 9:
   				[cell.textLabel setText:@"Like \"Better Pano Button\" that changes your Panorama button for 4-inches Tall-iDevices to blue."]; break;
   			case 10:
   				[cell.textLabel setText:@"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5 and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" version 1.0-4 or above installed first."]; break;
   			case 11:
-  				[cell.textLabel setText:@"For those iDevices don’t support Low Light Boost, this function will fix the dark issue in the another way and it works for all iDevices (iPod touch 5G users, if you don’t want to install LLBiPT5, you can just enable this function) and you will see the big different in camera brightness/lighting performance."]; break;
+  				[cell.textLabel setText:@"For those iDevices without support Low Light Boost feature, this function will fix the dark issue in the another way and it works for all iDevices (iPod touch 5G users, if you don’t want to install LLBiPT5, you can just enable this function) and you will see the big different in camera brightness/lighting performance.\nBut reason why Apple limits the brightness is simple, to fix Panorama overbright issue that you can face it in daytime."]; break;
   			case 12:
   				[cell.textLabel setText:@"Like \"Flashorama\" that allows you to toggle torch using Flash button in Panorama mode.\nSupported for iPhone 4, iPhone 4S, iPhone 5 and iPod touch 5G."]; break;
   			case 13:
-  				[cell.textLabel setText:@"The white arrow follows you when you move around, if you annoy this, hide it."]; break;
+  				[cell.textLabel setText:@"The white arrow follows you when you move around to capture Panorama, hide if you annoy it."]; break;
   			case 14:
   				[cell.textLabel setText:@"Hiding the blue horizontal line at the middle of screen, if you don't want it."]; break;
   			case 15:
@@ -298,7 +298,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
   			case 17:
   				[cell.textLabel setText:@"Just adjust them, easy ?"]; break;
   			case 18:
-  				[cell.textLabel setText:@"Simple button for hiding keyboard, useful in iPhone/iPod when you want to set many properties."]; break;
+  				[cell.textLabel setText:@"Simple button for hiding keyboard, useful in iPhone/iPod when you want to set many properties using input box."]; break;
   		}    
 
     return cell;
@@ -359,7 +359,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 - (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
 {
-	return 13;
+	return 15;
 }
 
 - (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
@@ -396,6 +396,10 @@ Then Customize the interface and properties of Panorama with PanoMod."
 			openLink(@"https://twitter.com/NavehIDL")
 		case 12:
 			openLink(@"https://www.facebook.com/omkung?fref=ts")
+		case 13:
+			openLink(@"https://twitter.com/iPFaHaD")
+		case 14:
+			openLink(@"https://twitter.com/H4lfSc0p3R")
 		
 	}
 }
@@ -417,6 +421,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
     	case 10: ident = @"u10"; break;
     	case 11: ident = @"u11"; break;
     	case 12: ident = @"u12"; break;
+    	case 13: ident = @"u13"; break;
+    	case 14: ident = @"u14"; break;
     }
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
@@ -443,7 +449,9 @@ Then Customize the interface and properties of Panorama with PanoMod."
     		addPerson(9, 2, 	@"@Xtoyou",				@"Tested tweak on iPad 3rd Generation (Global).")
     		addPerson(10, 2, 	@"@n4te2iver",			@"Tested tweak on iPad 4th Generation (Wi-Fi).")
     		addPerson(11, 1, 	@"@NavehIDL",			@"Tested tweak on iPad mini 1G (Wi-Fi).")
-    		addPerson(12, 1, 	@"Srsw Omegax Akrw",	@"Tested tweak on iPad mini 1G (GSM).")	
+    		addPerson(12, 1, 	@"Srsw Omegax Akrw",	@"Tested tweak on iPad mini 1G (GSM).")
+    		addPerson(13, 1,	@"@iPFaHaD",			@"Tested tweak on iPhone 4 GSM.")
+    		addPerson(14, 1,	@"@H4lfSc0p3R",			@"Tested tweak on iPhone 4 GSM.")
     	}
     } else {
     	cell.detailTextLabel.text = @"The list of People help creating PanoMod, Thanks for your support :)";
