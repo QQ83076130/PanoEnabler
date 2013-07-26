@@ -7,7 +7,7 @@
 #define isiPad2 		([model isEqualToString:@"iPad2,1"] || [model isEqualToString:@"iPad2,2"] || [model isEqualToString:@"iPad2,3"] || [model isEqualToString:@"iPad2,4"])
 #define isiPadMini1G	([model hasPrefix:@"iPad2"] && !isiPad2)
 #define isiPad3or4 		[model hasPrefix:@"iPad3"]
-#define isNon5MP 		(isiPad2 || isiPhone3GS || isiPod4 || isiPhone4)
+#define isNeedConfigDevice 	(isiPad2 || isiPhone3GS || isiPod4 || isiPhone4)
 #define isA4			(isiPhone3GS || isiPod4 || isiPhone4)
 
 #define PreferencesChangedNotification "com.PS.actHack.prefs"
@@ -18,3 +18,9 @@
 #define Bool(dict, key, defaultBoolValue) ([dict objectForKey:key] ? [[dict objectForKey:key] boolValue] : defaultBoolValue)
 #define setPanoProperty(dict, key, intValue) [dict setObject:[NSNumber numberWithInteger:intValue] forKey:key];
 #define num(intValue) [NSNumber numberWithInteger:intValue]
+
+#ifdef DEBUG
+#define DebugLog(...) NSLog(...)
+#else
+#define DebugLog(...)
+#endif
