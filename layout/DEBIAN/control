@@ -1,9 +1,16 @@
-Package: com.PS.PanoMod
+Author: PoomSmart & Pix3lDemon <poomst@hotmail.com>
+Maintainer: BigBoss <bigboss@thebigboss.org>
 Name: PanoMod
-Depends: mobilesubstrate, preferenceloader, gsc.still-camera, firmware (>= 6.0), firmware (<< 7.0)
+Package: org.thebigboss.panomod
+Depends: preferenceloader, firmware (>= 6.0), mobilesubstrate, gsc.still-camera, firmware (<< 7.0)
+Conflicts: org.thebigboss.flashorama, org.thebigboss.betterpanobutton, org.thebigboss.llbpano
+Section: Tweaks
 Version: 1.0
 Architecture: iphoneos-arm
 Description: Enable Panorama and customize it.
-Author: PoomSmart & Pix3lDemon
-Section: Tweaks
+Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=panomodDp
+Homepage: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=panomodDp
+Sponsor: thebigboss.org <http://thebigboss.org>
+dev: poomst
+Tag: purpose::extension, role::enduser
 Icon: file:///Library/PreferenceBundles/PanoPreferences.bundle/PanoPreferences@2x.png
