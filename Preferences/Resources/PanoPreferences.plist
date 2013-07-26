@@ -731,7 +731,7 @@ Usages:
 There are 3 modes of torch mode set in Panorama capture:
 1. Off = Turn off torch
 2. On = Turn on torch
-3. Auto = Turn off torch after pressed, turn on when Panorama capturing is started, turn off again whem Panorama capturing is stopped.</string>
+3. Auto = Turn on torch only when you are capturing Panorama.</string>
 		</dict>
 		<dict>
         	<key>cell</key>
