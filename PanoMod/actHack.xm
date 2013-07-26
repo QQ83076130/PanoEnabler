@@ -55,61 +55,15 @@ static NSString *Model()
 
 %end
 
-/*%hook AVCaptureConnection
-
--(BOOL)isVideoRetainedBufferCountHintSupported { return isPanorama ? YES : %orig; }
-
-%end*/
-
 %hook AVCaptureFigVideoDevice
-
-// Adding Panorama preset to iDevices without 5MP Camera
-- (id)devicePropertiesDictionary
-{
-	NSString *model = Model();
-	if (isNon5MP && Bool(prefDict, @"PanoEnabled", NO)) {
-		NSLog(@"PanoMod: Adding Panorama Preset to non-5MP Camera iDevice.");
-		NSMutableDictionary *avRoot = [(NSDictionary *)%orig mutableCopy];
-		if (avRoot == nil) return %orig;
-		NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
-   		if (avCap == nil) return %orig;
-   		NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
-   		if (index0 == nil) return %orig;
-   		NSDictionary *presetPhoto = [index0 objectForKey:@"AVCaptureSessionPresetPhoto"];
-   		if (presetPhoto == nil) return %orig;
-   	
-   		NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
-   		NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
-   		NSDictionary *res = nil;
-    	if (isiPod4 || isiPhone4 ||	isiPad2 || isiPhone3GS) {
-    		if (!isiPhone3GS) {
-    			res = [NSDictionary dictionaryWithObjectsAndKeys:
-    									num(960), @"Width",
-    									@"420f", @"PixelFormatType",
-    									num(720), @"Height", nil];
-    		} else {
-    			res = [NSDictionary dictionaryWithObjectsAndKeys:
-    									num(480), @"Width",
-    									@"420f", @"PixelFormatType",
-    									num(360), @"Height", nil];
-    		}
-    	}
-    	[liveSourceOptions setObject:res forKey:@"Sensor"];
-   		[liveSourceOptions setObject:res forKey:@"Capture"];
-    	[liveSourceOptions setObject:res forKey:@"Preview"];
-		[presetPhotoToAdd setObject:liveSourceOptions forKey:@"LiveSourceOptions"];
-		[index0 setObject:presetPhotoToAdd forKey:@"AVCaptureSessionPresetPhoto2592x1936"];
-		[avCap replaceObjectAtIndex:0 withObject:index0];
-		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
-		return (id)avRoot;
-    }
-	return %orig;
-}
 
 // Fix dark problem in Panorama mode
 - (void)setImageControlMode:(int)mode
 {
-	%orig(mode == 4 && Bool(prefDict, @"PanoDarkFix", NO) ? 1 : mode);
+	if (mode == 4 && Bool(prefDict, @"PanoDarkFix", NO)) {
+		DebugLog(@"PanoMod: Setting Image Control Mode to 1.");
+		%orig(1);
+	} else %orig;
 }
 
 %end
@@ -136,7 +90,7 @@ static NSString *Model()
 {
 // type 1 = on, type 2 = off
 	if ([self.currentDevice hasTorch]) {
-		NSLog(@"Flashorama: Setting Torch Mode: %@", type == 1 ? @"On" : @"Off");
+		DebugLog(@"Flashorama: Setting Torch Mode: %@", type == 1 ? @"On" : @"Off");
     	[self.currentDevice lockForConfiguration:nil];
         [self.currentDevice setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
         [self.currentDevice unlockForConfiguration];
@@ -149,7 +103,7 @@ static NSString *Model()
 	%orig;
     [self.currentDevice lockForConfiguration:nil];
     if ([self.currentDevice isLowLightBoostSupported]) {
-    	NSLog(@"LLBPano: Enabling Low-light mode in Panorama.");
+    	DebugLog(@"LLBPano: Enabling Low-light mode in Panorama.");
     	[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:Bool(prefDict, @"LLBPano", nil)];
     }
     [self.currentDevice unlockForConfiguration];
@@ -161,7 +115,7 @@ static NSString *Model()
 // iPhone recommended maximum height is 640
 - (struct CGSize)panoramaPreviewSize
 {
-	NSLog(@"PanoMod: Hooking Panorama preview size.");
+	DebugLog(@"PanoMod: Hooking Panorama preview size.");
 	return CGSizeMake(valueFromKey(prefDict, @"PreviewWidth", 306), valueFromKey(prefDict, @"PreviewHeight", 86));
 }
 
@@ -170,7 +124,7 @@ static NSString *Model()
 {
 	isPanorama = NO;
 	if (mode == 2 && device == 0) {
-		NSLog(@"PanoMod: Entering Panorama mode.");
+		DebugLog(@"PanoMod: Entering Panorama mode.");
 		isPanorama = YES;
 	}
 	%orig;
@@ -180,7 +134,7 @@ static NSString *Model()
 - (void)startPanoramaCapture
 {
 	if (autoOff && FMisOn) {
-		NSLog(@"Flashorama: Auto turn on Torch.");
+		DebugLog(@"Flashorama: Auto turn on Torch.");
 		[self torch:1];
 	}
 	%orig;
@@ -190,7 +144,7 @@ static NSString *Model()
 - (void)stopPanoramaCapture
 {
 	if (autoOff && FMisOn) {
-		NSLog(@"Flashorama: Auto turn off Torch.");
+		DebugLog(@"Flashorama: Auto turn off Torch.");
 		[self torch:2];
 	}
 	%orig;
@@ -203,13 +157,13 @@ static NSString *Model()
 // Changing Panorama button images (For 4-inches iDevices)
 + (id)backgroundPanoOffPressedImageName
 {
-	NSLog(@"Better Pano Button: Hooking Panorama button.");
+	DebugLog(@"Better Pano Button: Hooking Panorama button.");
 	return Bool(prefDict, @"bluePanoBtn", NO) ? @"PLCameraLargeShutterButtonPanoOnPressed_2only_-568h" : %orig;
 }
 
 + (id)backgroundPanoOffImageName
 {
-	NSLog(@"Better Pano Button: Hooking Panorama button.");
+	DebugLog(@"Better Pano Button: Hooking Panorama button.");
 	return Bool(prefDict, @"bluePanoBtn", NO) ? @"PLCameraLargeShutterButtonPanoOn_2only_-568h" : %orig;
 }
 
@@ -221,7 +175,7 @@ static NSString *Model()
 - (void)_updateInstructionalText:(NSString *)text
 {
 	%orig;
-	NSLog(@"PanoMod: Hooking Instruction Text Background and Ghost Image View.");
+	DebugLog(@"PanoMod: Hooking Instruction Text Background and Ghost Image View.");
 	UIView *labelBG = MSHookIvar<UIView *>(self, "_instructionalTextBackground");
 	UIImageView *ghostImg = MSHookIvar<UIImageView *>(self, "_previewGhostImageView");
 	[labelBG setHidden:Bool(prefDict, @"hideLabelBG", NO)];
@@ -275,7 +229,7 @@ static NSString *Model()
 - (BOOL)_zoomIsAllowed
 {
 	if (isPanorama && Bool(prefDict, @"panoZoom", NO)) {
-		NSLog(@"PanoMod: Enabling Zoom in Panorama mode.");
+		DebugLog(@"PanoMod: Enabling Zoom in Panorama mode.");
 		return YES;
 	}
 	return %orig;
@@ -297,7 +251,7 @@ static NSString *Model()
 - (BOOL)_flashButtonShouldBeHidden
 {
 	if (isPanorama && FMisOn) {
-		NSLog(@"Flashorama: Preventing Flash Button from being hidden in Panorama mode.");
+		DebugLog(@"Flashorama: Preventing Flash Button from being hidden in Panorama mode.");
 		return NO;
 	}
 	return %orig;
@@ -307,7 +261,7 @@ static NSString *Model()
 - (int)_glyphOrientationForCameraOrientation:(int)arg1
 {
 	if (isPanorama && (FMisOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) {
-		NSLog(@"Flashorama: Fixing Flash Button Orientation.");
+		DebugLog(@"Flashorama: Fixing Flash Button Orientation.");
 		return 1;
 	}
 	return %orig;
@@ -322,7 +276,7 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self && Bool(prefDict, @"hideLevelBar", NO)) {
-		NSLog(@"PanoMod: Hooking Panorama Level Bar.");
+		DebugLog(@"PanoMod: Hooking Panorama Level Bar.");
 		[self setHidden:YES];
 	}
 	return self;
@@ -337,7 +291,7 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self && Bool(prefDict, @"hideArrow", NO)) {
-		NSLog(@"PanoMod: Hooking Panorama Arrow");
+		DebugLog(@"PanoMod: Hooking Panorama Arrow");
 		[self setHidden:YES];
 	}
 	return self;
@@ -352,7 +306,7 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self && Bool(prefDict, @"hideLabel", NO)) {
-		NSLog(@"PanoMod: Hooking Panorama Labels.");
+		DebugLog(@"PanoMod: Hooking Panorama Labels.");
 		[self setHidden:YES];
 	}
 	return self;
@@ -362,7 +316,7 @@ static NSString *Model()
 - (void)setText:(NSString *)text
 {
 	if (Bool(prefDict, @"customText", NO)) {
-		NSLog(@"PanoMod: Hooking Panorama Text.");
+		DebugLog(@"PanoMod: Hooking Panorama Text.");
 		%orig([prefDict objectForKey:@"myText"] ? [[prefDict objectForKey:@"myText"] description] : text);
 	}
 	else %orig;
@@ -376,7 +330,7 @@ static NSString *Model()
 - (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName
 {
     if ([key isEqual:@"PANO_INSTRUCTIONAL_TEXT_iPad"]) {
-    	NSLog(@"Hooking Instructional Text for iPad. (English Only)");
+    	DebugLog(@"Hooking Instructional Text for iPad. (English Only)");
     	return @"Move iPad continuously when taking a Panorama.";
     }
     return %orig;
