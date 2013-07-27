@@ -150,7 +150,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 		case 3: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 4: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
 		case 5: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 6: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.2"]; break;
+		case 6: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.3"]; break;
     }
 
     return cell;
