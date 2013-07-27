@@ -1,5 +1,5 @@
 #include <CoreFoundation/CoreFoundation.h>
-#include <IOKit/IOKitLib.h>
+//#include <IOKit/IOKitLib.h>
 
 #ifndef __in
 #define __in
@@ -35,7 +35,7 @@ CFTypeRef _IORegistryEntryCreateCFProperty(__in PVOID Entry, __in CFStringRef Ke
 	const UInt8 enable[8] = {0, 1, 0, 0, 0, 0, 0, 0};
     CFDataRef DataValue;
     
-	if (CFStringCompare(Key, CFSTR("camera-panorama"), 0)) {
+	if (!CFStringCompare(Key, CFSTR("camera-panorama"), 0)) {
     	DataValue = CFDataCreate(kCFAllocatorDefault, enable, 8);
         return DataValue;
     }
