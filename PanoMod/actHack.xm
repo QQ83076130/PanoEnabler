@@ -101,12 +101,14 @@ static NSString *Model()
 - (void)_configureSessionWithCameraMode:(int)mode cameraDevice:(int)device
 {
 	%orig;
-    [self.currentDevice lockForConfiguration:nil];
-    if ([self.currentDevice isLowLightBoostSupported]) {
-    	DebugLog(@"LLBPano: Enabling Low-light mode in Panorama.");
-    	[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:Bool(prefDict, @"LLBPano", nil)];
+	if (mode == 2 && device == 0) {
+   		[self.currentDevice lockForConfiguration:nil];
+    	if ([self.currentDevice isLowLightBoostSupported]) {
+    		DebugLog(@"LLBPano: Enabling Low-light mode in Panorama.");
+    		[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:Bool(prefDict, @"LLBPano", nil)];
+    	}
+    	[self.currentDevice unlockForConfiguration];
     }
-    [self.currentDevice unlockForConfiguration];
 }
 
 // Set Panorama Preview Size
