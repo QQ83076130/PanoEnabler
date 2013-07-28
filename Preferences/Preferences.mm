@@ -14,6 +14,7 @@
 @interface PSListController (PanoMod)
 - (void)viewWillAppear:(BOOL)animated;
 - (void)viewDidUnload;
+- (UIView *)tableView:(UITableView *)view viewForHeaderInSection:(int)section;
 @end
 
 #define kFontSize 14.0f
@@ -196,6 +197,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStyleGrouped];
         [_tableView setDataSource:self];
         [_tableView setDelegate:self];
+        [_tableView setAutoresizingMask:1];
         [_tableView setEditing:NO];
         [_tableView setAllowsSelectionDuringEditing:NO];
         if ([self respondsToSelector:@selector(setView:)])
@@ -830,6 +832,23 @@ Then Customize the interface and properties of Panorama with PanoMod."
 		_specifiers = [specs copy];
   }
 	return _specifiers;
+}
+
+- (UIView *)tableView:(UITableView *)view viewForHeaderInSection:(int)section
+{
+	if (section == 0) {
+		UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 100)] autorelease];
+        [label setText:@"PanoMod"];
+        [label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
+        [label setTextAlignment:1];
+        [label setAutoresizingMask:2];
+        [label setBackgroundColor:[UIColor clearColor]];
+        [label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
+        [label setShadowColor:[UIColor whiteColor]];
+        [label setShadowOffset:CGSizeMake(1,1)];
+        [view setTableHeaderView:label];
+    }
+    return [super tableView:view viewForHeaderInSection:section];
 }
 
 @end
