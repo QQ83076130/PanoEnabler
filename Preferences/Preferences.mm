@@ -3,18 +3,25 @@
 #import <Preferences/PSViewController.h>
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
+#import <Preferences/PSTableCell.h>
 
 #include <objc/runtime.h>
 #include <sys/sysctl.h>
 
 @interface PSViewController (PanoMod)
 - (void)setView:(id)view;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section;
 @end
 
 @interface PSListController (PanoMod)
 - (void)viewWillAppear:(BOOL)animated;
 - (void)viewDidUnload;
 - (UIView *)tableView:(UITableView *)view viewForHeaderInSection:(int)section;
+@end
+
+@interface PSTableCell (PanoMod)
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)identifier specifier:(PSSpecifier *)specifier;
 @end
 
 #define kFontSize 14.0f
@@ -47,6 +54,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
 									if (value2 > max) { value = [NSNumber numberWithFloat:max]; } \
 									else if (value2 < min) { value = [NSNumber numberWithFloat:min]; } \
 									else value = [NSNumber numberWithFloat:([value floatValue])];
+									
+#define setAvailable(available, spec) [spec setProperty:[NSNumber numberWithBool:available] forKey:@"enabled"];
 
 #define updateValue(targetSpec, sliderSpec, targetKey, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] intValue]] forKey:targetKey]; \
   																		[self reloadSpecifier:self.targetSpec animated:NO];
@@ -84,9 +93,10 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (id)initForContentSize:(CGSize)size
 {
 	if ((self = [super initForContentSize:size]) != nil) {		
-		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStyleGrouped];
+		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
         [_tableView setDataSource:self];
         [_tableView setDelegate:self];
+        [_tableView setAutoresizingMask:1];
         [_tableView setEditing:NO];
         [_tableView setAllowsSelectionDuringEditing:NO];
         if ([self respondsToSelector:@selector(setView:)])
@@ -97,7 +107,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 - (int)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 7;
+    return 6;
 }
 
 - (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
@@ -115,11 +125,10 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	switch (section) {
 		case 0: return @"PanoMod";
 		case 1: return @"Will this fully working in A4 iDevices ?";
-		case 2: return @"(A4 iDevices) Panorama doesn't work in Lockscreen Camera";
-		case 3: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
-		case 4: return @"(iPad) Landscape Panorama UI is bad";
-		case 5: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
-		case 6: return @"Supported iOS Versions";
+		case 2: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
+		case 3: return @"(iPad) Landscape Panorama UI is bad";
+		case 4: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
+		case 5: return @"Supported iOS Versions";
 	}
 	return nil;
 }
@@ -147,11 +156,10 @@ Then Customize the interface and properties of Panorama with PanoMod."
     	case 1: [cell.textLabel setText:@"Here are the issues that still can’t be fixed.\n\
 1. The resolution of panoramic image in A4 iDevices is much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it.\n\
 2. iPhone 3GS, the slowest iOS 6 device, may not able to handle Panorama capture so it causes green images as usual."]; break;
-		case 2: [cell.textLabel setText:@"Method we use to enable Panorama is about code injection that only work when launching (Camera) app. So it doesn't work with Lockscreen Camera."]; break;
-		case 3: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
-		case 4: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
-		case 5: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 6: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.3"]; break;
+		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
+		case 3: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
+		case 4: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
+		case 5: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.3"]; break;
     }
 
     return cell;
@@ -194,7 +202,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (id)initForContentSize:(CGSize)size
 {
 	if ((self = [super initForContentSize:size]) != nil) {		
-		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStyleGrouped];
+		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
         [_tableView setDataSource:self];
         [_tableView setDelegate:self];
         [_tableView setAutoresizingMask:1];
@@ -266,7 +274,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
         	case 0:
   				[cell.textLabel setText:@"We will explain each function how they work."]; break;
   			case 1:
-  				[cell.textLabel setText:@"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama.\nBut it slows down time for opening Camera app, much in A4 iDevices."]; break;
+  				[cell.textLabel setText:@"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama."]; break;
   			case 2:
   				[cell.textLabel setText:@"For example, the default maximum panoramic image width of iPhone 4S, iPhone 5 and iPod touch 5G (5MP Camera) is 10800 pixel, you can adjust it, lowest is 3000 pixel, highest is 21600 pixel.\nNOTE: You cannot set the maximum width LOWER than the Camera sensor width."]; break;
   			case 3:
@@ -346,6 +354,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
         [_tableView setDataSource:self];
         [_tableView setDelegate:self];
+        [_tableView setAutoresizingMask:1];
         [_tableView setEditing:NO];
         [_tableView setAllowsSelectionDuringEditing:NO];
         if ([self respondsToSelector:@selector(setView:)])
@@ -482,6 +491,40 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 @end
 
+@interface BannerCell : PSTableCell {
+	UILabel *_label;
+}
+@end
+ 
+@implementation BannerCell
+
+- (id)initWithSpecifier:(PSSpecifier*)specifier
+{	
+	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Banner" specifier:specifier];
+	if (self) {
+		CGRect frame = [self frame];
+        _label = [[UILabel alloc] initWithFrame:frame];
+        [_label setText:@"PanoMod"];
+    	[_label setBackgroundColor:[UIColor clearColor]];
+    	[_label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
+        [_label setTextAlignment:1];
+        [_label setAutoresizingMask:2];
+        [_label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
+        [_label setShadowColor:[UIColor whiteColor]];
+        [_label setShadowOffset:CGSizeMake(0,1)];
+        [self addSubview:_label];
+        [_label release];
+    }
+	return self;
+}
+ 
+- (float)preferredHeightForWidth:(float)arg1
+{
+    return 50.f;
+}
+
+@end
+
 @interface actHackPreferenceController : PSListController {
 	PSSpecifier *PanoEnabledSpec;
 	PSSpecifier *maxWidthSpec;
@@ -612,7 +655,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 {
 	NSMutableArray *specs = [NSMutableArray arrayWithArray:[self loadSpecifiersFromPlistName:@"PanoPreferences" target:self]];
 		for (PSSpecifier *spec in specs) {
-			if ([[[spec properties] objectForKey:@"id"] length] > 0)
+			if ([Id length] > 0)
 				spec = nil;
 		}
     [super viewDidUnload];
@@ -620,7 +663,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 - (void)setWidth:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(3000, 21600)
+	NSString *model = [self model];
+	rangeFix(isiPhone3GS ? 2000 : 3000, 21600)
 	orig
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
 }
@@ -686,13 +730,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (void)setTextHide:(id)value specifier:(PSSpecifier *)spec
 {
 	orig
-	if ([value boolValue]) {
-		[self.customTextSpec setProperty:[NSNumber numberWithBool:NO] forKey:@"enabled"];
-		[self.inputTextSpec setProperty:[NSNumber numberWithBool:NO] forKey:@"enabled"];
-	} else {
-		[self.customTextSpec setProperty:[NSNumber numberWithBool:YES] forKey:@"enabled"];
-		[self.inputTextSpec setProperty:[NSNumber numberWithBool:YES] forKey:@"enabled"];
-	}
+	setAvailable(![value boolValue], self.customTextSpec)
+	setAvailable(![value boolValue], self.inputTextSpec)
 	[self reloadSpecifier:self.customTextSpec];
 	[self reloadSpecifier:self.inputTextSpec];
 }
@@ -700,32 +739,13 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (void)resetValues:(id)param
 {
 	NSString *model = [self model];
-	if (isiPhone4S || isiPhone5 || isiPod5 || isiPadMini1G || isiPad3or4) {
-		resetValue(10800, maxWidthSliderSpec, maxWidthInputSpec)
-	}
-	else if (isiPhone3GS) {
-		resetValue(2000, maxWidthSliderSpec, maxWidthInputSpec)
-	} else {
-		resetValue(4000, maxWidthSliderSpec, maxWidthInputSpec)
-	}
+	resetValue(isiPhone3GS ? 2000 : isNeedConfigDevice ? 4000 : 10800, maxWidthSliderSpec, maxWidthInputSpec)
 
-	if (isiPhone5 || isiPad3or4) {
-		resetValue(20, maxFPSSliderSpec, maxFPSInputSpec)
-	} else {
-		resetValue(15, maxFPSSliderSpec, maxFPSInputSpec)
-	}
+	resetValue((isiPhone5 || isiPad3or4) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
 
-	if (isiPhone3GS) {
-		resetValue(7, minFPSSliderSpec, minFPSInputSpec)
-	} else {
-		resetValue(15, minFPSSliderSpec, minFPSInputSpec)
-	}
+	resetValue(isiPhone3GS ? 7 : 15, minFPSSliderSpec, minFPSInputSpec)
 
-	if (isiPhone5 || isiPad3or4) {
-		resetValue(5, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
-	} else {
-		resetValue(7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
-	}
+	resetValue((isiPhone5 || isiPad3or4) ? 5 : 7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
 
 	if (isiPhone5 || isiPad3or4) {
 		resetValue(15, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
@@ -750,6 +770,11 @@ Then Customize the interface and properties of Panorama with PanoMod."
 {
 	orig
 	system("killall Camera");
+}
+
+- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
+{
+	return [super tableView:tableView numberOfRowsInSection:section];
 }
 
 - (NSArray *)specifiers
@@ -812,13 +837,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
         	[specs removeObject:self.PanoEnabledSpec];
         }
 
-		if (![[self readPreferenceValue:self.hideTextSpec] boolValue]) {
-			[self.customTextSpec setProperty:[NSNumber numberWithBool:YES] forKey:@"enabled"];
-			[self.inputTextSpec setProperty:[NSNumber numberWithBool:YES] forKey:@"enabled"];
-		} else {
-			[self.customTextSpec setProperty:[NSNumber numberWithBool:NO] forKey:@"enabled"];
-			[self.inputTextSpec setProperty:[NSNumber numberWithBool:NO] forKey:@"enabled"];
-		}
+		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.customTextSpec)
+		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.inputTextSpec)
 
         updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
         updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
@@ -828,30 +848,35 @@ Then Customize the interface and properties of Panorama with PanoMod."
 		updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"footerText", @"Current Value: %i")
 		updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"footerText", @"Current Value: %i")
 		updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"footerText", @"Current Value: %i")
-		
+				
 		_specifiers = [specs copy];
   }
 	return _specifiers;
 }
 
-- (UIView *)tableView:(UITableView *)view viewForHeaderInSection:(int)section
+/*- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (section == 0) {
-		UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 100)] autorelease];
-        [label setText:@"PanoMod"];
-        [label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
-        [label setTextAlignment:1];
-        [label setAutoresizingMask:2];
-        [label setBackgroundColor:[UIColor clearColor]];
-        [label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
-        [label setShadowColor:[UIColor whiteColor]];
-        [label setShadowOffset:CGSizeMake(1,1)];
-        [view setTableHeaderView:label];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PanoMod"];
+    if (indexPath.section == 0) {
+    	cell = [[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 320, 100) reuseIdentifier:@"PanoMod"];
+    	[cell.textLabel setText:@"PanoMod"];
+    	[cell.textLabel setBackgroundColor:[UIColor clearColor]];
+    	[cell.textLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
+        [cell.textLabel setTextAlignment:1];
+        [cell.detailTextLabel setTextAlignment:1];
+        [cell.textLabel setAutoresizingMask:2];
+        [cell.textLabel setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
+        [cell.textLabel setShadowColor:[UIColor whiteColor]];
+        [cell.textLabel setShadowOffset:CGSizeMake(0,1)];
+        [cell setBackgroundColor:[UIColor clearColor]];
+        [tableView setTableHeaderView:cell.textLabel];
+        return cell;
     }
-    return [super tableView:view viewForHeaderInSection:section];
-}
+    return [super tableView:tableView cellForRowAtIndexPath:indexPath];
+}*/
 
 @end
+
 
 #define PanoModAddMethod(_class, _sel, _imp, _type) \
     if (![[_class class] instancesRespondToSelector:@selector(_sel)]) \
