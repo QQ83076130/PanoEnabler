@@ -140,9 +140,9 @@
     	NSLog(@"Adding firebreak-Configuration.plist to system.");
     	NSMutableDictionary *createDict = [[NSMutableDictionary alloc] init];
     	NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
-		setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? 720 : 1936)
-		setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? 960 : 2592)
-		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800)
+		setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? isiPhone3GS ? 360 : 720 : 1936)
+		setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? isiPhone3GS ? 480 : 960 : 2592)
+		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? isiPhone3GS ? 2000 : 4000 : 10800)
 		setPanoProperty(insideDict, @"ACTPanoramaDefaultDirection", 1)
 		setPanoProperty(insideDict, @"ACTPanoramaMaxFrameRate", 15)
 		setPanoProperty(insideDict, @"ACTPanoramaMinFrameRate", 15)
