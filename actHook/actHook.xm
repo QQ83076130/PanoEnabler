@@ -1,5 +1,6 @@
 #import "../definitions.h"
 #import <substrate.h>
+#import <CoreFoundation/CoreFoundation.h>
 
 #include <sys/sysctl.h>
 
@@ -32,7 +33,7 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
 	DebugLog(@"actHook: Editing firebreak-Configuration values.");
 	theDict = [old__ACT_CopyDefaultConfigurationForPanorama() mutableCopy];
 	NSString *model = Model();
-	setPanoProperty(theDict, @"ACTPanoramaMaxWidth", valueFromKey(prefDict, @"PanoramaMaxWidth", isNon5MP ? 4000 : 10800))
+	setPanoProperty(theDict, @"ACTPanoramaMaxWidth", valueFromKey(prefDict, @"PanoramaMaxWidth", isNeedConfigDevice ? isiPhone3GS ? 2000 : 4000 : 10800))
 	setPanoProperty(theDict, @"ACTPanoramaMaxFrameRate", valueFromKey(prefDict, @"PanoramaMaxFrameRate", 15))
 	setPanoProperty(theDict, @"ACTPanoramaMinFrameRate", valueFromKey(prefDict, @"PanoramaMinFrameRate", 15))
 	setPanoProperty(theDict, @"ACTPanoramaBufferRingSize", valueFromKey(prefDict, @"PanoramaBufferRingSize", 6)) 
