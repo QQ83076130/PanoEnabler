@@ -76,7 +76,7 @@ static NSString *Model()
 	%orig;
 	if (isPanorama && FMisOn) {
 		autoOff = (mode == 0) ? YES : NO;
-		[[%c(PLCameraController) sharedInstance] torch:((mode == 1) ? 1 : 2)];
+		[[%c(PLCameraController) sharedInstance] torch:mode];
 	}
 }
 
@@ -88,7 +88,7 @@ static NSString *Model()
 
 - (void)torch:(int)type
 {
-// type 1 = on, type 2 = off
+// type 1 = on, type -1 = off
 	if ([self.currentDevice hasTorch]) {
 		DebugLog(@"Flashorama: Setting Torch Mode: %@", type == 1 ? @"On" : @"Off");
     	[self.currentDevice lockForConfiguration:nil];
@@ -147,7 +147,7 @@ static NSString *Model()
 {
 	if (autoOff && FMisOn) {
 		DebugLog(@"Flashorama: Auto turn off Torch.");
-		[self torch:2];
+		[self torch:-1];
 	}
 	%orig;
 }
