@@ -507,7 +507,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
         [_label setText:@"PanoMod"];
     	[_label setBackgroundColor:[UIColor clearColor]];
     	[_label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
-        [_label setTextAlignment:1];
+        [_label setTextAlignment:UITextAlignmentCenter];
         [_label setAutoresizingMask:2];
         [_label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
         [_label setShadowColor:[UIColor whiteColor]];
@@ -517,7 +517,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
     }
 	return self;
 }
- 
+
 - (float)preferredHeightForWidth:(float)arg1
 {
     return 50.f;
@@ -664,7 +664,12 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (void)setWidth:(id)value specifier:(PSSpecifier *)spec
 {
 	NSString *model = [self model];
-	rangeFix(isiPhone3GS ? 2000 : 3000, 21600)
+	if (isiPhone3GS) {
+		rangeFix(2000, 21600)
+	}
+	else {
+		rangeFix(3000, 21600)
+	}
 	orig
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
 }
@@ -853,27 +858,6 @@ Then Customize the interface and properties of Panorama with PanoMod."
   }
 	return _specifiers;
 }
-
-/*- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PanoMod"];
-    if (indexPath.section == 0) {
-    	cell = [[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 320, 100) reuseIdentifier:@"PanoMod"];
-    	[cell.textLabel setText:@"PanoMod"];
-    	[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-    	[cell.textLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
-        [cell.textLabel setTextAlignment:1];
-        [cell.detailTextLabel setTextAlignment:1];
-        [cell.textLabel setAutoresizingMask:2];
-        [cell.textLabel setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
-        [cell.textLabel setShadowColor:[UIColor whiteColor]];
-        [cell.textLabel setShadowOffset:CGSizeMake(0,1)];
-        [cell setBackgroundColor:[UIColor clearColor]];
-        [tableView setTableHeaderView:cell.textLabel];
-        return cell;
-    }
-    return [super tableView:tableView cellForRowAtIndexPath:indexPath];
-}*/
 
 @end
 
