@@ -107,7 +107,7 @@
 			<key>max</key>
 			<real>21600</real>
 			<key>min</key>
-			<real>2000</real>
+			<real>1000</real>
 			<key>showValue</key>
 			<false/>
 		</dict>
