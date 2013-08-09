@@ -5,46 +5,6 @@
 
 @implementation PanoRemover
 
-/*
-- (BOOL)removeAlternativeCacheFromDaemonAtPath:(const char *)path
-{
-
-    NSMutableDictionary *root = (NSMutableDictionary *) [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/LaunchDaemons/com.apple.SpringBoard.plist"];
-    if (root == nil) return NO;
-    NSMutableDictionary *ev = [root objectForKey:@"EnvironmentVariables"];
-    if (ev == nil) {
-        ev = [NSMutableDictionary dictionary];
-        [root setObject:ev forKey:@"EnvironmentVariables"];
-    }
-
-	if ([[ev objectForKey:@"DYLD_INSERT_LIBRARIES"] isEqual:@"/usr/lib/libPano.dylib"]) {
-        [ev removeObjectForKey:@"DYLD_INSERT_LIBRARIES"];
-    }
-
-	if ([[ev objectForKey:@"DYLD_FORCE_FLAT_NAMESPACE"] isEqual:@"1"]) {
-        [ev removeObjectForKey:@"DYLD_FORCE_FLAT_NAMESPACE"];
-    }
-    
-    [root setObject:ev forKey:@"EnvironmentVariables"];
-    [root writeToFile:@"/System/Library/LaunchDaemons/com.apple.SpringBoard.plist" atomically:YES];
-    
-    return YES;
-}
-*/
-
-/*
-- (BOOL)remove
-{
-    BOOL success = YES;
-
-    SPLog(@"Removing system file patches.");
-    success = [self removeAlternativeCacheFromDaemonAtPath:"/System/Library/LaunchDaemons/com.apple.SpringBoard.plist"];
-    if (!success) { SPLog(@"Failed removing patches."); }
-
-    return YES;
-}
-*/
-
 - (NSString *)getSysInfoByName:(char *)typeSpecifier
 {
     size_t size;
@@ -77,7 +37,7 @@
 {
 	NSString *model = [self model];
 	NSString *modelFile = [self modelFile];
-    NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
+	NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
 
     NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
     if (root == nil) return NO;
@@ -134,7 +94,6 @@
     [[NSFileManager defaultManager] removeItemAtPath:firebreakFile error:nil];
     
     if (isNeedConfigDevice) {
-    
     	NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
     	NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
    		if (avRoot == nil) return NO;
@@ -158,13 +117,12 @@
 {
     BOOL success = YES;
 
-    /*SPLog(@"Modifying System Files.");
-    success = [self applyLibraryToDaemon];
-    if (!success) { [self cleanUp]; NSLog(@"Failed adding EnvironmentVariables."); return success; }*/
-
 	NSLog(@"Removing Panorama Properties.");
     success = [self removePanoProperties];
-    if (!success) { NSLog(@"Failed removing Panorama Properties."); return success; }
+    if (!success) {
+    	NSLog(@"Failed removing Panorama Properties.");
+    	return success;
+    }
 
     NSLog(@"Done!");
     return success;

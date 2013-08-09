@@ -3,53 +3,7 @@
 
 @interface PanoInstaller : NSObject @end
 
-
 @implementation PanoInstaller
-
-/*
-- (void)applyLibraryToEnvironmentVariables:(NSMutableDictionary *)ev
-{
-
-    if ([[ev objectForKey:@"DYLD_INSERT_LIBRARIES"] length] == 0) {
-        [ev setObject:@"/usr/lib/libPano.dylib" forKey:@"DYLD_INSERT_LIBRARIES"];
-    }
-
-    if ([[ev objectForKey:@"DYLD_FORCE_FLAT_NAMESPACE"] length] == 0) {
-        [ev setObject:@"1" forKey:@"DYLD_FORCE_FLAT_NAMESPACE"];
-    }
-}
-*/
-
-/*
-- (BOOL)applyLibraryToDaemonAtPath:(NSString *)path
-{
-
-    NSMutableDictionary *daemon = (NSMutableDictionary *) [NSDictionary dictionaryWithContentsOfFile:path];
-    if (daemons == nil) return NO;
-    NSMutableDictionary *ev = [daemon objectForKey:@"EnvironmentVariables"];
-    if (ev == nil) {
-        ev = [NSMutableDictionary dictionary];
-        [daemon setObject:ev forKey:@"EnvironmentVariables"];
-    }
-
-	[self applyLibraryToEnvironmentVariables:ev];
-
-    return YES;
-}
-*/
-
-
-/*
-- (BOOL)applyLibraryToDaemon
-{
-    BOOL success = YES;
-
-    success = [self applyLibraryToDaemonAtPath:@"/System/Library/LaunchDaemons/com.apple.SpringBoard.plist"];
-    if (!success) { NSLog(@"Failed applying environment variables to SpringBoard."); return success; }
-
-    return success;
-}
-*/
 
 - (NSString *)getSysInfoByName:(char *)typeSpecifier
 {
@@ -140,9 +94,9 @@
     	NSLog(@"Adding firebreak-Configuration.plist to system.");
     	NSMutableDictionary *createDict = [[NSMutableDictionary alloc] init];
     	NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
-		setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? isiPhone3GS ? 360 : 720 : 1936)
-		setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? isiPhone3GS ? 480 : 960 : 2592)
-		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? isiPhone3GS ? 2000 : 4000 : 10800)
+		setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? 720 : 1936)
+		setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? 960 : 2592)
+		setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800)
 		setPanoProperty(insideDict, @"ACTPanoramaDefaultDirection", 1)
 		setPanoProperty(insideDict, @"ACTPanoramaMaxFrameRate", 15)
 		setPanoProperty(insideDict, @"ACTPanoramaMinFrameRate", 15)
@@ -169,18 +123,10 @@
    	NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
    	NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
     if (isNeedConfigDevice) {
-    	NSDictionary *res = nil;
-    	if (!isiPhone3GS) {
-    		res = [NSDictionary dictionaryWithObjectsAndKeys:
+    	NSDictionary *res = [NSDictionary dictionaryWithObjectsAndKeys:
     									num(960), @"Width",
     									@"420f", @"PixelFormatType",
     									num(720), @"Height", nil];
-    	} else {
-    		res = [NSDictionary dictionaryWithObjectsAndKeys:
-    									num(480), @"Width",
-    									@"420f", @"PixelFormatType",
-    									num(360), @"Height", nil];
-    	}
     	[liveSourceOptions setObject:res forKey:@"Sensor"];
    		[liveSourceOptions setObject:res forKey:@"Capture"];
     	[liveSourceOptions setObject:res forKey:@"Preview"];
@@ -196,10 +142,6 @@
 
 - (BOOL)install {
     BOOL success = YES;
-
-    /*SPLog(@"Modifying System Files.");
-    success = [self applyLibraryToDaemon];
-    if (!success) { [self cleanUp]; NSLog(@"Failed adding EnvironmentVariables."); return success; }*/
 
 	NSLog(@"Adding Panorama Properties.");
     success = [self addPanoProperties];
