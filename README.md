@@ -6,7 +6,6 @@ Enable Panorama and Customize it.
 Compatibility
 ===========
 
-- iPhone 3GS (Bad compatibility or slow)
 - iPhone 4 (Reduced panoramic capture resolution)
 - iPhone 4S
 - iPhone 5
