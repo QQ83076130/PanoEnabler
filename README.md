@@ -16,7 +16,7 @@ Compatibility
 - iPad 4
 - iPad mini 1G
 
-Tested in iOS 6.0.0 - 6.1.2
+Tested in iOS 6.0.0 - 6.1.3
 
 IMPORTANT
 ===========
