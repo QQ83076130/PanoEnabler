@@ -153,9 +153,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	switch (indexPath.section)
 	{
 		case 0:	[cell.textLabel setText:PanoModBrief]; break;
-    	case 1: [cell.textLabel setText:@"Here are the issues that still can’t be fixed.\n\
-1. The resolution of panoramic image in A4 iDevices is much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it.\n\
-2. iPhone 3GS, the slowest iOS 6 device, may not able to handle Panorama capture so it causes green images as usual."]; break;
+    	case 1: [cell.textLabel setText:@"The resolution of panoramic image in A4 iDevices is much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it."]; break;
 		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 3: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
 		case 4: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
@@ -276,7 +274,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
   			case 1:
   				[cell.textLabel setText:@"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama."]; break;
   			case 2:
-  				[cell.textLabel setText:@"For example, the default maximum panoramic image width of iPhone 4S, iPhone 5 and iPod touch 5G (5MP Camera) is 10800 pixel, you can adjust it, lowest is 3000 pixel, highest is 21600 pixel.\nNOTE: You cannot set the maximum width LOWER than the Camera sensor width."]; break;
+  				[cell.textLabel setText:@"For example, the default maximum panoramic image width of iPhone 4S, iPhone 5 and iPod touch 5G (5MP Camera) is 10800 pixel.\nNOTE: Maximum value what won't cause green image in A5 iDevices is 16384 pixel."]; break;
   			case 3:
   				[cell.textLabel setText:@"Adjust the little Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."]; break;
   			case 4:
@@ -384,39 +382,39 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	switch (indexPath.row)
 	{
 		case 1:
-			openLink(@"https://twitter.com/PoomSmart")
+			openLink(@"https://twitter.com/PoomSmart") break;
 		case 2:
-			openLink(@"https://twitter.com/Pix3lDemon")
+			openLink(@"https://twitter.com/Pix3lDemon") break;
 		case 3:
-			openLink(@"https://twitter.com/BassamKassem1")
+			openLink(@"https://twitter.com/BassamKassem1") break;
 		case 4:
-			openLink(@"https://twitter.com/iPMisterX")
+			openLink(@"https://twitter.com/iPMisterX") break;
 		case 5:
-			openLink(@"https://twitter.com/nenocrack")
+			openLink(@"https://twitter.com/nenocrack") break;
 		case 6:
-			openLink(@"https://twitter.com/Raem0n")
+			openLink(@"https://twitter.com/Raem0n") break;
 		case 7:
-			openLink(@"https://twitter.com/NTD123")
+			openLink(@"https://twitter.com/NTD123") break;
 		case 8:
-			openLink(@"https://www.facebook.com/itenb?fref=ts")
+			openLink(@"https://www.facebook.com/itenb?fref=ts") break;
 		case 9:
-			openLink(@"https://twitter.com/xtoyou")
+			openLink(@"https://twitter.com/xtoyou") break;
 		case 10:
-			openLink(@"https://twitter.com/n4te2iver")
+			openLink(@"https://twitter.com/n4te2iver") break;
 		case 11:
-			openLink(@"https://twitter.com/NavehIDL")
+			openLink(@"https://twitter.com/NavehIDL") break;
 		case 12:
-			openLink(@"https://www.facebook.com/omkung?fref=ts")
+			openLink(@"https://www.facebook.com/omkung?fref=ts") break;
 		case 13:
-			openLink(@"https://twitter.com/iPFaHaD")
+			openLink(@"https://twitter.com/iPFaHaD") break;
 		case 14:
-			openLink(@"https://twitter.com/H4lfSc0p3R")
+			openLink(@"https://twitter.com/H4lfSc0p3R") break;
 		
 	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{    
+{
     NSString *ident = nil;
 	switch (indexPath.row)
 	{
@@ -664,8 +662,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (void)setWidth:(id)value specifier:(PSSpecifier *)spec
 {
 	NSString *model = [self model];
-	if (isiPhone3GS) {
-		rangeFix(2000, 21600)
+	if (isSlow) {
+		rangeFix(1000, 4096)
 	}
 	else {
 		rangeFix(3000, 21600)
@@ -744,18 +742,18 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (void)resetValues:(id)param
 {
 	NSString *model = [self model];
-	resetValue(isiPhone3GS ? 2000 : isNeedConfigDevice ? 4000 : 10800, maxWidthSliderSpec, maxWidthInputSpec)
+	resetValue(isNeedConfigDevice ? 4000 : 10800, maxWidthSliderSpec, maxWidthInputSpec)
 
 	resetValue((isiPhone5 || isiPad3or4) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
 
-	resetValue(isiPhone3GS ? 7 : 15, minFPSSliderSpec, minFPSInputSpec)
+	resetValue(15, minFPSSliderSpec, minFPSInputSpec)
 
 	resetValue((isiPhone5 || isiPad3or4) ? 5 : 7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
 
 	if (isiPhone5 || isiPad3or4) {
 		resetValue(15, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
 	}
-	else if (isiPod5 || isiPadMini1G || isiPad2 || isiPod4 || isiPhone3GS) {
+	else if (isiPod5 || isiPadMini1G || isiPad2 || isiPod4) {
 		resetValue(13, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
 	}
 	else if (isiPhone4S || isiPhone4) {
@@ -766,9 +764,14 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	resetValue(86, previewHeightSliderSpec, previewHeightInputSpec)
 	resetValue(30, PanoramaPowerBlurBiasSliderSpec, PanoramaPowerBlurBiasInputSpec)
 	
-	// Too lazy to reload everything I set above
-	[self reloadSpecifiers];
-
+	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
+    updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
+    updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %f pixels")
+	updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
+	updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
+	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"footerText", @"Current Value: %i")
+	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"footerText", @"Current Value: %i")
+	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"footerText", @"Current Value: %i")
 }
 
 - (void)setBoolAndKillCam:(id)value specifier:(PSSpecifier *)spec
@@ -844,6 +847,13 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.customTextSpec)
 		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.inputTextSpec)
+		
+		if (isSlow)
+			[self.maxWidthSliderSpec setProperty:[NSNumber numberWithFloat:4096] forKey:@"max"];
+		else {
+			[self.maxWidthSliderSpec setProperty:[NSNumber numberWithFloat:21600] forKey:@"max"];
+			[self.maxWidthSliderSpec setProperty:[NSNumber numberWithFloat:3000] forKey:@"min"];
+		}
 
         updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
         updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
