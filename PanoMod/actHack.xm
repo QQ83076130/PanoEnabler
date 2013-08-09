@@ -193,7 +193,7 @@ static NSString *Model()
 - (void)cameraController:(PLCameraController *)controller capturedPanorama:(NSDictionary *)panorama error:(NSError *)error
 {
 	NSString *model = Model();
-	if (isA4) {
+	if (isSlow) {
 		NSMutableDictionary *dict = [panorama mutableCopy];
 		UIImage *image = (UIImage *)[dict objectForKey:@"kPLCameraPhotoPreviewImageKey"];
 		UIImageWriteToSavedPhotosAlbum(image, self, nil, nil);
@@ -259,10 +259,10 @@ static NSString *Model()
 	return %orig;
 }
 
-// Flash button orientation and Panorama orientation in iPad should be only 1 (Portrait)
+// Flash and options button orientation or Panorama orientation in iPad should be only 1 (Portrait)
 - (int)_glyphOrientationForCameraOrientation:(int)arg1
 {
-	if (isPanorama && (FMisOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) {
+	if (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) {
 		DebugLog(@"Flashorama: Fixing Flash Button Orientation.");
 		return 1;
 	}
@@ -273,7 +273,7 @@ static NSString *Model()
 
 %hook PLCameraLevelView
 
-// Show/Hide Panorama Level Bar
+// Show or Hide Panorama Level Bar
 - (id)initWithFrame:(struct CGRect)arg1
 {
 	self = %orig;
@@ -288,7 +288,7 @@ static NSString *Model()
 
 %hook PLCameraPanoramaBrokenArrowView
 
-// Show/Hide Panorama Arrow
+// Show or Hide Panorama Arrow
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
