@@ -5,7 +5,7 @@ cydia=($CYDIA)
 chk=$(uname -m)
 
 if [[ $1 == install ]]; then
-	if [[ "$chk" == "iPhone2,1" ]] || [[ "$chk" == iPhone3* ]] || [[ "$chk" == "iPod4,1" ]] || [[ "$chk" == iPad2* ]] || [[ "$chk" == iPad3* ]]; then
+	if [[ "$chk" == iPhone3* ]] || [[ "$chk" == "iPod4,1" ]] || [[ "$chk" == iPad2* ]] || [[ "$chk" == iPad3* ]]; then
    		PanoInstaller
    		if [ $? = 0 ]; then
         	if [[ ${CYDIA+@} ]]; then
