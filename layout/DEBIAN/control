@@ -2,8 +2,8 @@ Author: PoomSmart & Pix3lDemon <poomst@hotmail.com>
 Maintainer: BigBoss <bigboss@thebigboss.org>
 Name: PanoMod
 Package: org.thebigboss.panomod
-Depends: preferenceloader, firmware (>= 6.0), mobilesubstrate, gsc.still-camera, firmware (<< 7.0)
-Conflicts: org.thebigboss.flashorama, org.thebigboss.betterpanobutton, org.thebigboss.llbpano
+Depends: preferenceloader, firmware (>= 5.0), mobilesubstrate, gsc.still-camera, firmware (<< 7.0)
+Conflicts: org.thebigboss.flashorama, org.thebigboss.betterpanobutton, org.thebigboss.llbpano, cy+model.iphone (= 2.1)
 Section: Tweaks
 Version: 1.0
 Architecture: iphoneos-arm
