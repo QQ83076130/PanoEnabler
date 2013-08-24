@@ -21,7 +21,7 @@ static BOOL isPanorama = NO;
 #define PanoGridOn Bool(prefDict, @"panoGrid", NO)
 
 @interface PLCameraController
-@property(assign) AVCaptureDevice *currentDevice; // Correct ?
+@property(assign) AVCaptureDevice *currentDevice;
 - (void)torch:(int)type;
 @end
 
@@ -60,9 +60,11 @@ static NSString *Model()
 // Fix dark problem in Panorama mode
 - (void)setImageControlMode:(int)mode
 {
-	if (mode == 4 && Bool(prefDict, @"PanoDarkFix", NO)) {
-		DebugLog(@"PanoMod: Setting Image Control Mode to 1.");
-		%orig(1);
+	if (Bool(prefDict, @"PanoDarkFix", NO)) {
+		if (mode == 4) {
+			DebugLog(@"PanoMod: Setting Image Control Mode to 1.");
+			%orig(1);
+		} else %orig;
 	} else %orig;
 }
 
@@ -74,9 +76,11 @@ static NSString *Model()
 - (void)setFlashMode:(int)mode notifyDelegate:(BOOL)arg2
 {
 	%orig;
-	if (isPanorama && FMisOn) {
-		autoOff = (mode == 0) ? YES : NO;
-		[[%c(PLCameraController) sharedInstance] torch:mode];
+	if (FMisOn) {
+		if (isPanorama) {
+			autoOff = (mode == 0) ? YES : NO;
+			[[%c(PLCameraController) sharedInstance] torch:mode];
+		}
 	}
 }
 
@@ -84,7 +88,7 @@ static NSString *Model()
 
 %hook PLCameraController
 
-%new
+%new(v@:)
 
 - (void)torch:(int)type
 {
@@ -96,6 +100,7 @@ static NSString *Model()
         [self.currentDevice unlockForConfiguration];
 	}
 }
+
 
 // Enable Low Light Boost if in Panorama mode
 - (void)_configureSessionWithCameraMode:(int)mode cameraDevice:(int)device
@@ -173,11 +178,11 @@ static NSString *Model()
 
 %hook PLCameraPanoramaView
 
-// Use this method to show/hide instructional text background and ghost image view
-- (void)_updateInstructionalText:(NSString *)text
+// Use this method to show or hide instructional text background and ghost image view
+- (void)updateUI
 {
 	%orig;
-	DebugLog(@"PanoMod: Hooking Instruction Text Background and Ghost Image View.");
+	DebugLog(@"PanoMod: Hooking Instructional Text Background and Ghost Image View.");
 	UIView *labelBG = MSHookIvar<UIView *>(self, "_instructionalTextBackground");
 	UIImageView *ghostImg = MSHookIvar<UIImageView *>(self, "_previewGhostImageView");
 	[labelBG setHidden:Bool(prefDict, @"hideLabelBG", NO)];
@@ -230,9 +235,12 @@ static NSString *Model()
 // Ability to zoom in Panorama mode
 - (BOOL)_zoomIsAllowed
 {
-	if (isPanorama && Bool(prefDict, @"panoZoom", NO)) {
-		DebugLog(@"PanoMod: Enabling Zoom in Panorama mode.");
-		return YES;
+	if (Bool(prefDict, @"panoZoom", NO)) {
+		if (isPanorama) {
+			DebugLog(@"PanoMod: Enabling Zoom in Panorama mode.");
+			return YES;
+		}
+		return %orig;
 	}
 	return %orig;
 }
