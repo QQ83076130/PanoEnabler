@@ -39,38 +39,55 @@ Then Customize the interface and properties of Panorama with PanoMod."
     																	cell.detailTextLabel.numberOfLines = lineCount; \
     																	break; \
     																}
-
-#define openLink(url) [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-
+    																
 #define getSpec(mySpec, string)	if ([Id isEqualToString:string]) \
-                				self.mySpec = spec;
+                					self.mySpec = spec;
 
-#define rangeFix(min, max) 	int value2 = [NSNumber numberWithInteger:([value intValue])].intValue; \
-							if (value2 > max) { value = [NSNumber numberWithInteger:max]; } \
-							else if (value2 < min) { value = [NSNumber numberWithInteger:min]; } \
-							else value = [NSNumber numberWithInteger:([value intValue])];
+static void openLink(NSString *url)
+{
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+}
 
-#define rangeFixFloat(min, max) 	float value2 = [NSNumber numberWithFloat:([value floatValue])].floatValue; \
-									if (value2 > max) { value = [NSNumber numberWithFloat:max]; } \
-									else if (value2 < min) { value = [NSNumber numberWithFloat:min]; } \
-									else value = [NSNumber numberWithFloat:([value floatValue])];
-									
-#define setAvailable(available, spec) [spec setProperty:[NSNumber numberWithBool:available] forKey:@"enabled"];
-
-#define updateValue(targetSpec, sliderSpec, targetKey, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] intValue]] forKey:targetKey]; \
+#define updateValue(targetSpec, sliderSpec, targetKey, string) 			[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] intValue]] forKey:targetKey]; \
   																		[self reloadSpecifier:self.targetSpec animated:NO];
 
 #define updateFloatValue(targetSpec, sliderSpec, targetKey, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] floatValue]] forKey:targetKey]; \
   																		[self reloadSpecifier:self.targetSpec animated:NO];
 
 #define resetValue(intValue, spec, inputSpec) 	[self setPreferenceValue:[NSNumber numberWithInteger:intValue] specifier:self.spec]; \
-												[self setPreferenceValue:[[NSNumber numberWithInteger:intValue] stringValue] specifier:self.inputSpec]; \
+												[self setPreferenceValue:[NSNumber numberWithInteger:intValue] specifier:self.inputSpec]; \
 												[self reloadSpecifier:self.spec]; \
-												[self reloadSpecifier:self.inputSpec]; \
-												[[NSUserDefaults standardUserDefaults] synchronize];
+												[self reloadSpecifier:self.inputSpec];
 
 #define orig	[self setPreferenceValue:value specifier:spec]; \
 				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+static void rangeFix(id value, int min, int max) 	
+{
+	int value2 = [NSNumber numberWithInteger:([value intValue])].intValue;
+	if (value2 > max)
+		value = [NSNumber numberWithInteger:max];
+	else if (value2 < min)
+		value = [NSNumber numberWithInteger:min];
+	else
+		value = [NSNumber numberWithInteger:([value intValue])];
+}
+
+static void rangeFixFloat(id value, float min, float max)
+{
+	float value2 = [NSNumber numberWithFloat:([value floatValue])].floatValue;
+	if (value2 > max) 
+		value = [NSNumber numberWithFloat:max];
+	else if (value2 < min)
+		value = [NSNumber numberWithFloat:min];
+	else
+		value = [NSNumber numberWithFloat:([value floatValue])];
+}
+									
+static void setAvailable(BOOL available, PSSpecifier *spec)
+{
+	[spec setProperty:[NSNumber numberWithBool:available] forKey:@"enabled"];
+}
 
 
 @interface PanoFAQViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
@@ -124,7 +141,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 {
 	switch (section) {
 		case 0: return @"PanoMod";
-		case 1: return @"Will this fully working in A4 iDevices ?";
+		case 1: return @"Will this fully working on A4 iDevices ?";
 		case 2: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
 		case 3: return @"(iPad) Landscape Panorama UI is bad";
 		case 4: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
@@ -382,33 +399,33 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	switch (indexPath.row)
 	{
 		case 1:
-			openLink(@"https://twitter.com/PoomSmart") break;
+			openLink(@"https://twitter.com/PoomSmart"); break;
 		case 2:
-			openLink(@"https://twitter.com/Pix3lDemon") break;
+			openLink(@"https://twitter.com/Pix3lDemon"); break;
 		case 3:
-			openLink(@"https://twitter.com/BassamKassem1") break;
+			openLink(@"https://twitter.com/BassamKassem1"); break;
 		case 4:
-			openLink(@"https://twitter.com/iPMisterX") break;
+			openLink(@"https://twitter.com/iPMisterX"); break;
 		case 5:
-			openLink(@"https://twitter.com/nenocrack") break;
+			openLink(@"https://twitter.com/nenocrack"); break;
 		case 6:
-			openLink(@"https://twitter.com/Raem0n") break;
+			openLink(@"https://twitter.com/Raem0n"); break;
 		case 7:
-			openLink(@"https://twitter.com/NTD123") break;
+			openLink(@"https://twitter.com/NTD123"); break;
 		case 8:
-			openLink(@"https://www.facebook.com/itenb?fref=ts") break;
+			openLink(@"https://www.facebook.com/itenb?fref=ts"); break;
 		case 9:
-			openLink(@"https://twitter.com/xtoyou") break;
+			openLink(@"https://twitter.com/xtoyou"); break;
 		case 10:
-			openLink(@"https://twitter.com/n4te2iver") break;
+			openLink(@"https://twitter.com/n4te2iver"); break;
 		case 11:
-			openLink(@"https://twitter.com/NavehIDL") break;
+			openLink(@"https://twitter.com/NavehIDL"); break;
 		case 12:
-			openLink(@"https://www.facebook.com/omkung?fref=ts") break;
+			openLink(@"https://www.facebook.com/omkung?fref=ts"); break;
 		case 13:
-			openLink(@"https://twitter.com/iPFaHaD") break;
+			openLink(@"https://twitter.com/iPFaHaD"); break;
 		case 14:
-			openLink(@"https://twitter.com/H4lfSc0p3R") break;
+			openLink(@"https://twitter.com/H4lfSc0p3R"); break;
 		
 	}
 }
@@ -447,20 +464,20 @@ Then Customize the interface and properties of Panorama with PanoMod."
     if (indexPath.row != 0) {
     	switch (indexPath.row)
     	{
-    		addPerson(1, 3, 	@"@PoomSmart (Dev)", 	@"Tested tweak on iPod touch 4th generation, iPod touch 5G, iPhone 4S and iPad 2nd Generation (GSM).")
-    		addPerson(2, 3, 	@"@Pix3lDemon (Dev)", 	@"Tested tweak on iPhone 3GS, iPhone 4, iPod touch 4th generation, iPad 2nd Generation and iPad 3rd generation.")
+    		addPerson(1, 3, 	@"@PoomSmart (Dev)", 	@"Tested tweak on iPod touch 4G, iPod touch 5G, iPhone 4S and iPad 2G (GSM).")
+    		addPerson(2, 3, 	@"@Pix3lDemon (Dev)", 	@"Tested tweak on iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G and iPad 3G.")
     		addPerson(3, 1, 	@"@BassamKassem1", 		@"Tested tweak on iPhone 4 GSM.")
-    		addPerson(4, 1, 	@"@iPMisterX", 			@"Tested tweak on iPhone 3GS.")
-			addPerson(5, 1, 	@"@nenocrack", 			@"Tested tweak on iPhone 4 GSM.")
-    		addPerson(6, 2, 	@"@Raemon", 			@"Tested tweak on iPhone 4 GSM and iPad mini 1G (Global).")
-    		addPerson(7, 1, 	@"@Ntd123",				@"Tested tweak on iPhone 4 GSM.")
-    		addPerson(8, 2, 	@"Liewlom Bunnag",		@"Tested tweak on iPad 2nd Generation (Wi-Fi).")
-    		addPerson(9, 2, 	@"@Xtoyou",				@"Tested tweak on iPad 3rd Generation (Global).")
-    		addPerson(10, 2, 	@"@n4te2iver",			@"Tested tweak on iPad 4th Generation (Wi-Fi).")
-    		addPerson(11, 1, 	@"@NavehIDL",			@"Tested tweak on iPad mini 1G (Wi-Fi).")
-    		addPerson(12, 1, 	@"Srsw Omegax Akrw",	@"Tested tweak on iPad mini 1G (GSM).")
-    		addPerson(13, 1,	@"@iPFaHaD",			@"Tested tweak on iPhone 4 GSM.")
-    		addPerson(14, 1,	@"@H4lfSc0p3R",			@"Tested tweak on iPhone 4 GSM.")
+    		addPerson(4, 2,		@"@H4lfSc0p3R",			@"Tested tweak on iPhone 4 GSM, iPhone 4S and iPod touch 4G.")
+    		addPerson(5, 1, 	@"@iPMisterX", 			@"Tested tweak on iPhone 3GS.")
+			addPerson(6, 1, 	@"@nenocrack", 			@"Tested tweak on iPhone 4 GSM.")
+    		addPerson(7, 2, 	@"@Raemon", 			@"Tested tweak on iPhone 4 GSM and iPad mini 1G (Global).")
+    		addPerson(8, 1, 	@"@Ntd123",				@"Tested tweak on iPhone 4 GSM.")
+    		addPerson(9, 2, 	@"Liewlom Bunnag",		@"Tested tweak on iPad 2G (Wi-Fi).")
+    		addPerson(10, 2, 	@"@Xtoyou",				@"Tested tweak on iPad 3G (Global).")
+    		addPerson(11, 2, 	@"@n4te2iver",			@"Tested tweak on iPad 4G (Wi-Fi).")
+    		addPerson(12, 1, 	@"@NavehIDL",			@"Tested tweak on iPad mini 1G (Wi-Fi).")
+    		addPerson(13, 1, 	@"Srsw Omegax Akrw",	@"Tested tweak on iPad mini 1G (GSM).")
+    		addPerson(14, 1,	@"@iPFaHaD",			@"Tested tweak on iPhone 4 GSM.")
     	}
     } else {
     	cell.detailTextLabel.text = @"The list of People help creating PanoMod, Thanks for your support :)";
@@ -476,7 +493,6 @@ Then Customize the interface and properties of Panorama with PanoMod."
    	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), MAXFLOAT);
   	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] detailTextLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
   	return 30.0f + [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] detailTextLabel] text] sizeWithFont:[UIFont systemFontOfSize:(kFontSize + 0.5)] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap].height;
-    
 }
 
 - (void)dealloc
@@ -663,10 +679,10 @@ Then Customize the interface and properties of Panorama with PanoMod."
 {
 	NSString *model = [self model];
 	if (isSlow) {
-		rangeFix(1000, 4096)
+		rangeFix(value, 1000, 4096);
 	}
 	else {
-		rangeFix(3000, 21600)
+		rangeFix(value, 3000, 21600);
 	}
 	orig
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
@@ -674,14 +690,14 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 - (void)setPreviewWidth:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFixFloat(100, 576)
+	rangeFixFloat(value, 100, 576);
 	orig
 	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
 }
 
 - (void)setPreviewHeight:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFixFloat(40, 576)
+	rangeFixFloat(value, 40, 576);
 	orig
 	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %f pixels")
 }
@@ -692,7 +708,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	if ([[self readPreferenceValue:self.maxFPSSliderSpec] intValue] < [NSNumber numberWithInt:([value intValue])].intValue)
 		resetValue([value intValue], maxFPSSliderSpec, maxFPSInputSpec)
 
-	rangeFix(1, 30)
+	rangeFix(value, 1, 30);
 	orig
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 	updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
@@ -703,7 +719,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	if ([[self readPreferenceValue:self.minFPSSliderSpec] intValue] > [NSNumber numberWithInt:([value intValue])].intValue)
 		resetValue([value intValue], minFPSSliderSpec, minFPSInputSpec)
 	
-	rangeFix(15, 60)
+	rangeFix(value, 15, 60);
 	orig
 	updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
@@ -711,21 +727,21 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 - (void)setPanoramaBufferRingSize:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(1, 30)
+	rangeFix(value, 1, 30);
 	orig
 	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"footerText", @"Current Value: %i")
 }
 
 - (void)setPanoramaPowerBlurBias:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(1, 60)
+	rangeFix(value, 1, 60);
 	orig
 	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"footerText", @"Current Value: %i")
 }
 
 - (void)setPanoramaPowerBlurSlope:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(1, 60)
+	rangeFix(value, 1, 60);
 	orig
 	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"footerText", @"Current Value: %i")
 }
@@ -733,8 +749,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
 - (void)setTextHide:(id)value specifier:(PSSpecifier *)spec
 {
 	orig
-	setAvailable(![value boolValue], self.customTextSpec)
-	setAvailable(![value boolValue], self.inputTextSpec)
+	setAvailable(![value boolValue], self.customTextSpec);
+	setAvailable(![value boolValue], self.inputTextSpec);
 	[self reloadSpecifier:self.customTextSpec];
 	[self reloadSpecifier:self.inputTextSpec];
 }
@@ -763,6 +779,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
 	resetValue(306, previewWidthSliderSpec, previewWidthInputSpec)
 	resetValue(86, previewHeightSliderSpec, previewHeightInputSpec)
 	resetValue(30, PanoramaPowerBlurBiasSliderSpec, PanoramaPowerBlurBiasInputSpec)
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
     updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
@@ -803,10 +820,10 @@ Then Customize the interface and properties of Panorama with PanoMod."
 			getSpec(previewHeightInputSpec, @"PreviewHeightInput")
 			getSpec(minFPSSpec, @"MinFrameRate")
 			getSpec(minFPSSliderSpec, @"MinFrameRateSlider")
-			getSpec(minFPSInputSpec, @"MinFrameRateInput")
+			getSpec(minFPSInputSpec, @"MinFPSInput")
 			getSpec(maxFPSSpec, @"MaxFrameRate")
 			getSpec(maxFPSSliderSpec, @"MaxFrameRateSlider")
-			getSpec(maxFPSInputSpec, @"MaxFrameRateInput")
+			getSpec(maxFPSInputSpec, @"MaxFPSInput")
 			getSpec(minFPSInputSpec, @"MinFrameRateInput")
 			getSpec(PanoramaBufferRingSizeSpec, @"PanoramaBufferRingSize")
 			getSpec(PanoramaBufferRingSizeSliderSpec, @"PanoramaBufferRingSizeSlider")
@@ -845,8 +862,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
         	[specs removeObject:self.PanoEnabledSpec];
         }
 
-		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.customTextSpec)
-		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.inputTextSpec)
+		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.customTextSpec);
+		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.inputTextSpec);
 		
 		if (isSlow)
 			[self.maxWidthSliderSpec setProperty:[NSNumber numberWithFloat:4096] forKey:@"max"];
