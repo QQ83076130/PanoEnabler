@@ -9,7 +9,11 @@ if [[ $1 == install ]]; then
    		PanoInstaller
    		if [ $? = 0 ]; then
         	if [[ ${CYDIA+@} ]]; then
-          		eval "echo 'finish:reboot' >&${cydia[0]}"
+        		if [[ "$chk" == iPad* ]]; then
+          			eval "echo 'finish:reboot' >&${cydia[0]}"
+          		else
+          			eval "echo 'finish:restart' >&${cydia[0]}"
+          		fi
         	fi
       	  	exit 0
    	 	else
