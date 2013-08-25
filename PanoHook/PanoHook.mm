@@ -25,7 +25,7 @@ CFTypeRef replaced_registryEntry(io_registry_entry_t entry,  CFStringRef key, CF
 
 
 __attribute__((constructor)) static void PanoHookInit() {
-    prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+    	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
-    MSHookFunction((void *)IORegistryEntryCreateCFProperty, (void *)replaced_registryEntry, (void **)&orig_registryEntry);
+    	MSHookFunction((void *)IORegistryEntryCreateCFProperty, (void *)replaced_registryEntry, (void **)&orig_registryEntry);
 }
