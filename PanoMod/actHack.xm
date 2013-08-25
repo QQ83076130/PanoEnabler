@@ -35,14 +35,14 @@ static BOOL isPanorama = NO;
 static NSString *Model()
 {
 	size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    	sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     
-    char *answer = (char *)malloc(size);
-    sysctlbyname("hw.machine", answer, &size, NULL, 0);
+    	char *answer = (char *)malloc(size);
+    	sysctlbyname("hw.machine", answer, &size, NULL, 0);
     
-    NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
-    free(answer);
-    return results;
+    	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
+    	free(answer);
+    	return results;
 }
 
 %hook AVCaptureDevice
@@ -95,9 +95,9 @@ static NSString *Model()
 // type 1 = on, type -1 = off
 	if ([self.currentDevice hasTorch]) {
 		DebugLog(@"Flashorama: Setting Torch Mode: %@", type == 1 ? @"On" : @"Off");
-    	[self.currentDevice lockForConfiguration:nil];
-        [self.currentDevice setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
-        [self.currentDevice unlockForConfiguration];
+    		[self.currentDevice lockForConfiguration:nil];
+		[self.currentDevice setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
+        	[self.currentDevice unlockForConfiguration];
 	}
 }
 
@@ -108,12 +108,12 @@ static NSString *Model()
 	%orig;
 	if (mode == 2 && device == 0) {
    		[self.currentDevice lockForConfiguration:nil];
-    	if ([self.currentDevice isLowLightBoostSupported]) {
-    		DebugLog(@"LLBPano: Enabling Low-light mode in Panorama.");
-    		[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:Bool(prefDict, @"LLBPano", nil)];
+    		if ([self.currentDevice isLowLightBoostSupported]) {
+    			DebugLog(@"LLBPano: Enabling Low-light mode in Panorama.");
+    			[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:Bool(prefDict, @"LLBPano", nil)];
+    		}
+    		[self.currentDevice unlockForConfiguration];
     	}
-    	[self.currentDevice unlockForConfiguration];
-    }
 }
 
 // Set Panorama Preview Size
@@ -351,7 +351,7 @@ static NSString *Model()
 
 %ctor {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+    	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	[pool release];
 }
