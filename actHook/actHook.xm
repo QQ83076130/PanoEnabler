@@ -15,14 +15,14 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 static NSString *Model()
 {
 	size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    	sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     
-    char *answer = (char *)malloc(size);
-    sysctlbyname("hw.machine", answer, &size, NULL, 0);
+    	char *answer = (char *)malloc(size);
+    	sysctlbyname("hw.machine", answer, &size, NULL, 0);
     
-    NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
-    free(answer);
-    return results;
+    	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
+    	free(answer);
+    	return results;
 }
 
 static NSMutableDictionary *theDict = nil;
@@ -56,7 +56,7 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
 
 %ctor {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
+    	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MSHookFunction((NSMutableDictionary *)MSFindSymbol(NULL, "_ACT_CopyDefaultConfigurationForPanorama"), (NSMutableDictionary *)replaced__ACT_CopyDefaultConfigurationForPanorama, (NSMutableDictionary **)&old__ACT_CopyDefaultConfigurationForPanorama);
 	[pool release];
