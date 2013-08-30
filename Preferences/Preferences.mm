@@ -44,15 +44,18 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 
 #define updateValue(targetSpec, sliderSpec, targetKey, string) 		[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] intValue]] forKey:targetKey]; \
-  																		[self reloadSpecifier:self.targetSpec animated:NO];
+  																		[self reloadSpecifier:self.targetSpec]; \
+  																		[self reloadSpecifier:self.sliderSpec];
 
 #define updateFloatValue(targetSpec, sliderSpec, targetKey, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] floatValue]] forKey:targetKey]; \
-  																		[self reloadSpecifier:self.targetSpec animated:NO];
+  																		[self reloadSpecifier:self.targetSpec]; \
+  																		[self reloadSpecifier:self.sliderSpec];
 
 #define resetValue(intValue, spec, inputSpec) 	[self setPreferenceValue:[NSNumber numberWithInteger:intValue] specifier:self.spec]; \
-						[self setPreferenceValue:[NSNumber numberWithInteger:intValue] specifier:self.inputSpec]; \
+						[self setPreferenceValue:[[NSNumber numberWithInteger:intValue] stringValue] specifier:self.inputSpec]; \
 						[self reloadSpecifier:self.spec]; \
-						[self reloadSpecifier:self.inputSpec];
+						[self reloadSpecifier:self.inputSpec]; \
+						[[NSUserDefaults standardUserDefaults] synchronize];
 
 #define orig	[self setPreferenceValue:value specifier:spec]; \
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -62,27 +65,21 @@ static void openLink(NSString *url)
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }
 				
-static void rangeFix(id value, int min, int max) 	
-{
-	int value2 = [NSNumber numberWithInteger:([value intValue])].intValue;
-	if (value2 > max)
-		value = [NSNumber numberWithInteger:max];
-	else if (value2 < min)
-		value = [NSNumber numberWithInteger:min];
-	else
-		value = [NSNumber numberWithInteger:([value intValue])];
-}
+#define rangeFix(min, max) \
+	int value2 = [NSNumber numberWithInteger:[value intValue]].intValue; \
+	if (value2 > max) \
+		value = [NSNumber numberWithInteger:max]; \
+	else if (value2 < min) \
+		value = [NSNumber numberWithInteger:min]; \
+	else value = [NSNumber numberWithInteger:([value intValue])];
 
-static void rangeFixFloat(id value, float min, float max)
-{
-	float value2 = [NSNumber numberWithFloat:([value floatValue])].floatValue;
-	if (value2 > max) 
-		value = [NSNumber numberWithFloat:max];
-	else if (value2 < min)
-		value = [NSNumber numberWithFloat:min];
-	else
-		value = [NSNumber numberWithFloat:([value floatValue])];
-}
+#define rangeFixFloat(min, max) \
+	float value2 = [NSNumber numberWithFloat:[value floatValue]].floatValue; \
+	if (value2 > max) \
+		value = [NSNumber numberWithFloat:max]; \
+	else if (value2 < min) \
+		value = [NSNumber numberWithFloat:min]; \
+	else value = [NSNumber numberWithFloat:([value floatValue])];
 									
 static void setAvailable(BOOL available, PSSpecifier *spec)
 {
@@ -677,10 +674,10 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 {
 	NSString *model = [self model];
 	if (isSlow) {
-		rangeFix(value, 1000, 4096);
+		rangeFix(1000, 4096)
 	}
 	else {
-		rangeFix(value, 3000, 21600);
+		rangeFix(3000, 21600)
 	}
 	orig
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
@@ -688,14 +685,14 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 - (void)setPreviewWidth:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFixFloat(value, 100, 576);
+	rangeFixFloat(100, 576)
 	orig
 	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
 }
 
 - (void)setPreviewHeight:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFixFloat(value, 40, 576);
+	rangeFixFloat(40, 576)
 	orig
 	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %f pixels")
 }
@@ -703,10 +700,11 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 - (void)setMinFPS:(id)value specifier:(PSSpecifier *)spec
 {
-	if ([[self readPreferenceValue:self.maxFPSSliderSpec] intValue] < [NSNumber numberWithInt:([value intValue])].intValue)
+	if ([[self readPreferenceValue:self.maxFPSSliderSpec] intValue] < [NSNumber numberWithInt:[value intValue]].intValue) {
 		resetValue([value intValue], maxFPSSliderSpec, maxFPSInputSpec)
+	}
 
-	rangeFix(value, 1, 30);
+	rangeFix(1, 30)
 	orig
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 	updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
@@ -714,10 +712,11 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 - (void)setMaxFPS:(id)value specifier:(PSSpecifier *)spec
 {
-	if ([[self readPreferenceValue:self.minFPSSliderSpec] intValue] > [NSNumber numberWithInt:([value intValue])].intValue)
+	if ([[self readPreferenceValue:self.minFPSSliderSpec] intValue] > [NSNumber numberWithInt:[value intValue]].intValue) {
 		resetValue([value intValue], minFPSSliderSpec, minFPSInputSpec)
+	}
 	
-	rangeFix(value, 15, 60);
+	rangeFix(15, 60)
 	orig
 	updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
@@ -725,21 +724,21 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 - (void)setPanoramaBufferRingSize:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(value, 1, 30);
+	rangeFix(1, 30)
 	orig
 	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"footerText", @"Current Value: %i")
 }
 
 - (void)setPanoramaPowerBlurBias:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(value, 1, 60);
+	rangeFix(1, 60)
 	orig
 	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"footerText", @"Current Value: %i")
 }
 
 - (void)setPanoramaPowerBlurSlope:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(value, 1, 60);
+	rangeFix(1, 60)
 	orig
 	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"footerText", @"Current Value: %i")
 }
@@ -777,7 +776,6 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	resetValue(306, previewWidthSliderSpec, previewWidthInputSpec)
 	resetValue(86, previewHeightSliderSpec, previewHeightInputSpec)
 	resetValue(30, PanoramaPowerBlurBiasSliderSpec, PanoramaPowerBlurBiasInputSpec)
-	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
 	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
