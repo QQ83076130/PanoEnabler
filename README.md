@@ -10,7 +10,7 @@ Compatibility
 - iPhone 4S
 - iPhone 5
 - iPod touch 4G
-- iPod touch 5G (Not for 16 GB Model)
+- iPod touch 5G (32/64 GB)
 - iPad 2
 - iPad 3
 - iPad 4
