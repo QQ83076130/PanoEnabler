@@ -140,9 +140,11 @@ static NSString *Model()
 // Turn on Torch when start Panorama capture
 - (void)startPanoramaCapture
 {
-	if (autoOff && FMisOn) {
-		DebugLog(@"Flashorama: Auto turn on Torch.");
-		[self torch:1];
+	if (FMisOn) {
+		if (autoOff) {
+			DebugLog(@"Flashorama: Auto turn on Torch.");
+			[self torch:1];
+		}
 	}
 	%orig;
 }
@@ -150,9 +152,11 @@ static NSString *Model()
 // Turn off Torch when stop Panorama capture
 - (void)stopPanoramaCapture
 {
-	if (autoOff && FMisOn) {
-		DebugLog(@"Flashorama: Auto turn off Torch.");
-		[self torch:-1];
+	if (FMisOn) {
+		if (autoOff) {
+			DebugLog(@"Flashorama: Auto turn off Torch.");
+			[self torch:-1];
+		}
 	}
 	%orig;
 }
@@ -209,10 +213,12 @@ static NSString *Model()
 - (void)_showSettings:(BOOL)settings sender:(id)sender
 {
 	%orig;
-	if (settings && PanoGridOn) {
-		PLCameraSettingsView *settingsView = MSHookIvar<PLCameraSettingsView *>(self, "_settingsView");
-		[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_panoramaGroup") setHidden:(isPanorama ? YES : NO)];
-		[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_hdrGroup").accessorySwitch setEnabled:(isPanorama ? NO : YES)];
+	if (PanoGridOn) {
+		if (settings) {
+			PLCameraSettingsView *settingsView = MSHookIvar<PLCameraSettingsView *>(self, "_settingsView");
+			[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_panoramaGroup") setHidden:(isPanorama ? YES : NO)];
+			[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_hdrGroup").accessorySwitch setEnabled:(isPanorama ? NO : YES)];
+		}
 	}
 }
 
@@ -220,16 +226,20 @@ static NSString *Model()
 - (void)cameraControllerWillStopPanoramaCapture:(id)cameraController
 {
 	%orig;
-	if (FMisOn && autoOff)
-		[MSHookIvar<PLCameraFlashButton *>(self, "_flashButton") setUserInteractionEnabled:YES];
+	if (FMisOn) {
+		if (autoOff)
+			[MSHookIvar<PLCameraFlashButton *>(self, "_flashButton") setUserInteractionEnabled:YES];
+	}
 }
 
 // Lock Flash Button when start Panorama capture
 - (void)cameraControllerDidStartPanoramaCapture:(id)cameraController
 {
 	%orig;
-	if (FMisOn && autoOff)
-		[MSHookIvar<PLCameraFlashButton *>(self, "_flashButton") setUserInteractionEnabled:NO];
+	if (FMisOn) {
+		if (autoOff)
+			[MSHookIvar<PLCameraFlashButton *>(self, "_flashButton") setUserInteractionEnabled:NO];
+	}
 }
 
 // Ability to zoom in Panorama mode
@@ -260,9 +270,12 @@ static NSString *Model()
 // Ability to use Flash button in Panorama mode
 - (BOOL)_flashButtonShouldBeHidden
 {
-	if (isPanorama && FMisOn) {
-		DebugLog(@"Flashorama: Preventing Flash Button from being hidden in Panorama mode.");
-		return NO;
+	if (FMisOn) {
+		if (isPanorama) {
+			DebugLog(@"Flashorama: Preventing Flash Button from being hidden in Panorama mode.");
+			return NO;
+		}
+		return %orig;
 	}
 	return %orig;
 }
@@ -303,6 +316,19 @@ static NSString *Model()
 	if (self && Bool(prefDict, @"hideArrow", NO)) {
 		DebugLog(@"PanoMod: Hooking Panorama Arrow");
 		[self setHidden:YES];
+	}
+	return self;
+}
+
+%end
+
+%hook PLCameraPanoramaView
+
+- (id)initWithFrame:(CGRect)frame centerYOffset:(float)offset panoramaPreviewScale:(float)scale panoramaPreviewSize:(CGSize)size
+{
+	self = %orig;
+	if (self) {
+		[self setCaptureDirection:Int(prefDict, @"defaultDirection", 1)];
 	}
 	return self;
 }
@@ -353,5 +379,5 @@ static NSString *Model()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
-	[pool release];
+	[pool drain];
 }
