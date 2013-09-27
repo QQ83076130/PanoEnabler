@@ -20,6 +20,10 @@
 - (UIView *)tableView:(UITableView *)view viewForHeaderInSection:(int)section;
 @end
 
+@interface UITableViewCell (PanoMod)
+- (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString *)identifier;
+@end
+
 @interface PSTableCell (PanoMod)
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)identifier specifier:(PSSpecifier *)specifier;
 @end
@@ -86,453 +90,6 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	[spec setProperty:[NSNumber numberWithBool:available] forKey:@"enabled"];
 }
 
-
-@interface PanoFAQViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
-	UITableView *_tableView;
-}
-@end
-
-@implementation PanoFAQViewController
-
-- (NSString *)title
-{
-	return @"FAQ";
-}
-
-- (id)view
-{
-   	return _tableView;
-}
-
-- (id)initForContentSize:(CGSize)size
-{
-	if ((self = [super initForContentSize:size]) != nil) {		
-		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
-        	[_tableView setDataSource:self];
-		[_tableView setDelegate:self];
-        	[_tableView setAutoresizingMask:1];
-        	[_tableView setEditing:NO];
-        	[_tableView setAllowsSelectionDuringEditing:NO];
-        	if ([self respondsToSelector:@selector(setView:)])
-            		[self setView:_tableView];
-	}
-	return self;
-}
-
-- (int)numberOfSectionsInTableView:(UITableView *)tableView
-{
-   	return 6;
-}
-
-- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
-{
-	return 1;
-}
-
-- (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	return NO;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(int)section
-{
-	switch (section) {
-		case 0: return @"PanoMod";
-		case 1: return @"Will this fully working on A4 iDevices ?";
-		case 2: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
-		case 3: return @"(iPad) Landscape Panorama UI is bad";
-		case 4: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
-		case 5: return @"Supported iOS Versions";
-	}
-	return nil;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PanoFAQCell"];
-    
-    	if (cell == nil) {
-    		cell = [[[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 320, 460) reuseIdentifier:@"PanoFAQCell"] autorelease];
-    		[cell.textLabel setNumberOfLines:0];
-    		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-    		[cell.textLabel setFont:[UIFont systemFontOfSize:kFontSize]];
-        	[cell.textLabel setLineBreakMode:UILineBreakModeWordWrap];
-    	}
-    
-	switch (indexPath.section)
-	{
-		case 0:	[cell.textLabel setText:PanoModBrief]; break;
-    		case 1: [cell.textLabel setText:@"The resolution of panoramic image in A4 iDevices is much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it."]; break;
-		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
-		case 3: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
-		case 4: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 5: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.3"]; break;
-    }
-
-    return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), 20000.0f);
-  	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] textLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
-  	return size.height + CELL_CONTENT_MARGIN;
-}
-
-- (void)dealloc
-{
-	_tableView.dataSource = nil;
-	_tableView.delegate = nil;
-	[_tableView release];
-	[super dealloc];
-}
-
-@end
-
-@interface PanoGuideViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
-	UITableView *_tableView;
-}
-@end
-
-@implementation PanoGuideViewController
-
-- (NSString *)title
-{
-	return @"Guide";
-}
-
-- (id)view
-{
-   	return _tableView;
-}
-
-- (id)initForContentSize:(CGSize)size
-{
-	if ((self = [super initForContentSize:size]) != nil) {		
-		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
-        	[_tableView setDataSource:self];
-        	[_tableView setDelegate:self];
-        	[_tableView setAutoresizingMask:1];
-        	[_tableView setEditing:NO];
-        	[_tableView setAllowsSelectionDuringEditing:NO];
-        	if ([self respondsToSelector:@selector(setView:)])
-            		[self setView:_tableView];
-	}
-	return self;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(int)section
-{
-	switch (section) {
-		case 1: return @"Enable Panorama";
-		case 2: return @"Panoramic Images Maximum Width";
-		case 3: return @"Preview Width & Preview Height";
-		case 4: return @"Min & Max Framerate";
-		case 5: return @"ACTPanorama(BufferRingSize, PowerBlurBias, PowerBlurSlope)";
-		case 6: return @"Instructional Text";
-		case 7: return @"Enable Zoom";
-		case 8: return @"Enable Grid";
-		case 9: return @"Blue Button";
-		case 10: return @"Panorama Low Light Boost";
-		case 11: return @"Fix Dark issue";
-		case 12: return @"Ability to Toggle Torch";
-		case 13: return @"White Arrow";
-		case 14: return @"Blue line in the middle";
-		case 15: return @"White Border";
-		case 16: return @"Reset Sliders Values";
-		case 17: return @"About Sliders and Inputs";
-		case 18: return @"About \"Hide KB\" button at Top-right";
-	}
-	return nil;
-}
-
-- (int)numberOfSectionsInTableView:(UITableView *)tableView
-{
-   	return 19;
-}
-
-- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
-{
-	return 1;
-}
-
-- (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	return NO;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PanoGuideCell"];
-    
- 	if (cell == nil) {
-    		cell = [[[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 320, 460) reuseIdentifier:@"PanoGuideCell"] autorelease];
-    		[cell.textLabel setNumberOfLines:0];
-    		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-    		[cell.textLabel setFont:[UIFont systemFontOfSize:kFontSize]];
-        	[cell.textLabel setLineBreakMode:UILineBreakModeWordWrap];
-    	}
- 	switch (indexPath.section) {
-        	case 0:
-  			[cell.textLabel setText:@"We will explain each function how they work."]; break;
-  		case 1:
-  			[cell.textLabel setText:@"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama."]; break;
-  		case 2:
-  			[cell.textLabel setText:@"For example, the default maximum panoramic image width of iPhone 4S, iPhone 5 and iPod touch 5G (5MP Camera) is 10800 pixel.\nNOTE: Maximum value what won't cause green image in A5 iDevices is 16384 pixel."]; break;
- 		case 3:
-  			[cell.textLabel setText:@"Adjust the little Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."]; break;
-  		case 4:
-  			[cell.textLabel setText:@"Adjust the FPS of Panorama, but keep in mind in that don’t set it too high or too low or you may face the pink preview issue."]; break;
-  		case 5:
-  			[cell.textLabel setText:@"Some Panorama properties, just included them if you want to play around."]; break;
-  		case 6:
-  			[cell.textLabel setText:@"This is what Panorama talk to you, when you capture Panorama, this function provided some customization including Hide Text, Hide BG (Hide Black translucent background) and Custom Text. (Set it to whatever you want)"]; break;
-  		case 7:
-  			[cell.textLabel setText:@"This might be useless function, all it does is enabling ability to zoom in Panorama mode but doesn't affect in resulted image."]; break;
-  		case 8:
-  			[cell.textLabel setText:@"If you want grid to show in Panorama mode."]; break;
-  		case 9:
-  			[cell.textLabel setText:@"Like \"Better Pano Button\" that changes your Panorama button for 4-inches Tall-iDevices to blue."]; break;
-  		case 10:
-  			[cell.textLabel setText:@"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5 and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" version 1.0-4 or above installed first."]; break;
-  		case 11:
-  			[cell.textLabel setText:@"For those iDevices without support Low Light Boost feature, this function will fix the dark issue in the another way and it works for all iDevices (iPod touch 5G users, if you don’t want to install LLBiPT5, you can just enable this function) and you will see the big different in camera brightness/lighting performance.\nBut reason why Apple limits the brightness is simple, to fix Panorama overbright issue that you can face it in daytime."]; break;
-  		case 12:
-  			[cell.textLabel setText:@"Like \"Flashorama\" that allows you to toggle torch using Flash button in Panorama mode.\nSupported for iPhone 4, iPhone 4S, iPhone 5 and iPod touch 5G."]; break;
-  		case 13:
-  			[cell.textLabel setText:@"The white arrow follows you when you move around to capture Panorama, hide if you annoy it."]; break;
-  		case 14:
-  			[cell.textLabel setText:@"Hiding the blue horizontal line at the middle of screen, if you don't want it."]; break;
-  		case 15:
-  			[cell.textLabel setText:@"Hiding the border crops the small Panorama preview, sometimes this function is recommended to enable when you set Panoramic images maximum width into different values."]; break;
-  		case 16:
-  			[cell.textLabel setText:@"Reset all sliders values to their default."]; break;
-  		case 17:
-  			[cell.textLabel setText:@"Just adjust them, easy ?"]; break;
-  		case 18:
-  			[cell.textLabel setText:@"Simple button for hiding keyboard, useful in iPhone/iPod when you want to set many properties using input box."]; break;
-  	}
-	return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-   	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), MAXFLOAT);
-  	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] textLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
-  	return size.height + CELL_CONTENT_MARGIN;
-}
-
-- (void)dealloc
-{
-	_tableView.dataSource = nil;
-	_tableView.delegate = nil;
-	[_tableView release];
-	[super dealloc];
-}
-
-@end
-
-@interface PanoCreditsViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
-	UITableView *_tableView;
-}
-@end
-
-@implementation PanoCreditsViewController
-
-- (NSString *)title
-{
-	return @"Credits";
-}
-
-- (id)view
-{
-   	return _tableView;
-}
-
-- (id)initForContentSize:(CGSize)size
-{
-	if ((self = [super initForContentSize:size]) != nil) {		
-		_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
-        	[_tableView setDataSource:self];
-        	[_tableView setDelegate:self];
-        	[_tableView setAutoresizingMask:1];
-        	[_tableView setEditing:NO];
-        	[_tableView setAllowsSelectionDuringEditing:NO];
-        	if ([self respondsToSelector:@selector(setView:)])
-            		[self setView:_tableView];
-	}
-	return self;
-}
-
-- (int)numberOfSectionsInTableView:(UITableView *)tableView
-{
-	return 1;
-}
-
-- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
-{
-	return 15;
-}
-
-- (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	return YES;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-	switch (indexPath.row)
-	{
-		case 1:
-			openLink(@"https://twitter.com/PoomSmart"); break;
-		case 2:
-			openLink(@"https://twitter.com/Pix3lDemon"); break;
-		case 3:
-			openLink(@"https://twitter.com/BassamKassem1"); break;
-		case 4:
-			openLink(@"https://twitter.com/iPMisterX"); break;
-		case 5:
-			openLink(@"https://twitter.com/nenocrack"); break;
-		case 6:
-			openLink(@"https://twitter.com/Raem0n"); break;
-		case 7:
-			openLink(@"https://twitter.com/NTD123"); break;
-		case 8:
-			openLink(@"https://www.facebook.com/itenb?fref=ts"); break;
-		case 9:
-			openLink(@"https://twitter.com/xtoyou"); break;
-		case 10:
-			openLink(@"https://twitter.com/n4te2iver"); break;
-		case 11:
-			openLink(@"https://twitter.com/NavehIDL"); break;
-		case 12:
-			openLink(@"https://www.facebook.com/omkung?fref=ts"); break;
-		case 13:
-			openLink(@"https://twitter.com/iPFaHaD"); break;
-		case 14:
-			openLink(@"https://twitter.com/H4lfSc0p3R"); break;
-	}
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    	NSString *ident = nil;
-	switch (indexPath.row)
-	{
-		case 1:	ident = @"u1"; break;
-    		case 2: ident = @"u2"; break;
-    		case 3: ident = @"u3"; break;
-    		case 4: ident = @"u4"; break;
-    		case 5: ident = @"u5"; break;
-    		case 6: ident = @"u6"; break;
-    		case 7: ident = @"u7"; break;
-    		case 8: ident = @"u8"; break;
-    		case 9: ident = @"u9"; break;
-    		case 10: ident = @"u10"; break;
-    		case 11: ident = @"u11"; break;
-    		case 12: ident = @"u12"; break;
-    		case 13: ident = @"u13"; break;
-    		case 14: ident = @"u14"; break;
-    	}
-    
-    	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
-    
-    	if (cell == nil) {
-    		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident] autorelease];
-    		[cell.textLabel setNumberOfLines:0];
-    		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-    		[cell.textLabel setFont:[UIFont boldSystemFontOfSize:(kFontSize + 2)]];
-        	[cell.textLabel setLineBreakMode:UILineBreakModeWordWrap];
-    	}
-    
-    	if (indexPath.row != 0) {
-    		switch (indexPath.row)
-    		{
-    			addPerson(1, 3, 	@"@PoomSmart (Dev)", 	@"Tested tweak on iPod touch 4G, iPod touch 5G, iPhone 4S and iPad 2G (GSM).")
-    			addPerson(2, 3, 	@"@Pix3lDemon (Dev)", 	@"Tested tweak on iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G and iPad 3G.")
-    			addPerson(3, 1, 	@"@BassamKassem1", 	@"Tested tweak on iPhone 4 GSM.")
-    			addPerson(4, 2,		@"@H4lfSc0p3R",		@"Tested tweak on iPhone 4 GSM, iPhone 4S and iPod touch 4G.")
-    			addPerson(5, 1, 	@"@iPMisterX", 		@"Tested tweak on iPhone 3GS.")
-			addPerson(6, 1, 	@"@nenocrack", 		@"Tested tweak on iPhone 4 GSM.")
-    			addPerson(7, 2, 	@"@Raemon", 		@"Tested tweak on iPhone 4 GSM and iPad mini 1G (Global).")
-    			addPerson(8, 1, 	@"@Ntd123",		@"Tested tweak on iPhone 4 GSM.")
-    			addPerson(9, 2, 	@"Liewlom Bunnag",	@"Tested tweak on iPad 2G (Wi-Fi).")
-    			addPerson(10, 2, 	@"@Xtoyou",		@"Tested tweak on iPad 3G (Global).")
-    			addPerson(11, 2, 	@"@n4te2iver",		@"Tested tweak on iPad 4G (Wi-Fi).")
-    			addPerson(12, 1, 	@"@NavehIDL",		@"Tested tweak on iPad mini 1G (Wi-Fi).")
-    			addPerson(13, 1, 	@"Srsw Omegax Akrw",	@"Tested tweak on iPad mini 1G (GSM).")
-    			addPerson(14, 1,	@"@iPFaHaD",		@"Tested tweak on iPhone 4 GSM.")
-    		}
-    	} else {
-    		cell.detailTextLabel.text = @"The list of People help creating PanoMod, Thanks for your support :)";
-    		cell.detailTextLabel.textColor = [UIColor blackColor];
-    		cell.detailTextLabel.numberOfLines = 2;
-    		[cell.detailTextLabel setFont:[UIFont systemFontOfSize:(kFontSize + 1)]];
-   	}			
-    	return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-   	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), MAXFLOAT);
-  	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] detailTextLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
-  	return 30.0f + [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] detailTextLabel] text] sizeWithFont:[UIFont systemFontOfSize:(kFontSize + 0.5)] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap].height;
-}
-
-- (void)dealloc
-{
-	_tableView.dataSource = nil;
-	_tableView.delegate = nil;
-	[_tableView release];
-	[super dealloc];
-}
-
-@end
-
-@interface BannerCell : PSTableCell {
-	UILabel *_label;
-}
-@end
- 
-@implementation BannerCell
-
-- (id)initWithSpecifier:(PSSpecifier*)specifier
-{	
-	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Banner" specifier:specifier];
-	if (self) {
-		CGRect frame = [self frame];
-        	_label = [[UILabel alloc] initWithFrame:frame];
-        	[_label setText:@"PanoMod"];
-    		[_label setBackgroundColor:[UIColor clearColor]];
-    		[_label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
-        	[_label setTextAlignment:UITextAlignmentCenter];
-        	[_label setAutoresizingMask:2];
-        	[_label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
-        	[_label setShadowColor:[UIColor whiteColor]];
-        	[_label setShadowOffset:CGSizeMake(0,1)];
-        	[self addSubview:_label];
-        	[_label release];
-    	}
-	return self;
-}
-
-- (float)preferredHeightForWidth:(float)arg1
-{
-    return 50.f;
-}
-
-@end
 
 @interface actHackPreferenceController : PSListController {
 	PSSpecifier *PanoEnabledSpec;
@@ -757,13 +314,13 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	NSString *model = [self model];
 	resetValue(isNeedConfigDevice ? 4000 : 10800, maxWidthSliderSpec, maxWidthInputSpec)
 
-	resetValue((isiPhone5 || isiPad3or4) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
+	resetValue((isiPhone5Up || isiPad3or4) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
 
 	resetValue(15, minFPSSliderSpec, minFPSInputSpec)
 
-	resetValue((isiPhone5 || isiPad3or4) ? 5 : 7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
+	resetValue((isiPhone5Up || isiPad3or4) ? 5 : 7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
 
-	if (isiPhone5 || isiPad3or4) {
+	if (isiPhone5Up || isiPad3or4) {
 		resetValue(15, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
 	}
 	else if (isiPod5 || isiPadMini1G || isiPad2 || isiPod4) {
@@ -844,17 +401,17 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		}
         
         	NSString *model = [self model];
-        	if (!(isiPhone5 || isiPod5)) {
+        	if (!(isiPhone5Up || isiPod5)) {
         		[specs removeObject:self.blueButtonDescSpec];
         		[specs removeObject:self.blueButtonSwitchSpec];
         		[specs removeObject:self.LLBPanoDescSpec];
         		[specs removeObject:self.LLBPanoSwitchSpec];
 		}
-        	if (!(isiPhone4 || isiPhone4S || isiPhone5 || isiPod5)) {
+        	if (!(isiPhone4 || isiPhone4S || isiPhone5Up || isiPod5)) {
         		[specs removeObject:self.FMDescSpec];
         		[specs removeObject:self.FMSwitchSpec];
         	}
-        	if (isiPhone4S || isiPhone5 || isiPod5) {
+        	if (isiPhone4S || isiPhone5Up || isiPod5) {
         		[specs removeObject:self.PanoEnabledSpec];
         	}
 
@@ -880,6 +437,455 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		_specifiers = [specs copy];
   	}
 	return _specifiers;
+}
+
+@end
+
+@interface BannerCell : PSTableCell {
+	UILabel *_label;
+}
+@end
+ 
+@implementation BannerCell
+
+- (id)initWithSpecifier:(PSSpecifier*)specifier
+{	
+	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Banner" specifier:specifier];
+	if (self) {
+		CGRect frame = [self frame];
+        	_label = [[UILabel alloc] initWithFrame:frame];
+        	[_label setText:@"PanoMod"];
+    		[_label setBackgroundColor:[UIColor clearColor]];
+    		[_label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
+        	[_label setTextAlignment:NSTextAlignmentCenter];
+        	[_label setAutoresizingMask:2];
+        	[_label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
+        	[_label setShadowColor:[UIColor whiteColor]];
+        	[_label setShadowOffset:CGSizeMake(0,1)];
+        	[self addSubview:_label];
+        	[_label release];
+    	}
+	return self;
+}
+
+- (float)preferredHeightForWidth:(float)arg1
+{
+    return 50.f;
+}
+
+@end
+
+@interface PanoFAQViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
+	UITableView *_tableView;
+}
+@end
+
+@implementation PanoFAQViewController
+
+- (NSString *)title
+{
+	return @"FAQ";
+}
+
+- (id)view
+{
+   	return _tableView;
+}
+
+- (id)initForContentSize:(CGSize)size
+{
+	if ((self = [super initForContentSize:size]) != nil) {		
+		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
+        	[_tableView setDataSource:self];
+		[_tableView setDelegate:self];
+        	[_tableView setAutoresizingMask:1];
+        	[_tableView setEditing:NO];
+        	[_tableView setAllowsSelectionDuringEditing:NO];
+        	if ([self respondsToSelector:@selector(setView:)])
+            		[self setView:_tableView];
+	}
+	return self;
+}
+
+- (int)numberOfSectionsInTableView:(UITableView *)tableView
+{
+   	return 6;
+}
+
+- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
+{
+	return 1;
+}
+
+- (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	return NO;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(int)section
+{
+	switch (section) {
+		case 0: return @"PanoMod";
+		case 1: return @"Will this fully working on A4 iDevices ?";
+		case 2: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
+		case 3: return @"(iPad) Landscape Panorama UI is bad";
+		case 4: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
+		case 5: return @"Supported iOS Versions";
+	}
+	return nil;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PanoFAQCell"];
+    
+    	if (cell == nil) {
+    		cell = [[[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 320, 460) reuseIdentifier:@"PanoFAQCell"] autorelease];
+    		[cell.textLabel setNumberOfLines:0];
+    		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
+    		[cell.textLabel setFont:[UIFont systemFontOfSize:kFontSize]];
+        	[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    	}
+    
+	switch (indexPath.section)
+	{
+		case 0:	[cell.textLabel setText:PanoModBrief]; break;
+    		case 1: [cell.textLabel setText:@"The resolution of panoramic image in A4 iDevices is much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it."]; break;
+		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
+		case 3: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
+		case 4: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
+		case 5: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.3"]; break;
+    }
+
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), 20000.0f);
+  	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] textLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
+  	return size.height + CELL_CONTENT_MARGIN;
+}
+
+- (void)dealloc
+{
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+	[_tableView release];
+	[super dealloc];
+}
+
+@end
+
+@interface PanoGuideViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
+	UITableView *_tableView;
+}
+@end
+
+@implementation PanoGuideViewController
+
+- (NSString *)title
+{
+	return @"Guide";
+}
+
+- (id)view
+{
+   	return _tableView;
+}
+
+- (id)initForContentSize:(CGSize)size
+{
+	if ((self = [super initForContentSize:size]) != nil) {		
+		 _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
+        	[_tableView setDataSource:self];
+        	[_tableView setDelegate:self];
+        	[_tableView setAutoresizingMask:1];
+        	[_tableView setEditing:NO];
+        	[_tableView setAllowsSelectionDuringEditing:NO];
+        	if ([self respondsToSelector:@selector(setView:)])
+            		[self setView:_tableView];
+	}
+	return self;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(int)section
+{
+	switch (section) {
+		case 1: return @"Enable Panorama";
+		case 2: return @"Panoramic Images Maximum Width";
+		case 3: return @"Preview Width & Preview Height";
+		case 4: return @"Min & Max Framerate";
+		case 5: return @"ACTPanorama(BufferRingSize, PowerBlurBias, PowerBlurSlope)";
+		case 6: return @"Panorama Default Direction";
+		case 7: return @"Instructional Text";
+		case 8: return @"Enable Zoom";
+		case 9: return @"Enable Grid";
+		case 10: return @"Blue Button";
+		case 11: return @"Panorama Low Light Boost";
+		case 12: return @"Fix Dark issue";
+		case 13: return @"Ability to Toggle Torch";
+		case 14: return @"White Arrow";
+		case 15: return @"Blue line in the middle";
+		case 16: return @"White Border";
+		case 17: return @"Reset Sliders Values";
+		case 18: return @"About Sliders and Inputs";
+		case 19: return @"About \"Hide KB\" button at Top-right";
+	}
+	return nil;
+}
+
+- (int)numberOfSectionsInTableView:(UITableView *)tableView
+{
+   	return 20;
+}
+
+- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
+{
+	return 1;
+}
+
+- (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	return NO;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PanoGuideCell"];
+    
+ 	if (cell == nil) {
+    		cell = [[[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 320, 460) reuseIdentifier:@"PanoGuideCell"] autorelease];
+    		[cell.textLabel setNumberOfLines:0];
+    		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
+    		[cell.textLabel setFont:[UIFont systemFontOfSize:kFontSize]];
+        	[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    	}
+ 	switch (indexPath.section) {
+        	case 0:
+  			[cell.textLabel setText:@"We will explain each function how they work."]; break;
+  		case 1:
+  			[cell.textLabel setText:@"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama."]; break;
+  		case 2:
+  			[cell.textLabel setText:@"For example, the default maximum panoramic image width of iPhone 4S, iPhone 5 and iPod touch 5G (5MP Camera) is 10800 pixel.\nNOTE: Maximum value what won't cause green image in A5 iDevices is 16384 pixel."]; break;
+ 		case 3:
+  			[cell.textLabel setText:@"Adjust the little Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."]; break;
+  		case 4:
+  			[cell.textLabel setText:@"Adjust the FPS of Panorama, but keep in mind in that don’t set it too high or too low or you may face the pink preview issue."]; break;
+  		case 5:
+  			[cell.textLabel setText:@"Some Panorama properties, just included them if you want to play around."]; break;
+  		case 6:
+  			[cell.textLabel setText:@"Set the default arrow direction when you enter Panorama mode."]; break;
+  		case 7:
+  			[cell.textLabel setText:@"This is what Panorama talk to you, when you capture Panorama, this function provided some customization including Hide Text, Hide BG (Hide Black translucent background) and Custom Text. (Set it to whatever you want)"]; break;
+  		case 8:
+  			[cell.textLabel setText:@"This might be useless function, all it does is enabling ability to zoom in Panorama mode but doesn't affect in resulted image."]; break;
+  		case 9:
+  			[cell.textLabel setText:@"If you want grid to show in Panorama mode."]; break;
+  		case 10:
+  			[cell.textLabel setText:@"Like \"Better Pano Button\" that changes your Panorama button for 4-inches Tall-iDevices to blue."]; break;
+  		case 11:
+  			[cell.textLabel setText:@"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5 and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" version 1.0-4 or above installed first."]; break;
+  		case 12:
+  			[cell.textLabel setText:@"For those iDevices without support Low Light Boost feature, this function will fix the dark issue in the another way and it works for all iDevices (iPod touch 5G users, if you don’t want to install LLBiPT5, you can just enable this function) and you will see the big different in camera brightness/lighting performance.\nBut reason why Apple limits the brightness is simple, to fix Panorama overbright issue that you can face it in daytime."]; break;
+  		case 13:
+  			[cell.textLabel setText:@"Like \"Flashorama\" that allows you to toggle torch using Flash button in Panorama mode.\nSupported for iPhone 4, iPhone 4S, iPhone 5 and iPod touch 5G."]; break;
+  		case 14:
+  			[cell.textLabel setText:@"The white arrow follows you when you move around to capture Panorama, hide if you annoy it."]; break;
+  		case 15:
+  			[cell.textLabel setText:@"Hiding the blue horizontal line at the middle of screen, if you don't want it."]; break;
+  		case 16:
+  			[cell.textLabel setText:@"Hiding the border crops the small Panorama preview, sometimes this function is recommended to enable when you set Panoramic images maximum width into different values."]; break;
+  		case 17:
+  			[cell.textLabel setText:@"Reset all sliders values to their default."]; break;
+  		case 18:
+  			[cell.textLabel setText:@"Just adjust them, easy ?"]; break;
+  		case 19:
+  			[cell.textLabel setText:@"Simple button for hiding keyboard, useful in iPhone/iPod when you want to set many properties using input box."]; break;
+  	}
+	return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), MAXFLOAT);
+  	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] textLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
+  	return size.height + CELL_CONTENT_MARGIN;
+}
+
+- (void)dealloc
+{
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+	[_tableView release];
+	[super dealloc];
+}
+
+@end
+
+@interface PanoCreditsViewController : PSViewController <UITableViewDelegate, UITableViewDataSource> {
+	UITableView *_tableView;
+}
+@end
+
+@implementation PanoCreditsViewController
+
+- (NSString *)title
+{
+	return @"Credits";
+}
+
+- (id)view
+{
+   	return _tableView;
+}
+
+- (id)initForContentSize:(CGSize)size
+{
+	if ((self = [super initForContentSize:size]) != nil) {		
+		_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480 - 64) style:UITableViewStyleGrouped];
+        	[_tableView setDataSource:self];
+        	[_tableView setDelegate:self];
+        	[_tableView setAutoresizingMask:1];
+        	[_tableView setEditing:NO];
+        	[_tableView setAllowsSelectionDuringEditing:NO];
+        	if ([self respondsToSelector:@selector(setView:)])
+            		[self setView:_tableView];
+	}
+	return self;
+}
+
+- (int)numberOfSectionsInTableView:(UITableView *)tableView
+{
+	return 1;
+}
+
+- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section
+{
+	return 15;
+}
+
+- (BOOL)tableView:(UITableView *)view shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	return YES;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+	switch (indexPath.row)
+	{
+		case 1:
+			openLink(@"https://twitter.com/PoomSmart"); break;
+		case 2:
+			openLink(@"https://twitter.com/Pix3lDemon"); break;
+		case 3:
+			openLink(@"https://twitter.com/BassamKassem1"); break;
+		case 4:
+			openLink(@"https://twitter.com/iPMisterX"); break;
+		case 5:
+			openLink(@"https://twitter.com/nenocrack"); break;
+		case 6:
+			openLink(@"https://twitter.com/Raem0n"); break;
+		case 7:
+			openLink(@"https://twitter.com/NTD123"); break;
+		case 8:
+			openLink(@"https://www.facebook.com/itenb?fref=ts"); break;
+		case 9:
+			openLink(@"https://twitter.com/xtoyou"); break;
+		case 10:
+			openLink(@"https://twitter.com/n4te2iver"); break;
+		case 11:
+			openLink(@"https://twitter.com/NavehIDL"); break;
+		case 12:
+			openLink(@"https://www.facebook.com/omkung?fref=ts"); break;
+		case 13:
+			openLink(@"https://twitter.com/iPFaHaD"); break;
+		case 14:
+			openLink(@"https://twitter.com/H4lfSc0p3R"); break;
+	}
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    	NSString *ident = nil;
+	switch (indexPath.row)
+	{
+		case 1:	ident = @"u1"; break;
+    		case 2: ident = @"u2"; break;
+    		case 3: ident = @"u3"; break;
+    		case 4: ident = @"u4"; break;
+    		case 5: ident = @"u5"; break;
+    		case 6: ident = @"u6"; break;
+    		case 7: ident = @"u7"; break;
+    		case 8: ident = @"u8"; break;
+    		case 9: ident = @"u9"; break;
+    		case 10: ident = @"u10"; break;
+    		case 11: ident = @"u11"; break;
+    		case 12: ident = @"u12"; break;
+    		case 13: ident = @"u13"; break;
+    		case 14: ident = @"u14"; break;
+    	}
+    
+    	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    
+    	if (cell == nil) {
+    		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident] autorelease];
+    		[cell.textLabel setNumberOfLines:0];
+    		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
+    		[cell.textLabel setFont:[UIFont boldSystemFontOfSize:(kFontSize + 2)]];
+        	[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    	}
+    
+    	if (indexPath.row != 0) {
+    		switch (indexPath.row)
+    		{
+    			addPerson(1, 3, 	@"@PoomSmart (Dev)", 	@"Tested tweak on iPod touch 4G, iPod touch 5G, iPhone 4S and iPad 2G (GSM).")
+    			addPerson(2, 3, 	@"@Pix3lDemon (Dev)", 	@"Tested tweak on iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G and iPad 3G.")
+    			addPerson(3, 1, 	@"@BassamKassem1", 	@"Tested tweak on iPhone 4 GSM.")
+    			addPerson(4, 2,		@"@H4lfSc0p3R",		@"Tested tweak on iPhone 4 GSM, iPhone 4S and iPod touch 4G.")
+    			addPerson(5, 1, 	@"@iPMisterX", 		@"Tested tweak on iPhone 3GS.")
+			addPerson(6, 1, 	@"@nenocrack", 		@"Tested tweak on iPhone 4 GSM.")
+    			addPerson(7, 2, 	@"@Raemon", 		@"Tested tweak on iPhone 4 GSM and iPad mini 1G (Global).")
+    			addPerson(8, 1, 	@"@Ntd123",		@"Tested tweak on iPhone 4 GSM.")
+    			addPerson(9, 2, 	@"Liewlom Bunnag",	@"Tested tweak on iPad 2G (Wi-Fi).")
+    			addPerson(10, 2, 	@"@Xtoyou",		@"Tested tweak on iPad 3G (Global).")
+    			addPerson(11, 2, 	@"@n4te2iver",		@"Tested tweak on iPad 4G (Wi-Fi).")
+    			addPerson(12, 1, 	@"@NavehIDL",		@"Tested tweak on iPad mini 1G (Wi-Fi).")
+    			addPerson(13, 1, 	@"Srsw Omegax Akrw",	@"Tested tweak on iPad mini 1G (GSM).")
+    			addPerson(14, 1,	@"@iPFaHaD",		@"Tested tweak on iPhone 4 GSM.")
+    		}
+    	} else {
+    		cell.detailTextLabel.text = @"The list of People help creating PanoMod, Thanks for your support :)";
+    		cell.detailTextLabel.textColor = [UIColor blackColor];
+    		cell.detailTextLabel.numberOfLines = 2;
+    		[cell.detailTextLabel setFont:[UIFont systemFontOfSize:(kFontSize + 1)]];
+   	}			
+    	return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), MAXFLOAT);
+  	return 30.0f + [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] detailTextLabel] text] sizeWithFont:[UIFont systemFontOfSize:(kFontSize + 0.5)] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping].height;
+}
+
+- (void)dealloc
+{
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+	[_tableView release];
+	[super dealloc];
 }
 
 @end
