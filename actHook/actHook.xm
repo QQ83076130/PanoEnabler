@@ -59,5 +59,5 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
     	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MSHookFunction((NSMutableDictionary *)MSFindSymbol(NULL, "_ACT_CopyDefaultConfigurationForPanorama"), (NSMutableDictionary *)replaced__ACT_CopyDefaultConfigurationForPanorama, (NSMutableDictionary **)&old__ACT_CopyDefaultConfigurationForPanorama);
-	[pool release];
+	[pool drain];
 }
