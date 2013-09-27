@@ -14,8 +14,8 @@ static CFTypeRef (*orig_registryEntry)(io_registry_entry_t entry,  CFStringRef k
 CFTypeRef replaced_registryEntry(io_registry_entry_t entry,  CFStringRef key, CFAllocatorRef allocator, IOOptionBits options) {
     CFTypeRef retval = NULL;
     retval = orig_registryEntry(entry, key, allocator, options);
-    if (Bool(prefDict, @"PanoEnabled", NO)) {
-    	if (CFEqual(key, CFSTR("camera-panorama"))) {
+    if (CFEqual(key, CFSTR("camera-panorama"))) {
+    	if (Bool(prefDict, @"PanoEnabled", NO)) {
     		const UInt8 enable[3] = {1, 0, 0};
         	retval = CFDataCreate(kCFAllocatorDefault, enable, 4);
         }
