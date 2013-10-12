@@ -30,7 +30,6 @@ static NSMutableDictionary *theDict = nil;
 NSMutableDictionary* (*old__ACT_CopyDefaultConfigurationForPanorama) ();
 NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
 {
-	DebugLog(@"actHook: Editing firebreak-Configuration values.");
 	theDict = [old__ACT_CopyDefaultConfigurationForPanorama() mutableCopy];
 	NSString *model = Model();
 	setPanoProperty(theDict, @"ACTPanoramaMaxWidth", valueFromKey(prefDict, @"PanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800))
@@ -46,7 +45,6 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
 
 - (void)_removeCameraPreviewViews
 {
-	DebugLog(@"actHook: Cleaning up.");
 	theDict = nil;
 	%orig;
 }
