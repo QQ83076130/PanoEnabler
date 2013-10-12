@@ -823,7 +823,7 @@ There are 3 modes of torch mode set in Panorama capture:
 			<key>label</key>
 			<string>Blue line in the middle</string>
 			<key>footerText</key>
-			<string>The blue horizontal line in the middle of screen</string>
+			<string>The blue horizontal line in the middle of screen.</string>
 		</dict>
 		<dict>
         	<key>cell</key>
