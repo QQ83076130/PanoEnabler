@@ -17,10 +17,4 @@
 #define Bool(dict, key, defaultBoolValue) ([dict objectForKey:key] ? [[dict objectForKey:key] boolValue] : defaultBoolValue)
 #define Int(dict, key, defaultIntValue) ([dict objectForKey:key] ? [[dict objectForKey:key] intValue] : defaultIntValue)
 #define setPanoProperty(dict, key, intValue) [dict setObject:[NSNumber numberWithInteger:intValue] forKey:key];
-#define num(intValue) [NSNumber numberWithInteger:intValue]
-
-#ifdef DEBUG
-#define DebugLog(...) NSLog(...)
-#else
-#define DebugLog(...)
-#endif
+#define num(intValue) [NSNumber numberWithInt:intValue]
