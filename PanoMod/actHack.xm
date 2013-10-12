@@ -28,6 +28,15 @@ static BOOL isPanorama = NO;
 @interface PLCameraSettingsView
 @end
 
+@interface PLCameraFlashButton : UIButton
+- (void)_expandAnimated:(BOOL)animated;
+- (void)_collapseAndSetMode:(int)mode animated:(BOOL)animated;
+@end
+
+@interface PLCameraPanoramaView
+- (void)setCaptureDirection:(int)direction;
+@end
+
 @interface PLCameraSettingsGroupView : UIView
 @property(retain, nonatomic) UISwitch* accessorySwitch;
 @end
@@ -61,10 +70,9 @@ static NSString *Model()
 - (void)setImageControlMode:(int)mode
 {
 	if (Bool(prefDict, @"PanoDarkFix", NO)) {
-		if (mode == 4) {
-			DebugLog(@"PanoMod: Setting Image Control Mode to 1.");
+		if (mode == 4)
 			%orig(1);
-		} else %orig;
+		else %orig;
 	} else %orig;
 }
 
@@ -94,7 +102,6 @@ static NSString *Model()
 {
 // type 1 = on, type -1 = off
 	if ([self.currentDevice hasTorch]) {
-		DebugLog(@"Flashorama: Setting Torch Mode: %@", type == 1 ? @"On" : @"Off");
     		[self.currentDevice lockForConfiguration:nil];
 		[self.currentDevice setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
         	[self.currentDevice unlockForConfiguration];
@@ -108,32 +115,25 @@ static NSString *Model()
 	%orig;
 	if (mode == 2 && device == 0) {
    		[self.currentDevice lockForConfiguration:nil];
-    		if ([self.currentDevice isLowLightBoostSupported]) {
-    			DebugLog(@"LLBPano: Enabling Low-light mode in Panorama.");
+    		if ([self.currentDevice isLowLightBoostSupported])
     			[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:Bool(prefDict, @"LLBPano", nil)];
-    		}
     		[self.currentDevice unlockForConfiguration];
     	}
 }
 
 // Set Panorama Preview Size
 // Default value is {306, 86}
-// iPad recommended maximum width is 576
-// iPhone recommended maximum height is 640
+// iPad recommended maximum width is 576 px
+// iPhone recommended maximum height is 640 px
 - (struct CGSize)panoramaPreviewSize
 {
-	DebugLog(@"PanoMod: Hooking Panorama preview size.");
 	return CGSizeMake(valueFromKey(prefDict, @"PreviewWidth", 306), valueFromKey(prefDict, @"PreviewHeight", 86));
 }
 
 // Detect Camera mode
 - (void)_setCameraMode:(int)mode cameraDevice:(int)device
 {
-	isPanorama = NO;
-	if (mode == 2 && device == 0) {
-		DebugLog(@"PanoMod: Entering Panorama mode.");
-		isPanorama = YES;
-	}
+	isPanorama = (mode == 2 && device == 0) ? YES : NO;
 	%orig;
 }
 
@@ -141,10 +141,8 @@ static NSString *Model()
 - (void)startPanoramaCapture
 {
 	if (FMisOn) {
-		if (autoOff) {
-			DebugLog(@"Flashorama: Auto turn on Torch.");
+		if (autoOff)
 			[self torch:1];
-		}
 	}
 	%orig;
 }
@@ -153,10 +151,8 @@ static NSString *Model()
 - (void)stopPanoramaCapture
 {
 	if (FMisOn) {
-		if (autoOff) {
-			DebugLog(@"Flashorama: Auto turn off Torch.");
+		if (autoOff)
 			[self torch:-1];
-		}
 	}
 	%orig;
 }
@@ -168,13 +164,11 @@ static NSString *Model()
 // Changing Panorama button images (For 4-inches iDevices)
 + (id)backgroundPanoOffPressedImageName
 {
-	DebugLog(@"Better Pano Button: Hooking Panorama button.");
 	return Bool(prefDict, @"bluePanoBtn", NO) ? @"PLCameraLargeShutterButtonPanoOnPressed_2only_-568h" : %orig;
 }
 
 + (id)backgroundPanoOffImageName
 {
-	DebugLog(@"Better Pano Button: Hooking Panorama button.");
 	return Bool(prefDict, @"bluePanoBtn", NO) ? @"PLCameraLargeShutterButtonPanoOn_2only_-568h" : %orig;
 }
 
@@ -186,7 +180,6 @@ static NSString *Model()
 - (void)updateUI
 {
 	%orig;
-	DebugLog(@"PanoMod: Hooking Instructional Text Background and Ghost Image View.");
 	UIView *labelBG = MSHookIvar<UIView *>(self, "_instructionalTextBackground");
 	UIImageView *ghostImg = MSHookIvar<UIImageView *>(self, "_previewGhostImageView");
 	[labelBG setHidden:Bool(prefDict, @"hideLabelBG", NO)];
@@ -246,10 +239,8 @@ static NSString *Model()
 - (BOOL)_zoomIsAllowed
 {
 	if (Bool(prefDict, @"panoZoom", NO)) {
-		if (isPanorama) {
-			DebugLog(@"PanoMod: Enabling Zoom in Panorama mode.");
+		if (isPanorama)
 			return YES;
-		}
 		return %orig;
 	}
 	return %orig;
@@ -271,10 +262,8 @@ static NSString *Model()
 - (BOOL)_flashButtonShouldBeHidden
 {
 	if (FMisOn) {
-		if (isPanorama) {
-			DebugLog(@"Flashorama: Preventing Flash Button from being hidden in Panorama mode.");
+		if (isPanorama)
 			return NO;
-		}
 		return %orig;
 	}
 	return %orig;
@@ -283,10 +272,8 @@ static NSString *Model()
 // Flash and options button orientation or Panorama orientation in iPad should be only 1 (Portrait)
 - (int)_glyphOrientationForCameraOrientation:(int)arg1
 {
-	if (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) {
-		DebugLog(@"Flashorama: Fixing Flash Button Orientation.");
+	if (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad))
 		return 1;
-	}
 	return %orig;
 }
 
@@ -298,10 +285,8 @@ static NSString *Model()
 - (id)initWithFrame:(struct CGRect)arg1
 {
 	self = %orig;
-	if (self && Bool(prefDict, @"hideLevelBar", NO)) {
-		DebugLog(@"PanoMod: Hooking Panorama Level Bar.");
-		[self setHidden:YES];
-	}
+	if (self)
+		[self setHidden:Bool(prefDict, @"hideLevelBar", NO)];
 	return self;
 }
 
@@ -313,10 +298,8 @@ static NSString *Model()
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
-	if (self && Bool(prefDict, @"hideArrow", NO)) {
-		DebugLog(@"PanoMod: Hooking Panorama Arrow");
-		[self setHidden:YES];
-	}
+	if (self)
+		[self setHidden:Bool(prefDict, @"hideArrow", NO)];
 	return self;
 }
 
@@ -341,20 +324,16 @@ static NSString *Model()
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
-	if (self && Bool(prefDict, @"hideLabel", NO)) {
-		DebugLog(@"PanoMod: Hooking Panorama Labels.");
-		[self setHidden:YES];
-	}
+	if (self)
+		[self setHidden:Bool(prefDict, @"hideLabel", NO)];
 	return self;
 }
 
 // Hooking Panorama instructional text
 - (void)setText:(NSString *)text
 {
-	if (Bool(prefDict, @"customText", NO)) {
-		DebugLog(@"PanoMod: Hooking Panorama Text.");
+	if (Bool(prefDict, @"customText", NO))
 		%orig([prefDict objectForKey:@"myText"] ? [[prefDict objectForKey:@"myText"] description] : text);
-	}
 	else %orig;
 }
 
@@ -365,10 +344,8 @@ static NSString *Model()
 // Supported only English
 - (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName
 {
-    if ([key isEqual:@"PANO_INSTRUCTIONAL_TEXT_iPad"]) {
-    	DebugLog(@"Hooking Instructional Text for iPad. (English Only)");
+    if ([key isEqual:@"PANO_INSTRUCTIONAL_TEXT_iPad"])
     	return @"Move iPad continuously when taking a Panorama.";
-    }
     return %orig;
 }
 
