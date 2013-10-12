@@ -51,7 +51,7 @@ Then Customize the interface and properties of Panorama with PanoMod."
   																		[self reloadSpecifier:self.targetSpec]; \
   																		[self reloadSpecifier:self.sliderSpec];
 
-#define updateFloatValue(targetSpec, sliderSpec, targetKey, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] floatValue]] forKey:targetKey]; \
+#define updateFloatValue(targetSpec, sliderSpec, targetKey, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, round([[self readPreferenceValue:self.sliderSpec] floatValue]*100.0)/100.0] forKey:targetKey]; \
   																		[self reloadSpecifier:self.targetSpec]; \
   																		[self reloadSpecifier:self.sliderSpec];
 
@@ -83,7 +83,7 @@ static void openLink(NSString *url)
 		value = [NSNumber numberWithFloat:max]; \
 	else if (value2 < min) \
 		value = [NSNumber numberWithFloat:min]; \
-	else value = [NSNumber numberWithFloat:([value floatValue])];
+	else value = [NSNumber numberWithFloat:(round([value floatValue]*100.0)/100.0)];
 									
 static void setAvailable(BOOL available, PSSpecifier *spec)
 {
@@ -244,14 +244,14 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 {
 	rangeFixFloat(100, 576)
 	orig
-	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
+	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %.2f pixels")
 }
 
 - (void)setPreviewHeight:(id)value specifier:(PSSpecifier *)spec
 {
 	rangeFixFloat(40, 576)
 	orig
-	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %f pixels")
+	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %.2f pixels")
 }
 
 
@@ -335,8 +335,8 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	resetValue(30, PanoramaPowerBlurBiasSliderSpec, PanoramaPowerBlurBiasInputSpec)
 	
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
-	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
-	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %f pixels")
+	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %.2f pixels")
+	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %.2f pixels")
 	updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"footerText", @"Current Value: %i")
@@ -426,8 +426,8 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		}
 
         	updateValue(maxWidthSpec, maxWidthSliderSpec, @"footerText", @"Current Width: %i pixels")
-        	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %f pixels")
-        	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %f pixels")
+        	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"footerText", @"Current Width: %.2f pixels")
+        	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"footerText", @"Current Height: %.2f pixels")
 		updateValue(minFPSSpec, minFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 		updateValue(maxFPSSpec, maxFPSSliderSpec, @"footerText", @"Current Framerate: %i FPS")
 		updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"footerText", @"Current Value: %i")
@@ -555,11 +555,11 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	switch (indexPath.section)
 	{
 		case 0:	[cell.textLabel setText:PanoModBrief]; break;
-    		case 1: [cell.textLabel setText:@"The resolution of panoramic image in A4 iDevices is much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it."]; break;
+    		case 1: [cell.textLabel setText:@"The resolution of panoramic images in A4 iDevices are much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it.\nIt's not possible to make the full resolution because A4 iDevices use AppleH3CamIn driver, which doesn't provide Panorama processor."]; break;
 		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 3: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
 		case 4: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 5: [cell.textLabel setText:@"iOS 6.0.0 - 6.1.3"]; break;
+		case 5: [cell.textLabel setText:@"iOS 6.0 - 6.1.3"]; break;
     }
 
     return cell;
@@ -679,7 +679,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
   		case 2:
   			[cell.textLabel setText:@"For example, the default maximum panoramic image width of iPhone 4S, iPhone 5 and iPod touch 5G (5MP Camera) is 10800 pixel.\nNOTE: Maximum value what won't cause green image in A5 iDevices is 16384 pixel."]; break;
  		case 3:
-  			[cell.textLabel setText:@"Adjust the little Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."]; break;
+  			[cell.textLabel setText:@"Adjust the Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."]; break;
   		case 4:
   			[cell.textLabel setText:@"Adjust the FPS of Panorama, but keep in mind in that don’t set it too high or too low or you may face the pink preview issue."]; break;
   		case 5:
@@ -788,7 +788,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 1:
 			openLink(@"https://twitter.com/PoomSmart"); break;
 		case 2:
-			openLink(@"https://twitter.com/Pix3lDemon"); break;
+			openLink(@"https://twitter.com/Pix3lDemon"); break; // Main dev but help exactly 5% :(
 		case 3:
 			openLink(@"https://twitter.com/BassamKassem1"); break;
 		case 4:
@@ -818,24 +818,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    	NSString *ident = nil;
-	switch (indexPath.row)
-	{
-		case 1:	ident = @"u1"; break;
-    		case 2: ident = @"u2"; break;
-    		case 3: ident = @"u3"; break;
-    		case 4: ident = @"u4"; break;
-    		case 5: ident = @"u5"; break;
-    		case 6: ident = @"u6"; break;
-    		case 7: ident = @"u7"; break;
-    		case 8: ident = @"u8"; break;
-    		case 9: ident = @"u9"; break;
-    		case 10: ident = @"u10"; break;
-    		case 11: ident = @"u11"; break;
-    		case 12: ident = @"u12"; break;
-    		case 13: ident = @"u13"; break;
-    		case 14: ident = @"u14"; break;
-    	}
+    	NSString *ident = [NSString stringWithFormat:@"u%i", indexPath.row];
     
     	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
     
@@ -850,7 +833,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
     	if (indexPath.row != 0) {
     		switch (indexPath.row)
     		{
-    			addPerson(1, 3, 	@"@PoomSmart (Dev)", 	@"Tested tweak on iPod touch 4G, iPod touch 5G, iPhone 4S and iPad 2G (GSM).")
+    			addPerson(1, 3, 	@"@PoomSmart (Main Dev)", 	@"Tested tweak on iPod touch 4G, iPod touch 5G, iPhone 4S and iPad 2G (GSM).")
     			addPerson(2, 3, 	@"@Pix3lDemon (Dev)", 	@"Tested tweak on iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G and iPad 3G.")
     			addPerson(3, 1, 	@"@BassamKassem1", 	@"Tested tweak on iPhone 4 GSM.")
     			addPerson(4, 2,		@"@H4lfSc0p3R",		@"Tested tweak on iPhone 4 GSM, iPhone 4S and iPod touch 4G.")
