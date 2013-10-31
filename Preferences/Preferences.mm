@@ -3,7 +3,7 @@
 #import <Preferences/PSViewController.h>
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
-#import <Preferences/PSTableCell.h>
+#import <Preferences/PSTextViewTableCell.h>
 
 #include <objc/runtime.h>
 #include <sys/sysctl.h>
@@ -12,12 +12,6 @@
 - (void)setView:(id)view;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (int)tableView:(UITableView *)tableView numberOfRowsInSection:(int)section;
-@end
-
-@interface PSListController (PanoMod)
-- (void)viewWillAppear:(BOOL)animated;
-- (void)viewDidUnload;
-- (UIView *)tableView:(UITableView *)view viewForHeaderInSection:(int)section;
 @end
 
 @interface UITableViewCell (PanoMod)
@@ -441,7 +435,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 @end
 
-@interface BannerCell : PSTableCell {
+@interface BannerCell : PSTextViewTableCell {
 	UILabel *_label;
 }
 @end
@@ -459,18 +453,22 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
     		[_label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
         	[_label setTextAlignment:NSTextAlignmentCenter];
         	[_label setAutoresizingMask:2];
-        	[_label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.43 alpha:1]];
+        	[_label setTextColor:[UIColor colorWithRed:.6 green:.6 blue:.69 alpha:1]];
         	[_label setShadowColor:[UIColor whiteColor]];
-        	[_label setShadowOffset:CGSizeMake(0,1)];
+        	[_label setShadowOffset:CGSizeMake(0, 1)];
         	[self addSubview:_label];
         	[_label release];
     	}
 	return self;
 }
 
+- (void)layoutSubviews
+{
+}
+
 - (float)preferredHeightForWidth:(float)arg1
 {
-    return 50.f;
+    return 50.0f;
 }
 
 @end
@@ -792,27 +790,27 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 3:
 			openLink(@"https://twitter.com/BassamKassem1"); break;
 		case 4:
-			openLink(@"https://twitter.com/iPMisterX"); break;
-		case 5:
-			openLink(@"https://twitter.com/nenocrack"); break;
-		case 6:
-			openLink(@"https://twitter.com/Raem0n"); break;
-		case 7:
-			openLink(@"https://twitter.com/NTD123"); break;
-		case 8:
-			openLink(@"https://www.facebook.com/itenb?fref=ts"); break;
-		case 9:
-			openLink(@"https://twitter.com/xtoyou"); break;
-		case 10:
-			openLink(@"https://twitter.com/n4te2iver"); break;
-		case 11:
-			openLink(@"https://twitter.com/NavehIDL"); break;
-		case 12:
-			openLink(@"https://www.facebook.com/omkung?fref=ts"); break;
-		case 13:
-			openLink(@"https://twitter.com/iPFaHaD"); break;
-		case 14:
 			openLink(@"https://twitter.com/H4lfSc0p3R"); break;
+		case 5:
+			openLink(@"https://twitter.com/iPMisterX"); break;
+		case 6:
+			openLink(@"https://twitter.com/nenocrack"); break;
+		case 7:
+			openLink(@"https://twitter.com/Raem0n"); break;
+		case 8:
+			openLink(@"https://twitter.com/NTD123"); break;
+		case 9:
+			openLink(@"https://www.facebook.com/itenb?fref=ts"); break;
+		case 10:
+			openLink(@"https://twitter.com/xtoyou"); break;
+		case 11:
+			openLink(@"https://twitter.com/n4te2iver"); break;
+		case 12:
+			openLink(@"https://twitter.com/NavehIDL"); break;
+		case 13:
+			openLink(@"https://www.facebook.com/omkung?fref=ts"); break;
+		case 14:
+			openLink(@"https://twitter.com/iPFaHaD"); break;
 	}
 }
 
