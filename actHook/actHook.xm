@@ -32,25 +32,14 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
 {
 	theDict = [old__ACT_CopyDefaultConfigurationForPanorama() mutableCopy];
 	NSString *model = Model();
-	setPanoProperty(theDict, @"ACTPanoramaMaxWidth", valueFromKey(prefDict, @"PanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800))
-	setPanoProperty(theDict, @"ACTPanoramaMaxFrameRate", valueFromKey(prefDict, @"PanoramaMaxFrameRate", 15))
-	setPanoProperty(theDict, @"ACTPanoramaMinFrameRate", valueFromKey(prefDict, @"PanoramaMinFrameRate", 15))
-	setPanoProperty(theDict, @"ACTPanoramaBufferRingSize", valueFromKey(prefDict, @"PanoramaBufferRingSize", 6)) 
-	setPanoProperty(theDict, @"ACTPanoramaPowerBlurBias", valueFromKey(prefDict, @"PanoramaPowerBlurBias", 30))
-	setPanoProperty(theDict, @"ACTPanoramaPowerBlurSlope", valueFromKey(prefDict, @"PanoramaPowerBlurSlope", 16))
+	setPanoProperty(theDict, @"ACTPanoramaMaxWidth", Int(prefDict, @"PanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800))
+	setPanoProperty(theDict, @"ACTPanoramaMaxFrameRate", Int(prefDict, @"PanoramaMaxFrameRate", 15))
+	setPanoProperty(theDict, @"ACTPanoramaMinFrameRate", Int(prefDict, @"PanoramaMinFrameRate", 15))
+	setPanoProperty(theDict, @"ACTPanoramaBufferRingSize", Int(prefDict, @"PanoramaBufferRingSize", 6)) 
+	setPanoProperty(theDict, @"ACTPanoramaPowerBlurBias", Int(prefDict, @"PanoramaPowerBlurBias", 30))
+	setPanoProperty(theDict, @"ACTPanoramaPowerBlurSlope", Int(prefDict, @"PanoramaPowerBlurSlope", 16))
 	return theDict;
 }
-
-%hook SBAwayController
-
-- (void)_removeCameraPreviewViews
-{
-	theDict = nil;
-	%orig;
-}
-
-%end
-
 
 %ctor {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

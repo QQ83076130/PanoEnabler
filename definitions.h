@@ -12,9 +12,8 @@
 #define PreferencesChangedNotification "com.PS.actHack.prefs"
 #define PREF_PATH @"/var/mobile/Library/Preferences/com.PS.actHack.plist"
 #define firebreakFile @"/System/Library/PrivateFrameworks/ACTFramework.framework/firebreak-Configuration.plist"
-#define valueFromKey(dict, key, defaultValue) ([dict objectForKey:key] ? [[dict objectForKey:key] intValue] : defaultValue)
 #define floatFromKey(dict, key, defaultValue) ([dict objectForKey:key] ? [[dict objectForKey:key] floatValue] : defaultValue)
 #define Bool(dict, key, defaultBoolValue) ([dict objectForKey:key] ? [[dict objectForKey:key] boolValue] : defaultBoolValue)
 #define Int(dict, key, defaultIntValue) ([dict objectForKey:key] ? [[dict objectForKey:key] intValue] : defaultIntValue)
-#define setPanoProperty(dict, key, intValue) [dict setObject:[NSNumber numberWithInteger:intValue] forKey:key];
 #define num(intValue) [NSNumber numberWithInt:intValue]
+#define setPanoProperty(dict, key, intValue) [dict setObject:num(intValue) forKey:key];
