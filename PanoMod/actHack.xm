@@ -70,10 +70,12 @@ static NSString *Model()
 - (void)setImageControlMode:(int)mode
 {
 	if (Bool(prefDict, @"PanoDarkFix", NO)) {
-		if (mode == 4)
+		if (mode == 4) {
 			%orig(1);
-		else %orig;
-	} else %orig;
+			return;
+		}
+	}
+	%orig;
 }
 
 %end
@@ -86,7 +88,7 @@ static NSString *Model()
 	%orig;
 	if (FMisOn) {
 		if (isPanorama) {
-			autoOff = (mode == 0) ? YES : NO;
+			autoOff = (mode == 0);
 			[[%c(PLCameraController) sharedInstance] torch:mode];
 		}
 	}
@@ -127,13 +129,13 @@ static NSString *Model()
 // iPhone recommended maximum height is 640 px
 - (struct CGSize)panoramaPreviewSize
 {
-	return CGSizeMake(valueFromKey(prefDict, @"PreviewWidth", 306), valueFromKey(prefDict, @"PreviewHeight", 86));
+	return CGSizeMake(Int(prefDict, @"PreviewWidth", 306), Int(prefDict, @"PreviewHeight", 86));
 }
 
 // Detect Camera mode
 - (void)_setCameraMode:(int)mode cameraDevice:(int)device
 {
-	isPanorama = (mode == 2 && device == 0) ? YES : NO;
+	isPanorama = (mode == 2 && device == 0);
 	%orig;
 }
 
@@ -238,12 +240,7 @@ static NSString *Model()
 // Ability to zoom in Panorama mode
 - (BOOL)_zoomIsAllowed
 {
-	if (Bool(prefDict, @"panoZoom", NO)) {
-		if (isPanorama)
-			return YES;
-		return %orig;
-	}
-	return %orig;
+	return Bool(prefDict, @"panoZoom", NO) && isPanorama ? YES : %orig;
 }
 
 // Enable access Grid Option in Panorama mode
@@ -261,20 +258,13 @@ static NSString *Model()
 // Ability to use Flash button in Panorama mode
 - (BOOL)_flashButtonShouldBeHidden
 {
-	if (FMisOn) {
-		if (isPanorama)
-			return NO;
-		return %orig;
-	}
-	return %orig;
+	return FMisOn && isPanorama ? NO : %orig;
 }
 
 // Flash and options button orientation or Panorama orientation in iPad should be only 1 (Portrait)
 - (int)_glyphOrientationForCameraOrientation:(int)arg1
 {
-	if (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad))
-		return 1;
-	return %orig;
+	return (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) ? 1 : %orig;
 }
 
 %end
@@ -334,7 +324,8 @@ static NSString *Model()
 {
 	if (Bool(prefDict, @"customText", NO))
 		%orig([prefDict objectForKey:@"myText"] ? [[prefDict objectForKey:@"myText"] description] : text);
-	else %orig;
+	else
+		%orig;
 }
 
 %end
@@ -344,9 +335,7 @@ static NSString *Model()
 // Supported only English
 - (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName
 {
-    if ([key isEqual:@"PANO_INSTRUCTIONAL_TEXT_iPad"])
-    	return @"Move iPad continuously when taking a Panorama.";
-    return %orig;
+    return [key isEqualToString:@"PANO_INSTRUCTIONAL_TEXT_iPad"] ? @"Move iPad continuously when taking a Panorama." : %orig;
 }
 
 %end
