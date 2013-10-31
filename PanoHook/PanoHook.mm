@@ -1,8 +1,13 @@
 #import "../definitions.h"
 #import <substrate.h>
-#import "IOKitDefines.h"
 
 static NSDictionary *prefDict = nil;
+
+typedef mach_port_t io_object_t;
+typedef io_object_t io_registry_entry_t;
+typedef UInt32 IOOptionBits;
+
+extern "C" CFTypeRef IORegistryEntryCreateCFProperty(io_registry_entry_t entry,  CFStringRef key, CFAllocatorRef allocator, IOOptionBits options);
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
 {
