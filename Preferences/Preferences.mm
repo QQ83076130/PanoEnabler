@@ -453,7 +453,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
     		[_label setFont:[UIFont fontWithName:@"HelveticaNeue" size:60]];
         	[_label setTextAlignment:NSTextAlignmentCenter];
         	[_label setAutoresizingMask:2];
-        	[_label setTextColor:[UIColor colorWithRed:.6 green:.6 blue:.69 alpha:1]];
+        	[_label setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.49 alpha:1]];
         	[_label setShadowColor:[UIColor whiteColor]];
         	[_label setShadowOffset:CGSizeMake(0, 1)];
         	[self addSubview:_label];
@@ -557,7 +557,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 3: [cell.textLabel setText:@"Apple didn’t make Panorama as a stock feature on any iPads so there will be bugs like this that are simply unfixable."]; break;
 		case 4: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 5: [cell.textLabel setText:@"iOS 6.0 - 6.1.3"]; break;
+		case 5: [cell.textLabel setText:@"iOS 6.0 - 6.1.5"]; break;
     }
 
     return cell;
