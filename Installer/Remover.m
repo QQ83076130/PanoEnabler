@@ -10,13 +10,11 @@
 {
 	size_t size;
 	sysctlbyname(typeSpecifier, NULL, &size, NULL, 0);
-    
-    	char *answer = (char *)malloc(size);
-    	sysctlbyname(typeSpecifier, answer, &size, NULL, 0);
-    
-    	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
-    	free(answer);
-    	return results;
+	char *answer = (char *)malloc(size);
+	sysctlbyname(typeSpecifier, answer, &size, NULL, 0);
+	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
+	free(answer);
+	return results;
 }
 
 - (NSString *)modelAP
@@ -40,60 +38,54 @@
 	NSString *modelFile = [self modelFile];
 	NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
 
-    	NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
-    	if (root == nil) return NO;
-    	NSMutableDictionary *tuningParameters = [[root objectForKey:@"TuningParameters"] mutableCopy];
-    	if (tuningParameters == nil) return NO;
-    	NSMutableDictionary *portTypeBack = [[tuningParameters objectForKey:@"PortTypeBack"] mutableCopy];
-    	if (portTypeBack == nil) return NO;
+	NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
+	if (root == nil) return NO;
+	NSMutableDictionary *tuningParameters = [[root objectForKey:@"TuningParameters"] mutableCopy];
+	if (tuningParameters == nil) return NO;
+	NSMutableDictionary *portTypeBack = [[tuningParameters objectForKey:@"PortTypeBack"] mutableCopy];
+	if (portTypeBack == nil) return NO;
     
-    	NSString *port = nil;
-    	NSMutableDictionary *cameraProperties = nil;
-    	if ([portTypeBack objectForKey:@"0x3650"] != nil) {
-    		cameraProperties = [[portTypeBack objectForKey:@"0x3650"] mutableCopy];
-    		port = @"0x3650";
-    	}
-    	else if ([portTypeBack objectForKey:@"0x9726"] != nil) {
-    		cameraProperties = [[portTypeBack objectForKey:@"0x9726"] mutableCopy];
-    		port = @"0x9726";
-    	}
-    	else if ([portTypeBack objectForKey:@"0x5651"] != nil) {
-    		cameraProperties = [[portTypeBack objectForKey:@"0x5651"] mutableCopy];
-    		port = @"0x5651";
-    	}
-    	else if ([portTypeBack objectForKey:@"0x5690"] != nil) {
-    		cameraProperties = [[portTypeBack objectForKey:@"0x5690"] mutableCopy];
-    		port = @"0x5690";
-    	}
-    	else return NO;
+	NSString *port = nil;
+	NSMutableDictionary *cameraProperties = nil;
+	for (NSString *portName in [portTypeBack allKeys]) {
+		if ([portName hasPrefix:@"0x"]) {
+			port = portName;
+			break;
+		} else
+			return NO;
+	}
 	
-   	if ([cameraProperties objectForKey:@"panoramaMaxIntegrationTime"] != nil && !(isiPad3or4 || isiPadMini1G))
-        	[cameraProperties removeObjectForKey:@"panoramaMaxIntegrationTime"];
+	#define removeObject(key) \
+		if ([cameraProperties objectForKey:key] != nil) \
+			[cameraProperties removeObjectForKey:key];
 
-    	if ([cameraProperties objectForKey:@"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition"] != nil)
-	        [cameraProperties removeObjectForKey:@"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition"];
+	if (!isiPad) {
+		removeObject(@"panoramaMaxIntegrationTime")
+	}
+	removeObject(@"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition")
+	removeObject(@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
+	removeObject(@"panoramaAEMinGain")
+	removeObject(@"panoramaAEMaxGain")
+	if (isiOS7) {
+		removeObject(@"panoramaAELowerExposureDelta")
+		removeObject(@"panoramaAEUpperExposureDelta")
+		removeObject(@"panoramaAEMaxPerFrameExposureDelta")
+		removeObject(@"PanoramaFaceAEHighKeyCorrection")
+		removeObject(@"PanoramaFaceAELowKeyCorrection")
+	}
 
-    	if ([cameraProperties objectForKey:@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition"] != nil)
-        	[cameraProperties removeObjectForKey:@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition"];
-
-    	if ([cameraProperties objectForKey:@"panoramaAEMinGain"] != nil)
-        	[cameraProperties removeObjectForKey:@"panoramaAEMinGain"];
+	[portTypeBack setObject:cameraProperties forKey:port];
+	[tuningParameters setObject:portTypeBack forKey:@"PortTypeBack"];
+	[root setObject:tuningParameters forKey:@"TuningParameters"];
+	[root writeToFile:platformPathWithFile atomically:YES];
     
-    	if ([cameraProperties objectForKey:@"panoramaAEMaxGain"] != nil)
-        	[cameraProperties removeObjectForKey:@"panoramaAEMaxGain"];
-
-    	[portTypeBack setObject:cameraProperties forKey:port];
-    	[tuningParameters setObject:portTypeBack forKey:@"PortTypeBack"];
-    	[root setObject:tuningParameters forKey:@"TuningParameters"];
-    	[root writeToFile:platformPathWithFile atomically:YES];
+	[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"] error:nil];
     
-    	[[NSFileManager defaultManager] removeItemAtPath:firebreakFile error:nil];
-    
-    	if (isNeedConfigDevice) {
-    		NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
-    		NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
+	if (isNeedConfigDevice) {
+		NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
+		NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
    		if (avRoot == nil) return NO;
-    		NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
+		NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
    		if (avCap == nil) return NO;
    		NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
    		if (index0 == nil) return NO;
@@ -104,8 +96,7 @@
 		[avCap replaceObjectAtIndex:0 withObject:index0];
 		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 		[avRoot writeToFile:avSession atomically:YES];
-    	}
-    
+	}
 	return YES;
 }
 
@@ -113,12 +104,12 @@
 {
 	BOOL success = YES;
 	NSLog(@"Removing Panorama Properties.");
-    	success = [self removePanoProperties];
-    	if (!success) {
-    		NSLog(@"Failed removing Panorama Properties.");
-    		return success;
-    	}
-    	NSLog(@"Done!");
+	success = [self removePanoProperties];
+	if (!success) {
+		NSLog(@"Failed removing Panorama Properties.");
+		return success;
+	}
+	NSLog(@"Done!");
 	return success;
 }
 
@@ -127,11 +118,9 @@
 
 int main(int argc, char **argv, char **envp) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    	PanoRemover *remover = [[PanoRemover alloc] init];
-    	BOOL success = [remover remove];
-    	[remover release];
-    	[pool release];
-    	return (success ? 0 : 1);
+	PanoRemover *remover = [[PanoRemover alloc] init];
+	BOOL success = [remover remove];
+	[remover release];
+	[pool release];
+	return (success ? 0 : 1);
 }
-
-
