@@ -125,6 +125,10 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	PSSpecifier *FMSwitchSpec;
 	PSSpecifier *borderSpec;
 	PSSpecifier *borderDescSpec;
+	PSSpecifier *Pano8MPSpec;
+	PSSpecifier *Pano8MPDescSpec;
+	PSSpecifier *BPNRSpec;
+	PSSpecifier *BPNRDescSpec;
 }
 @property (nonatomic, retain) PSSpecifier *PanoEnabledSpec;
 @property (nonatomic, retain) PSSpecifier *maxWidthSpec;
@@ -165,6 +169,10 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 @property (nonatomic, retain) PSSpecifier *FMSwitchSpec;
 @property (nonatomic, retain) PSSpecifier *borderSpec;
 @property (nonatomic, retain) PSSpecifier *borderDescSpec;
+@property (nonatomic, retain) PSSpecifier *Pano8MPSpec;
+@property (nonatomic, retain) PSSpecifier *Pano8MPDescSpec;
+@property (nonatomic, retain) PSSpecifier *BPNRSpec;
+@property (nonatomic, retain) PSSpecifier *BPNRDescSpec;
 @end
 
 @implementation actHackPreferenceController
@@ -184,6 +192,8 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 @synthesize PanoDarkFixDescSpec, PanoDarkFixSwitchSpec;
 @synthesize FMDescSpec, FMSwitchSpec;
 @synthesize borderSpec, borderDescSpec;
+@synthesize Pano8MPSpec, Pano8MPDescSpec;
+@synthesize BPNRSpec, BPNRDescSpec;
 
 - (NSString *)model
 {
@@ -400,6 +410,10 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 			getSpec(FMSwitchSpec, @"FMSwitch")
 			getSpec(borderSpec, @"border")
 			getSpec(borderDescSpec, @"borderDesc")
+			getSpec(Pano8MPSpec, @"Pano8MPs")
+			getSpec(Pano8MPDescSpec, @"Pano8MP")
+			getSpec(BPNRSpec, @"BPNRs")
+			getSpec(BPNRDescSpec, @"BPNR")
 		}
         
 		NSString *model = [self model];
@@ -426,6 +440,11 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 			[specs removeObject:self.borderSpec];
 			[specs removeObject:self.borderDescSpec];
 		}
+		if (!is8MPCamDevice) {
+			[specs removeObject:self.BPNRSpec];
+			[specs removeObject:self.BPNRDescSpec];
+		}
+		
 		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.customTextSpec);
 		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.inputTextSpec);
 		
@@ -483,7 +502,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 {
 }
 
-- (float)preferredHeightForWidth:(float)arg1
+- (float)preferredHeightForWidth:(float)width
 {
     return 50.0f;
 }
@@ -544,7 +563,8 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 1: return @"Will this fully working on A4 iDevices ?";
 		case 2: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
 		case 3: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
-		case 4: return @"Supported iOS Versions";
+		case 4: return @"(iOS 7, unsupported devices) Panorama doesn't work in Lockscreen Camera";
+		case 5: return @"Supported iOS Versions";
 	}
 	return nil;
 }
@@ -572,7 +592,8 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 1: [cell.textLabel setText:@"The resolution of panoramic images in A4 iDevices are much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it.\nIt's not possible to make the full resolution because A4 iDevices use AppleH3CamIn driver, which doesn't provide Panorama processor."]; break;
 		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 3: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 4: [cell.textLabel setText:@"iOS 6.0 - 7.1"]; break;
+		case 4: [cell.textLabel setText:@"The limitation of hooking methods in iOS 7 causes this."]; break;
+		case 5: [cell.textLabel setText:@"iOS 6.0 - 7.1"]; break;
     }
     return cell;
 }
@@ -645,16 +666,18 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 14: return @"White Arrow";
 		case 15: return @"Blue line in the middle";
 		case 16: return @"White Border";
-		case 17: return @"Reset Sliders Values";
-		case 18: return @"About Sliders and Inputs";
-		case 19: return @"About \"Hide KB\" button at Top-right";
+		case 17: return @"Panorama 8 MP";
+		case 18: return @"Panorama BPNR Mode";
+		case 19: return @"Reset Sliders Values";
+		case 20: return @"About Sliders and Inputs";
+		case 21: return @"About \"Hide KB\" button at Top-right";
 	}
 	return nil;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-   	return 20;
+   	return 22;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -719,10 +742,14 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
   		case 16:
   			[cell.textLabel setText:@"iOS 6 only, Hiding the border crops the small Panorama preview, sometimes this function is recommended to enable when you set Panoramic images maximum width into different values."]; break;
   		case 17:
-  			[cell.textLabel setText:@"Reset all sliders values to their default."]; break;
+  			[cell.textLabel setText:@"By default, the Panorama sensor resolution is 5 MP, this option can changes the sensor resolution to 8 MP if your device is capable. (iPhone 4S or newer) This makes the panoramic images more clear."]; break;
   		case 18:
-  			[cell.textLabel setText:@"Just adjust them, easy ?"]; break;
+  			[cell.textLabel setText:@"iOS 7 only, \"BPNR\" or Auto exposure adjustments during the pan of Panorama capture, was introduced in iPhone 5s, to even out exposure in scenes where brightness varies across the frame."]; break;
   		case 19:
+  			[cell.textLabel setText:@"Reset all sliders values to their default."]; break;
+  		case 20:
+  			[cell.textLabel setText:@"Just adjust them, easy ?"]; break;
+  		case 21:
   			[cell.textLabel setText:@"Simple button for hiding keyboard, useful in iPhone/iPod when you want to set many properties using input box."]; break;
   	}
 	return cell;

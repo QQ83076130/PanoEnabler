@@ -4,8 +4,6 @@
 
 #include <sys/sysctl.h>
 
-%config(generator=MobileSubstrate);
-
 static NSDictionary *prefDict = nil;
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
@@ -27,8 +25,8 @@ static NSString *Model()
 
 static NSMutableDictionary *theDict = nil;
 
-NSMutableDictionary* (*old__ACT_CopyDefaultConfigurationForPanorama) ();
-NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
+NSMutableDictionary* (*old__ACT_CopyDefaultConfigurationForPanorama)();
+NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama()
 {
 	theDict = [old__ACT_CopyDefaultConfigurationForPanorama() mutableCopy];
 	NSString *model = Model();
@@ -43,7 +41,7 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama ()
 	setPanoProperty(theDict, @"ACTPanoramaPowerBlurBias", val(prefDict, @"PanoramaPowerBlurBias", 30, INT))
 	setPanoProperty(theDict, @"ACTPanoramaPowerBlurSlope", val(prefDict, @"PanoramaPowerBlurSlope", 16, INT))
 	if (isiOS7)
-		setPanoProperty(theDict, @"ACTPanoramaBPNRMode", val(prefDict, @"BPNRMode", 0, INT))
+		setPanoProperty(theDict, @"ACTPanoramaBPNRMode", val(prefDict, @"BPNR", NO, BOOLEAN) ? 1 : 0)
 	return theDict;
 }
 

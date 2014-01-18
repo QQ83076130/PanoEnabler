@@ -134,6 +134,12 @@
 		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 		[avRoot writeToFile:avSession atomically:YES];
 	}
+	
+	if (!isiOS7) {
+		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
+		[[NSFileManager defaultManager] removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
+	}
+	
 	return YES;
 }
 

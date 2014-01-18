@@ -24,9 +24,6 @@
 
 #define PreferencesChangedNotification "com.PS.actHack.prefs"
 #define PREF_PATH @"/var/mobile/Library/Preferences/com.PS.actHack.plist"
-/*#define floatFromKey(dict, key, defaultValue) ([dict objectForKey:key] ? [[dict objectForKey:key] floatValue] : defaultValue)
-#define Bool(dict, key, defaultBoolValue) ([dict objectForKey:key] ? [[dict objectForKey:key] boolValue] : defaultBoolValue)
-#define Int(dict, key, defaultIntValue) ([dict objectForKey:key] ? [[dict objectForKey:key] intValue] : defaultIntValue)*/
 #define val(dict, key, defaultValue, type) ([dict objectForKey:key] ? [[dict objectForKey:key] type] : defaultValue)
 #define num(intValue) [NSNumber numberWithInt:intValue]
 #define FLOAT(floatValue) [NSNumber numberWithFloat:floatValue]

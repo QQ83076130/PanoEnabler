@@ -878,6 +878,58 @@ There are 3 modes of torch mode set in Panorama capture:
         	<string>com.PS.actHack.prefs</string>
       </dict>
       <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Panorama 8 MP</string>
+			<key>id</key>
+			<string>8MP</string>
+			<key>footerText</key>
+			<string>Capture Panorama in 8 megapixels sensor.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>id</key>
+			<string>8MPs</string>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>Pano8MP</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Panorama BPNR Mode</string>
+			<key>id</key>
+			<string>BPNR</string>
+			<key>footerText</key>
+			<string>The mode was introduced in iPhone 5s.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>id</key>
+			<string>BPNRs</string>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>BPNR</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
       		<key>cell</key>
       		<string>PSGroupCell</string>
       </dict>
@@ -893,7 +945,7 @@ There are 3 modes of torch mode set in Panorama capture:
         <key>cell</key>
         <string>PSGroupCell</string>
         <key>footerText</key>
-        <string>© 2013 Thuchapol Unprasert
+        <string>© 2013 - 2014 Thuchapol Unprasert
 (@PoomSmart)</string>
       </dict>
     </array>

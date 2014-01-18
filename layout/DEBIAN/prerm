@@ -4,16 +4,12 @@ declare -a cydia
 cydia=($CYDIA)
 chk=$(uname -m)
 
-if [[ "$chk" != iPod5* ]] && [[ "$chk" != iPhone4* ]] && [[ "$chk" != iPhone5* ]];then
+if [[ "$chk" != iPod5* ]] && [[ "$chk" != iPhone4* ]] && [[ "$chk" != iPhone5* ]] && [[ "$chk" != iPhone6* ]];then
 	if [[ $1 == remove ]]; then
    		PanoRemover
 
     	if [[ ${CYDIA+@} ]]; then
-        	if [[ "$chk" == iPad* ]]; then
-          		eval "echo 'finish:reboot' >&${cydia[0]}"
-          	else
-          		eval "echo 'finish:restart' >&${cydia[0]}"
-          	fi
+          	eval "echo 'finish:restart' >&${cydia[0]}"
     	fi
 	fi
 fi

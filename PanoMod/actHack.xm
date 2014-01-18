@@ -5,9 +5,6 @@
 
 #include <sys/sysctl.h>
 
-#define FMisOn val(prefDict, @"FMisOn", NO, BOOLEAN)
-#define PanoGridOn val(prefDict, @"panoGrid", NO, BOOLEAN)
-
 @interface PLCameraController
 @property(assign) AVCaptureDevice *currentDevice;
 @end
@@ -45,16 +42,63 @@
 @property(readonly, assign, nonatomic) CAMTopBar* _topBar;
 @end
 
-static NSDictionary *prefDict = nil;
-
-static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
-{
-	[prefDict release];
-	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
-}
+static BOOL PanoDarkFix;
+static BOOL bluePanoBtn;
+static BOOL FMisOn;
+static BOOL LLBPano;
+static BOOL Pano8MP;
+static BOOL customText;
+static BOOL hideArrow;
+static BOOL hideLabel;
+static BOOL hideLevelBar;
+static BOOL panoZoom;
+static BOOL PanoGridOn;
+static BOOL hideLabelBG;
+static BOOL hideGhostImg;
+static BOOL BPNR;
 
 static BOOL autoOff = NO;
 static BOOL isPanorama = NO;
+
+static NSString *myText;
+
+static int defaultDirection;
+static int PreviewWidth = 306;
+static int PreviewHeight = 86;
+
+static void PanoModLoader()
+{
+	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
+	#define readBoolOption(prename, name) \
+		name = [[dict objectForKey:prename] boolValue];
+	#define readIntOption(prename, name, defaultValue) \
+		name = [dict objectForKey:prename] ? [[dict objectForKey:prename] intValue] : defaultValue;
+	readBoolOption(@"PanoDarkFix", PanoDarkFix);
+	readBoolOption(@"bluePanoBtn", bluePanoBtn);
+	readBoolOption(@"FMisOn", FMisOn);
+	readBoolOption(@"LLBPano", LLBPano);
+	readBoolOption(@"customText", customText);
+	readBoolOption(@"hideArrow", hideArrow);
+	readBoolOption(@"hideLabel", hideLabel);
+	readBoolOption(@"hideLevelBar", hideLevelBar);
+	readBoolOption(@"panoZoom", panoZoom);
+	readBoolOption(@"PanoGridOn", PanoGridOn);
+	readBoolOption(@"hideLabelBG", hideLabelBG);
+	readBoolOption(@"hideGhostImg", hideGhostImg);
+	readBoolOption(@"BPNR", BPNR);
+	readBoolOption(@"Pano8MP", Pano8MP);
+	readIntOption(@"defaultDirection", defaultDirection, 1);
+	readIntOption(@"PreviewWidth", PreviewWidth, 306);
+	readIntOption(@"PreviewHeight", PreviewHeight, 86);
+
+	myText = (NSString *)[dict objectForKey:@"myText"];
+}
+
+static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
+	system("killall Camera");
+	PanoModLoader();
+}
 
 static NSString *Model()
 {
@@ -73,11 +117,9 @@ static NSString *Model()
 // Fix dark problem in Panorama mode
 - (void)setImageControlMode:(int)mode
 {
-	if (val(prefDict, @"PanoDarkFix", NO, BOOLEAN)) {
-		if (mode == 4) {
-			%orig(1);
-			return;
-		}
+	if (PanoDarkFix && mode == 4) {
+		%orig(1);
+		return;
 	}
 	%orig;
 }
@@ -112,6 +154,12 @@ static NSString *Model()
 	}
 }
 
+// Ability to use Flash button in Panorama mode
+- (BOOL)_flashButtonShouldBeHidden
+{
+	return FMisOn && isPanorama ? NO : %orig;
+}
+
 %end
 
 %end
@@ -139,11 +187,9 @@ static NSString *Model()
 - (void)setFlashMode:(int)mode notifyDelegate:(BOOL)arg2
 {
 	%orig;
-	if (FMisOn) {
-		if (isPanorama) {
-			autoOff = (mode == 0);
-			[[%c(PLCameraController) sharedInstance] torch:mode];
-		}
+	if (FMisOn && isPanorama) {
+		autoOff = (mode == 0);
+		[[%c(PLCameraController) sharedInstance] torch:mode];
 	}
 }
 
@@ -161,8 +207,8 @@ static NSString *Model()
 	if (PanoGridOn) {
 		if (settings) {
 			PLCameraSettingsView *settingsView = MSHookIvar<PLCameraSettingsView *>(self, "_settingsView");
-			[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_panoramaGroup") setHidden:(isPanorama ? YES : NO)];
-			[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_hdrGroup").accessorySwitch setEnabled:(isPanorama ? NO : YES)];
+			[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_panoramaGroup") setHidden:isPanorama];
+			[MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_hdrGroup").accessorySwitch setEnabled:!isPanorama];
 		}
 	}
 }
@@ -181,7 +227,7 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self) {
-		[self setCaptureDirection:val(prefDict, @"defaultDirection", 1, INT)];
+		[self setCaptureDirection:defaultDirection];
 	}
 	return self;
 }
@@ -202,13 +248,22 @@ static NSString *Model()
 
 %end
 
+%hook CAMPadApplicationSpec
+
+- (BOOL)shouldCreatePanoramaView
+{
+	return YES;
+}
+
+%end
+
 %hook PLCameraPanoramaView
 
 - (id)initWithFrame:(CGRect)frame centerYOffset:(float)offset panoramaPreviewScale:(float)scale
 {
 	self = %orig;
 	if (self) {
-		[self setCaptureDirection:val(prefDict, @"defaultDirection", 1, INT)];
+		[self setCaptureDirection:defaultDirection];
 	}
 	return self;
 }
@@ -224,12 +279,12 @@ static NSString *Model()
 // Changing Panorama button images (For 4-inches iDevices)
 + (id)backgroundPanoOffPressedImageName
 {
-	return val(prefDict, @"bluePanoBtn", NO, BOOLEAN) ? @"PLCameraLargeShutterButtonPanoOnPressed_2only_-568h" : %orig;
+	return @"PLCameraLargeShutterButtonPanoOnPressed_2only_-568h";
 }
 
 + (id)backgroundPanoOffImageName
 {
-	return val(prefDict, @"bluePanoBtn", NO, BOOLEAN) ? @"PLCameraLargeShutterButtonPanoOn_2only_-568h" : %orig;
+	return @"PLCameraLargeShutterButtonPanoOn_2only_-568h";
 }
 
 %end
@@ -242,7 +297,7 @@ static NSString *Model()
 
 - (void)_setFlashMode:(int)mode force:(BOOL)force
 {
-	if (FMisOn && isPanorama) {
+	if (isPanorama) {
 		MSHookIvar<int>(self, "_cameraMode") = 1;
 		%orig;
 		MSHookIvar<int>(self, "_cameraMode") = 3;
@@ -256,12 +311,12 @@ static NSString *Model()
 
 - (BOOL)_shouldHideFlashButtonForMode:(int)mode
 {
-	return mode == 3 && FMisOn ? NO : %orig;
+	return mode == 3 ? NO : %orig;
 }
 
 - (void)_setFlashMode:(int)mode
 {
-	if (FMisOn && isPanorama) {
+	if (isPanorama) {
 		MSHookIvar<int>([%c(PLCameraController) sharedInstance], "_cameraMode") = 1;
 		%orig;
 		MSHookIvar<int>([%c(PLCameraController) sharedInstance], "_cameraMode") = 3;
@@ -271,7 +326,7 @@ static NSString *Model()
 
 - (void)_updateFlashModeIfNecessary
 {
-	if (FMisOn && isPanorama) {
+	if (isPanorama) {
 		MSHookIvar<int>([%c(PLCameraController) sharedInstance], "_cameraMode") = 1;
 		%orig;
 		MSHookIvar<int>([%c(PLCameraController) sharedInstance], "_cameraMode") = 3;
@@ -283,7 +338,7 @@ static NSString *Model()
 - (void)_hideControlsForChangeToMode:(int)mode animated:(BOOL)animated
 {
 	%orig;
-	if (FMisOn && mode == 3) {
+	if (mode == 3) {
 		[self._topBar setHidden:NO];
 		[self._topBar setBackgroundStyle:0 animated:YES];
 	}
@@ -296,7 +351,7 @@ static NSString *Model()
 - (void)setFlashMode:(int)mode notifyDelegate:(BOOL)arg2
 {
 	%orig;
-	if (isPanorama && FMisOn)
+	if (isPanorama)
 		autoOff = (mode == 0);
 }
 
@@ -311,7 +366,7 @@ static NSString *Model()
 // Low Light Boost capability for Panorama
 - (BOOL)isLowLightBoostSupported
 {
-	return val(prefDict, @"LLBPano", NO, BOOLEAN) ? YES : %orig;
+	return YES;
 }
 
 %end
@@ -326,7 +381,7 @@ static NSString *Model()
 - (void)_configureSessionWithCameraMode:(int)mode cameraDevice:(int)device
 {
 	%orig;
-	if (val(prefDict, @"LLBPano", nil, BOOLEAN) && mode == 2 && device == 0) {
+	if (mode == 2 && device == 0) {
 		[self.currentDevice lockForConfiguration:nil];
 		if ([self.currentDevice isLowLightBoostSupported])
 			[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:YES];
@@ -345,12 +400,12 @@ static NSString *Model()
 - (void)_setupPanoramaForDevice:(id)device output:(id)output options:(id)options
 {
 	%orig;
-	if (val(prefDict, @"LLBPano", nil, BOOLEAN)) {
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
 		[self.currentDevice lockForConfiguration:nil];
 		if ([self.currentDevice isLowLightBoostSupported])
 			[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:YES];
 		[self.currentDevice unlockForConfiguration];
-	}
+	});
 }
 
 %end
@@ -363,8 +418,6 @@ static NSString *Model()
 
 + (NSDictionary *)avCaptureSessionPlist
 {
-	if (!val(prefDict, @"Pano8MP", NO, BOOLEAN))
-		return %orig;
 	NSMutableDictionary *avRoot = [%orig mutableCopy];
 	NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
 	NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
@@ -397,7 +450,7 @@ static NSString *Model()
 // iPhone recommended maximum height is 640 px
 - (struct CGSize)panoramaPreviewSize
 {
-	return CGSizeMake(val(prefDict, @"PreviewWidth", 306, INT), val(prefDict, @"PreviewHeight", 86, INT));
+	return CGSizeMake(PreviewWidth, PreviewHeight);
 }
 
 // Detect Camera mode
@@ -446,8 +499,8 @@ static NSString *Model()
 	%orig;
 	UIView *labelBG = MSHookIvar<UIView *>(self, "_instructionalTextBackground");
 	UIImageView *ghostImg = MSHookIvar<UIImageView *>(self, "_previewGhostImageView");
-	[labelBG setHidden:val(prefDict, @"hideLabelBG", NO, BOOLEAN)];
-	[ghostImg setHidden:val(prefDict, @"hideGhostImg", NO, BOOLEAN)];
+	[labelBG setHidden:hideLabelBG];
+	[ghostImg setHidden:hideGhostImg];
 }
 
 %end
@@ -470,19 +523,13 @@ static NSString *Model()
 // Ability to zoom in Panorama mode
 - (BOOL)_zoomIsAllowed
 {
-	return val(prefDict, @"panoZoom", NO, BOOLEAN) && isPanorama ? YES : %orig;
+	return panoZoom && isPanorama ? YES : %orig;
 }
 
 // Ability to enable grid in Panorama mode
 - (BOOL)_gridLinesShouldBeHidden
 {
 	return isPanorama && PanoGridOn ? NO : %orig;
-}
-
-// Ability to use Flash button in Panorama mode
-- (BOOL)_flashButtonShouldBeHidden
-{
-	return FMisOn && isPanorama ? NO : %orig;
 }
 
 // Flash and options button orientation or Panorama orientation in iPad should be only 1 (Portrait)
@@ -500,7 +547,7 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self)
-		[self setHidden:val(prefDict, @"hideLevelBar", NO, BOOLEAN)];
+		[self setHidden:hideLevelBar];
 	return self;
 }
 
@@ -513,7 +560,7 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self)
-		[self setHidden:val(prefDict, @"hideArrow", NO, BOOLEAN)];
+		[self setHidden:hideArrow];
 	return self;
 }
 
@@ -526,15 +573,15 @@ static NSString *Model()
 {
 	self = %orig;
 	if (self)
-		[self setHidden:val(prefDict, @"hideLabel", NO, BOOLEAN)];
+		[self setHidden:hideLabel];
 	return self;
 }
 
 // Hooking Panorama instructional text
 - (void)setText:(NSString *)text
 {
-	if (val(prefDict, @"customText", NO, BOOLEAN))
-		%orig([prefDict objectForKey:@"myText"] ? [[prefDict objectForKey:@"myText"] description] : text);
+	if (customText)
+		%orig((myText != nil) ? myText : text);
 	else
 		%orig;
 }
@@ -554,8 +601,8 @@ static NSString *Model()
 
 %ctor {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	PanoModLoader();
 	if (isiOS6) {
 		%init(actHackiOS6);
 		%init(FlashoramaiOS6);
@@ -570,7 +617,7 @@ static NSString *Model()
 	%init(LLBPanoCommon);
 	%init(FlashoramaCommon);
 	NSString *model = Model();
-	if (is8MPCamDevice) {
+	if (is8MPCamDevice && Pano8MP) {
 		%init(Pano8MP);
 	}
 	%init();
