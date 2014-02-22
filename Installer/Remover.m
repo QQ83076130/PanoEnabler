@@ -54,6 +54,7 @@
 		} else
 			return NO;
 	}
+	cameraProperties = [[portTypeBack objectForKey:port] mutableCopy];
 	
 	#define removeObject(key) \
 		if ([cameraProperties objectForKey:key] != nil) \
@@ -72,14 +73,14 @@
 		removeObject(@"panoramaAEMaxPerFrameExposureDelta")
 		removeObject(@"PanoramaFaceAEHighKeyCorrection")
 		removeObject(@"PanoramaFaceAELowKeyCorrection")
-	}
+		[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] error:nil];
+	} else
+		[[NSFileManager defaultManager] removeItemAtPath:@"/System/Library/PrivateFrameworks/ACTFramework.framework/firebreak-Configuration.plist" error:nil];
 
 	[portTypeBack setObject:cameraProperties forKey:port];
 	[tuningParameters setObject:portTypeBack forKey:@"PortTypeBack"];
 	[root setObject:tuningParameters forKey:@"TuningParameters"];
 	[root writeToFile:platformPathWithFile atomically:YES];
-    
-	[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"] error:nil];
     
 	if (isNeedConfigDevice) {
 		NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];

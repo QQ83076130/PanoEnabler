@@ -18,11 +18,7 @@
     	<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-		</dict>
-    	<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>headerCellClass</key>
+			<key>footerCellClass</key>
 			<string>BannerCell</string>
 		</dict>
 		<dict>
@@ -723,7 +719,7 @@ Will Kill Camera process automatically to take effect.</string>
 			<string>Panorama Low Light Boost</string>
 			<key>footerText</key>
 			<string>Same with "LLBPano" (Enable Panorama Low-light mode or Low Light Boost).
-iPod touch 5G users need to install LLBiPT5 version 1.0-4 or above.</string>
+iPod touch 5G users need to install LLBiPT5 tweak first.</string>
 		</dict>
 		<dict>
         	<key>cell</key>
@@ -896,6 +892,8 @@ There are 3 modes of torch mode set in Panorama capture:
 			<string>8MPs</string>
         	<key>defaults</key>
         	<string>com.PS.actHack</string>
+        	<key>set</key>
+			<string>setBoolAndKillCam:specifier:</string>
         	<key>key</key>
         	<string>Pano8MP</string>
         	<key>label</key>
@@ -922,6 +920,8 @@ There are 3 modes of torch mode set in Panorama capture:
 			<string>BPNRs</string>
         	<key>defaults</key>
         	<string>com.PS.actHack</string>
+        	<key>set</key>
+			<string>setBoolAndKillCam:specifier:</string>
         	<key>key</key>
         	<string>BPNR</string>
         	<key>label</key>

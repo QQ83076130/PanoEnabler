@@ -87,7 +87,6 @@
     	NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
 		if (![[NSFileManager defaultManager] fileExistsAtPath:firebreakFile]) {
 			NSLog(@"Adding firebreak-Configuration.plist to system.");
-			NSMutableDictionary *createDict = [[NSMutableDictionary alloc] init];
 			NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
 			setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? 720 : 1936)
 			setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? 960 : 2592)
@@ -99,15 +98,16 @@
 			setPanoProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
 			setPanoProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
 			setPanoProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
-			if (isiOS7)
+			if (isiOS7) {
 				setPanoProperty(insideDict, @"ACTPanoramaBPNRMode", 0)
-			[createDict setObject:insideDict forKey:[self modelAP]];
-			[createDict writeToFile:firebreakFile atomically:YES];
+				NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+        		[[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] withIntermediateDirectories:YES attributes:attr error:nil];
+        	}
+			[insideDict writeToFile:firebreakFile atomically:YES];
 			[insideDict release];
-			[createDict release];
 		}
 	}
-    
+
     NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
     NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
     if (avRoot == nil) return NO;
@@ -138,6 +138,8 @@
 	if (!isiOS7) {
 		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
 		[[NSFileManager defaultManager] removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
+	} else {
+		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/PanoHook.dylib" error:nil];
 	}
 	
 	return YES;

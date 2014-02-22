@@ -1,8 +1,7 @@
 #import "../definitions.h"
 #import <substrate.h>
 #import <CoreFoundation/CoreFoundation.h>
-
-#include <sys/sysctl.h>
+#import <sys/utsname.h>
 
 static NSDictionary *prefDict = nil;
 
@@ -12,18 +11,21 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 }
 
+static NSMutableDictionary *theDict = nil;
+
 static NSString *Model()
 {
-	size_t size;
-	sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-	char *answer = (char *)malloc(size);
-	sysctlbyname("hw.machine", answer, &size, NULL, 0);
-	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
-	free(answer);
-	return results;
+	struct utsname systemInfo;
+	uname(&systemInfo);
+	NSString *modelName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+	return modelName;
 }
 
-static NSMutableDictionary *theDict = nil;
+Boolean (*old__ACT_IsPanoramaSupported)();
+
+Boolean replaced__ACT_IsPanoramaSupported() {
+	return val(prefDict, @"PanoEnabled", NO, BOOLEAN) ? YES : old__ACT_IsPanoramaSupported();
+}
 
 NSMutableDictionary* (*old__ACT_CopyDefaultConfigurationForPanorama)();
 NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama()
@@ -49,6 +51,7 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	MSHookFunction(((BOOL *)MSFindSymbol(NULL, "_ACT_IsPanoramaSupported")), (BOOL *)replaced__ACT_IsPanoramaSupported, (BOOL **)&old__ACT_IsPanoramaSupported);
 	MSHookFunction((NSMutableDictionary *)MSFindSymbol(NULL, "_ACT_CopyDefaultConfigurationForPanorama"), (NSMutableDictionary *)replaced__ACT_CopyDefaultConfigurationForPanorama, (NSMutableDictionary **)&old__ACT_CopyDefaultConfigurationForPanorama);
 	[pool drain];
 }
