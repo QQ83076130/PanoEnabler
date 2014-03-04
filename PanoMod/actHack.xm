@@ -29,7 +29,6 @@
 @property(retain, nonatomic) UISwitch* accessorySwitch;
 @end
 
-// iOS 7+
 @interface CAMFlashButton : UIControl
 @end
 
@@ -99,7 +98,6 @@ static NSString *Model()
 
 %hook AVCaptureFigVideoDevice
 
-// Fix dark problem in Panorama mode
 - (void)setImageControlMode:(int)mode
 {
 	%orig((PanoDarkFix && mode == 4) ? 1 : mode);
@@ -114,7 +112,6 @@ static NSString *Model()
 %new(v@:)
 - (void)torch:(int)type
 {
-// type 1 = on, type -1 = off
 	if ([self.currentDevice hasTorch]) {
 		[self.currentDevice lockForConfiguration:nil];
 		[self.currentDevice setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
@@ -126,7 +123,6 @@ static NSString *Model()
 
 %hook PLCameraView
 
-// Unlock Flash Button after Panorama capture
 - (void)cameraControllerWillStopPanoramaCapture:(id)cameraController
 {
 	%orig;
@@ -138,7 +134,6 @@ static NSString *Model()
 	}
 }
 
-// Lock Flash Button when start Panorama capture
 - (void)cameraControllerDidStartPanoramaCapture:(id)cameraController
 {
 	%orig;
@@ -150,7 +145,6 @@ static NSString *Model()
 	}
 }
 
-// Ability to use Flash button in Panorama mode
 - (BOOL)_flashButtonShouldBeHidden
 {
 	return FMisOn && isPanorama ? NO : %orig;
@@ -164,7 +158,6 @@ static NSString *Model()
 
 %hook PLCameraFlashButton
 
-// Implementing Torch in Flash Button in Panorama mode
 - (void)setFlashMode:(int)mode notifyDelegate:(BOOL)arg2
 {
 	%orig;
@@ -194,7 +187,6 @@ static NSString *Model()
 	}
 }
 
-// Enable access Grid Option in Panorama mode
 - (BOOL)_optionsButtonShouldBeHidden
 {
 	return isPanorama && PanoGridOn ? NO : %orig;
@@ -257,7 +249,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraView
 
-// Ability to enable grid in Panorama mode, iOS 7 specific
 - (BOOL)_shouldHideGridView
 {
 	return isPanorama && PanoGridOn ? NO : %orig;
@@ -268,7 +259,7 @@ static BOOL padTextHook = NO;
 	%orig;
 	PLCameraPanoramaView *panoramaView = MSHookIvar<PLCameraPanoramaView *>(self, "_panoramaView");
 	if (panoramaView != nil) {
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .2*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
 			[panoramaView setCaptureDirection:defaultDirection];
 		});
 	}
@@ -291,7 +282,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraLargeShutterButton
 
-// Changing Panorama button images (For 4-inches iDevices)
 + (id)backgroundPanoOffPressedImageName
 {
 	return bluePanoBtn ? @"PLCameraLargeShutterButtonPanoOnPressed_2only_-568h" : %orig;
@@ -325,19 +315,24 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraView
 
-- (BOOL)_shouldHideFlashButtonForMode:(int)mode
+- (int)_topBarBackgroundStyleForMode:(int)mode
 {
-	return mode == 3 ? NO : %orig;
+	return mode == 3 && FMisOn ? 3 : %orig;
 }
 
-// Add top bar in panorama mode to make the UI looks nice
-- (void)_hideControlsForChangeToMode:(int)mode animated:(BOOL)animated
+- (BOOL)_shouldEnableFlashButton
 {
-	%orig;
-	if (mode == 3) {
-		self._topBar.hidden = NO;
-		[self._topBar setBackgroundStyle:0 animated:YES];
-	}
+	return isPanorama && FMisOn ? YES : %orig;
+}
+
+- (BOOL)_shouldHideFlashButtonForMode:(int)mode
+{
+	return mode == 3 && FMisOn ? NO : %orig;
+}
+
+- (BOOL)_shouldHideTopBarForMode:(int)mode
+{
+	return mode == 3 && FMisOn ? NO : %orig;
 }
 
 %end
@@ -358,7 +353,6 @@ static BOOL padTextHook = NO;
 
 %hook AVCaptureDevice
 
-// Low Light Boost capability for Panorama
 - (BOOL)isLowLightBoostSupported
 {
 	return LLBPano ? YES : %orig;
@@ -372,7 +366,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraController
 
-// Enable Low Light Boost if in Panorama mode
 - (void)_configureSessionWithCameraMode:(int)mode cameraDevice:(int)device
 {
 	%orig;
@@ -468,7 +461,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraController
 
-// Set Panorama Preview Size
 // Default value is {306, 86}
 // iPad recommended maximum width is 576 px
 // iPhone recommended maximum height is 640 px
@@ -477,7 +469,6 @@ static BOOL padTextHook = NO;
 	return CGSizeMake(PreviewWidth, PreviewHeight);
 }
 
-// Detect Camera mode
 - (void)_setCameraMode:(int)mode cameraDevice:(int)device
 {
 	isPanorama = NO;
@@ -493,7 +484,6 @@ static BOOL padTextHook = NO;
 	%orig;
 }
 
-// Turn on Torch when start Panorama capture
 - (void)startPanoramaCapture
 {
 	if (FMisOn) {
@@ -503,7 +493,6 @@ static BOOL padTextHook = NO;
 	%orig;
 }
 
-// Turn off Torch when stop Panorama capture
 - (void)stopPanoramaCapture
 {
 	if (FMisOn) {
@@ -517,7 +506,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraPanoramaView
 
-// Use this method to show or hide instructional text background and ghost image view
 - (void)updateUI
 {
 	%orig;
@@ -531,7 +519,7 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraView
 
-// Super important hooking to save Panoramic image in A4 iDevices !
+// Super important hooking to save Panoramic image in A4 iDevices!
 // But problem is we can get only a thumbnail of it, not fully image
 - (void)cameraController:(PLCameraController *)controller capturedPanorama:(NSDictionary *)panorama error:(NSError *)error
 {
@@ -544,19 +532,16 @@ static BOOL padTextHook = NO;
 	%orig;
 }
 
-// Ability to zoom in Panorama mode
 - (BOOL)_zoomIsAllowed
 {
 	return panoZoom && isPanorama ? YES : %orig;
 }
 
-// Ability to enable grid in Panorama mode
 - (BOOL)_gridLinesShouldBeHidden
 {
 	return isPanorama && PanoGridOn ? NO : %orig;
 }
 
-// Flash and options button orientation or Panorama orientation in iPad should be only 1 (Portrait)
 - (int)_glyphOrientationForCameraOrientation:(int)arg1
 {
 	return (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) ? 1 : %orig;
@@ -566,7 +551,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraLevelView
 
-// Show or Hide Panorama Level Bar
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
@@ -579,7 +563,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraPanoramaBrokenArrowView
 
-// Show or Hide Panorama Arrow
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
@@ -592,7 +575,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraPanoramaTextLabel
 
-// Show/Hide Panorama instructional text
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
@@ -601,7 +583,6 @@ static BOOL padTextHook = NO;
 	return self;
 }
 
-// Hooking Panorama instructional text
 - (void)setText:(NSString *)text
 {
 	%orig((customText && myText != nil) ? myText : text);
