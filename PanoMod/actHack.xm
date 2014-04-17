@@ -1,45 +1,6 @@
 #import "../definitions.h"
 #import <substrate.h>
-#import <AVFoundation/AVFoundation.h>
-#import <UIKit/UIKit.h>
-#import <sys/utsname.h>
-
-@interface PLCameraController
-@property(assign) AVCaptureDevice *currentDevice;
-@property(assign, nonatomic) int cameraMode;
-@end
-
-@interface PLCameraController (Flashorama)
-- (void)torch:(int)type;
-@end
-
-@interface PLCameraSettingsView
-@end
-
-@interface PLCameraFlashButton : UIButton
-- (void)_expandAnimated:(BOOL)animated;
-- (void)_collapseAndSetMode:(int)mode animated:(BOOL)animated;
-@end
-
-@interface PLCameraPanoramaView
-- (void)setCaptureDirection:(int)direction;
-@end
-
-@interface PLCameraSettingsGroupView : UIView
-@property(retain, nonatomic) UISwitch* accessorySwitch;
-@end
-
-@interface CAMFlashButton : UIControl
-@end
-
-@interface CAMTopBar : UIView
-- (void)setBackgroundStyle:(int)style animated:(BOOL)animated;
-@end
-
-@interface PLCameraView
-@property(readonly, assign, nonatomic) CAMFlashButton* _flashButton;
-@property(readonly, assign, nonatomic) CAMTopBar* _topBar;
-@end
+#import "../PanoMod.h"
 
 static BOOL PanoEnabled, PanoDarkFix, bluePanoBtn, FMisOn, LLBPano, Pano8MP, customText, hideArrow, hideLabel, hideLevelBar, panoZoom, PanoGridOn, hideLabelBG, hideGhostImg, BPNR;
 
@@ -55,10 +16,6 @@ static int PreviewHeight = 86;
 static void PanoModLoader()
 {
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
-	#define readBoolOption(prename, name) \
-		name = [[dict objectForKey:prename] boolValue];
-	#define readIntOption(prename, name, defaultValue) \
-		name = [dict objectForKey:prename] ? [[dict objectForKey:prename] intValue] : defaultValue;
 	readBoolOption(@"PanoEnabled", PanoEnabled);
 	readBoolOption(@"PanoDarkFix", PanoDarkFix);
 	readBoolOption(@"bluePanoBtn", bluePanoBtn);
@@ -388,7 +345,7 @@ static BOOL padTextHook = NO;
 - (void)_setupPanoramaForDevice:(id)device output:(id)output options:(id)options
 {
 	%orig;
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .2*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
 		if (!LLBPano)
 			return;
 		[self.currentDevice lockForConfiguration:nil];
@@ -519,19 +476,6 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraView
 
-// Super important hooking to save Panoramic image in A4 iDevices!
-// But problem is we can get only a thumbnail of it, not fully image
-- (void)cameraController:(PLCameraController *)controller capturedPanorama:(NSDictionary *)panorama error:(NSError *)error
-{
-	NSString *model = Model();
-	if (isSlow) {
-		NSMutableDictionary *dict = [panorama mutableCopy];
-		UIImage *image = (UIImage *)[dict objectForKey:@"kPLCameraPhotoPreviewImageKey"];
-		UIImageWriteToSavedPhotosAlbum(image, self, nil, nil);
-	}
-	%orig;
-}
-
 - (BOOL)_zoomIsAllowed
 {
 	return panoZoom && isPanorama ? YES : %orig;
@@ -589,7 +533,6 @@ static BOOL padTextHook = NO;
 }
 
 %end
-
 
 %ctor {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
