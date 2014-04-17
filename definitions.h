@@ -31,3 +31,8 @@
 #define isiOS6 (kCFCoreFoundationVersionNumber == 793.00)
 #define isiOS7 (kCFCoreFoundationVersionNumber >= 847.20)
 #define isiOS70 (isiOS7 && kCFCoreFoundationVersionNumber < 847.23)
+
+#define readBoolOption(prename, name) \
+		name = [[dict objectForKey:prename] boolValue];
+#define readIntOption(prename, name, defaultValue) \
+		name = [dict objectForKey:prename] ? [[dict objectForKey:prename] intValue] : defaultValue;
