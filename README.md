@@ -25,9 +25,8 @@ Tested in iOS 6.0 - 7.1
 IMPORTANT
 ===========
 
-- Doesn't fully working in A4 iDevices due to iOS compatibility reason and you can only get about 30% sizes of Panoramic image because I replace the actual image one that won't be generated with its thumbnail.
 - Thanks for all Beta Testers for this tweak !
-- Doesn't fully working with iOS 7 and non-Panorama-capable devices.
+- Doesn't fully working with iOS 7 and non-Panorama-capable devices yet.
 
 Contact
 ===========
