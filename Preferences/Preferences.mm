@@ -479,11 +479,10 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 {
 	switch (section) {
 		case 0: return @"PanoMod";
-		case 1: return @"Will this fully working on A4 iDevices ?";
-		case 2: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
-		case 3: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
-		case 4: return @"(iOS 7, unsupported devices) Panorama doesn't work in Lockscreen Camera";
-		case 5: return @"Supported iOS Versions";
+		case 1: return @"(iPad) Sometimes camera view flashes frequently when taking Panorama";
+		case 2: return @"Panorama sometimes still dark even with \"Pano Dark Fix\" enabled";
+		case 3: return @"(iOS 7, unsupported devices) Panorama doesn't work in Lockscreen Camera";
+		case 4: return @"Supported iOS Versions";
 	}
 	return nil;
 }
@@ -508,11 +507,10 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 	switch (indexPath.section)
 	{
 		case 0:	[cell.textLabel setText:PanoModBrief]; break;
-		case 1: [cell.textLabel setText:@"The resolution of panoramic images in A4 iDevices are much lower than expect, due to some iOS compatibility reasons, I must use the thumbnail of panoramic image for saving in camera roll instead of using the actual but camera doesn't provide it.\nIt's not possible to make the full resolution because A4 iDevices use AppleH3CamIn driver, which doesn't provide Panorama processor."]; break;
-		case 2: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
-		case 3: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
-		case 4: [cell.textLabel setText:@"The limitation of hooking methods in iOS 7 causes this."]; break;
-		case 5: [cell.textLabel setText:@"iOS 6.0 - 7.1"]; break;
+		case 1: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
+		case 2: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
+		case 3: [cell.textLabel setText:@"The limitation of hooking methods in iOS 7 causes this."]; break;
+		case 4: [cell.textLabel setText:@"iOS 6.0 - 7.1"]; break;
     }
     return cell;
 }
