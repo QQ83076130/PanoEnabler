@@ -3,7 +3,13 @@
 chk=$(uname -m)
 
 if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]] || [[ "$chk" == iPhone6* ]];then
-	rm -f /Library/MobileSubstrate/DynamicLibraries/PanoHook* /Library/MobileSubstrate/DynamicLibraries/BackBoardEnv* /usr/lib/PanoHook7.dylib
+	rm -f /Library/MobileSubstrate/DynamicLibraries/PanoHook*
+	rm -f /Library/MobileSubstrate/DynamicLibraries/BackBoardEnv*
+	rm -f /Library/MobileSubstrate/DynamicLibraries/actHack6*
+	rm -f /usr/lib/PanoHook7.dylib
 else
+	if [[ "$chk" == iPad* ]];then
+		rm -f /Library/MobileSubstrate/DynamicLibraries/actHack6*
+	fi
 	cp /Library/PanoModUI/*.png /System/Library/PrivateFrameworks/PhotoLibrary.framework
 fi
