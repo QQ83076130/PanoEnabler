@@ -1,13 +1,13 @@
-PanoEnabler
+PanoEnabler (PanoMod)
 ===========
 
 Enable Panorama and Customize it.
 
-Compatibility
+Supported Devices
 ===========
 
 - iPhone 4 (1MP Panorama sensor only)
-- iPhone 4S
+- iPhone 4s
 - iPhone 5
 - iPhone 5c
 - iPhone 5s
@@ -27,10 +27,3 @@ IMPORTANT
 
 - Thanks for all Beta Testers for this tweak !
 - Doesn't fully working with iOS 7 and non-Panorama-capable devices yet.
-
-Contact
-===========
-
-iMessage: poomst@me.com
-
-Twitter: @PoomSmart
