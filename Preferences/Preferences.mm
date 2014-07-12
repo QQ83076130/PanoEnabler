@@ -347,6 +347,9 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 			[specs removeObject:self.hideBGSpec];
 			[specs removeObject:self.borderSpec];
 			[specs removeObject:self.borderDescSpec];
+		} else {
+			[specs removeObject:self.BPNRSpec];
+			[specs removeObject:self.BPNRDescSpec];
 		}
 		if (!(isiPhone5Up || isiPod5)) {
 			[specs removeObject:self.blueButtonDescSpec];
@@ -462,7 +465,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-	return 6;
+	return 5;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -652,7 +655,7 @@ static void setAvailable(BOOL available, PSSpecifier *spec)
 		case 13:
 			[cell.textLabel setText:@"Like \"Flashorama\" that allows you to toggle torch using Flash button in Panorama mode.\nSupported for iPhone or iPod with LED-Flash capable."]; break;
 		case 14:
-			[cell.textLabel setText:@"Hiding the white arrow that follows you when you move around to capture Panorama."]; break;
+			[cell.textLabel setText:@"The white arrow that follows you when you move around to capture Panorama, you can hide it or remove its tail animation."]; break;
 		case 15:
 			[cell.textLabel setText:@"Hiding the blue (iOS 6) or yellow (iOS 7) horizontal line at the middle of screen, if you don't want it."]; break;
 		case 16:
