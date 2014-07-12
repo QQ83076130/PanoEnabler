@@ -7,6 +7,7 @@ static NSDictionary *prefDict = nil;
 typedef io_object_t io_registry_entry_t;
 typedef UInt32 IOOptionBits;
 
+//extern "C" CFTypeRef MGCopyAnswer(CFStringRef property);
 extern "C" CFTypeRef IORegistryEntryCreateCFProperty(io_registry_entry_t entry, CFStringRef key, CFAllocatorRef allocator, IOOptionBits options);
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
@@ -28,9 +29,26 @@ CFTypeRef replaced_registryEntry(io_registry_entry_t entry,  CFStringRef key, CF
     return retval;
 }
 
+/*CFTypeRef (*orig_MGCopyAnswer)(CFStringRef key);
+CFTypeRef replace_MGCopyAnswer(CFStringRef key)
+{      
+        //NSLog(@"my hookfunction");                                     
+        return orig_MGCopyAnswer(key);         
+}*/
+
+/*%hook MobileGestaltHelperListener
+
+-(void)getServerAnswerForQuestion:(id)arg1 reply:(^block id)arg2
+{
+%log; %orig;
+}
+
+%end*/
+
 
 __attribute__((constructor)) static void PanoHookInit() {
 	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	MSHookFunction((void *)IORegistryEntryCreateCFProperty, (void *)replaced_registryEntry, (void **)&orig_registryEntry);
+	//MSHookFunction(MGCopyAnswer,replace_MGCopyAnswer,&orig_MGCopyAnswer);
 }

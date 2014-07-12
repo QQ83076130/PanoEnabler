@@ -822,6 +822,20 @@ There are 3 modes of torch mode set in Panorama capture:
         	<string>com.PS.actHack.prefs</string>
       </dict>
       <dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>noArrowTail</string>
+        	<key>label</key>
+        	<string>No Tail Animation</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>isStaticText</key>

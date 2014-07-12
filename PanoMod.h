@@ -8,7 +8,7 @@
 @end
 
 @interface PLCameraController (Flashorama)
-- (void)torch:(int)type;
+- (void)fm_torch:(int)type;
 @end
 
 @interface PLCameraSettingsView
@@ -31,6 +31,7 @@
 @end
 
 @interface CAMFlashButton : UIControl
+@property(assign, nonatomic) int flashMode;
 @end
 
 @interface CAMTopBar : UIView
@@ -38,6 +39,8 @@
 @end
 
 @interface PLCameraView
+@property(assign, nonatomic) int cameraMode;
+@property(assign, nonatomic) int videoFlashMode;
 @property(readonly, assign, nonatomic) CAMFlashButton* _flashButton;
 @property(readonly, assign, nonatomic) CAMTopBar* _topBar;
 @end

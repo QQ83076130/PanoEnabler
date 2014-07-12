@@ -138,9 +138,8 @@
 	if (!isiOS7) {
 		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
 		[[NSFileManager defaultManager] removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
-	} else {
+	} else
 		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/PanoHook.dylib" error:nil];
-	}
 	
 	return YES;
 }
