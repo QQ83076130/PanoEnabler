@@ -2,7 +2,7 @@
 #import <substrate.h>
 #import "../PanoMod.h"
 
-static BOOL PanoEnabled, PanoDarkFix, bluePanoBtn, FMisOn, LLBPano, Pano8MP, customText, hideArrow, hideLabel, hideLevelBar, panoZoom, PanoGridOn, hideLabelBG, hideGhostImg, BPNR;
+static BOOL PanoEnabled, PanoDarkFix, bluePanoBtn, FMisOn, LLBPano, Pano8MP, customText, hideArrow, hideLabel, hideLevelBar, panoZoom, PanoGridOn, hideLabelBG, hideGhostImg, BPNR, noArrowTail;
 
 static BOOL autoOff = NO;
 static BOOL isPanorama = NO;
@@ -31,6 +31,7 @@ static void PanoModLoader()
 	readBoolOption(@"hideGhostImg", hideGhostImg);
 	readBoolOption(@"BPNR", BPNR);
 	readBoolOption(@"Pano8MP", Pano8MP);
+	readBoolOption(@"noArrowTail", noArrowTail);
 	readIntOption(@"defaultDirection", defaultDirection, 1);
 	readIntOption(@"PreviewWidth", PreviewWidth, 306);
 	readIntOption(@"PreviewHeight", PreviewHeight, 86);
@@ -67,7 +68,7 @@ static NSString *Model()
 %hook PLCameraController
 
 %new(v@:)
-- (void)torch:(int)type
+- (void)fm_torch:(int)type
 {
 	if ([self.currentDevice hasTorch]) {
 		[self.currentDevice lockForConfiguration:nil];
@@ -120,7 +121,7 @@ static NSString *Model()
 	%orig;
 	if (FMisOn && isPanorama) {
 		autoOff = (mode == 0);
-		[[%c(PLCameraController) sharedInstance] torch:mode];
+		[[%c(PLCameraController) sharedInstance] fm_torch:mode];
 	}
 }
 
@@ -259,18 +260,35 @@ static BOOL padTextHook = NO;
 
 - (void)_setFlashMode:(int)mode force:(BOOL)force
 {
-	if (self.cameraMode == 3) {
+	%log;
+	if (isPanorama) {
 		MSHookIvar<int>(self, "_cameraMode") = 1;
 		%orig;
 		MSHookIvar<int>(self, "_cameraMode") = 3;
-		return;
-	}
-	%orig;
+	} else
+		%orig;
 }
 
 %end
 
 %hook PLCameraView
+
+- (int)_currentFlashMode
+{
+	return self.cameraMode == 3 ? self.videoFlashMode : %orig;
+}
+
+- (void)flashButtonModeDidChange:(CAMFlashButton *)change
+{
+	if (!isPanorama) {
+		%orig;
+		return;
+	}
+	PLCameraController *cont = MSHookIvar<PLCameraController* >(self, "_cameraController");
+	MSHookIvar<int>(cont, "_cameraMode") = 1;
+	%orig;
+	MSHookIvar<int>(cont, "_cameraMode") = 3;
+}
 
 - (int)_topBarBackgroundStyleForMode:(int)mode
 {
@@ -445,7 +463,7 @@ static BOOL padTextHook = NO;
 {
 	if (FMisOn) {
 		if (autoOff)
-			[self torch:1];
+			[self fm_torch:1];
 	}
 	%orig;
 }
@@ -454,9 +472,18 @@ static BOOL padTextHook = NO;
 {
 	if (FMisOn) {
 		if (autoOff)
-			[self torch:-1];
+			[self fm_torch:-1];
 	}
 	%orig;
+}
+
+%end
+
+%hook PLCameraPanoramaBrokenArrowView
+
+- (CGPathRef)_newTailPiecesPathOfWidth:(float *)width
+{
+	return noArrowTail ? nil : %orig;
 }
 
 %end
