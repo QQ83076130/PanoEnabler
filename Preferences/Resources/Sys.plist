@@ -116,8 +116,6 @@ There are 3 modes of torch mode set in Panorama capture:
 			<string>8MPs</string>
         	<key>defaults</key>
         	<string>com.PS.actHack</string>
-        	<key>set</key>
-			<string>setBoolAndKillCam:specifier:</string>
         	<key>key</key>
         	<string>Pano8MP</string>
         	<key>label</key>
@@ -144,8 +142,6 @@ There are 3 modes of torch mode set in Panorama capture:
 			<string>BPNRs</string>
         	<key>defaults</key>
         	<string>com.PS.actHack</string>
-        	<key>set</key>
-			<string>setBoolAndKillCam:specifier:</string>
         	<key>key</key>
         	<string>BPNR</string>
         	<key>label</key>
