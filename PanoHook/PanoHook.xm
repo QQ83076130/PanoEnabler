@@ -17,7 +17,8 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 }
 
 static CFTypeRef (*orig_registryEntry)(io_registry_entry_t entry,  CFStringRef key, CFAllocatorRef allocator, IOOptionBits options);
-CFTypeRef replaced_registryEntry(io_registry_entry_t entry,  CFStringRef key, CFAllocatorRef allocator, IOOptionBits options) {
+CFTypeRef replaced_registryEntry(io_registry_entry_t entry,  CFStringRef key, CFAllocatorRef allocator, IOOptionBits options)
+{
     CFTypeRef retval = NULL;
     retval = orig_registryEntry(entry, key, allocator, options);
     if (CFEqual(key, CFSTR("camera-panorama"))) {
@@ -27,6 +28,17 @@ CFTypeRef replaced_registryEntry(io_registry_entry_t entry,  CFStringRef key, CF
         }
     }
     return retval;
+}
+
+Boolean (*orig__isDeviceTreePropertyPresent)(const char *root, CFStringRef key);
+Boolean replaced__isDeviceTreePropertyPresent(const char *root, CFStringRef key)
+{
+	if (CFEqual(key, CFSTR("camera-panorama"))) {
+    	if (val(prefDict, @"PanoEnabled", NO, BOOLEAN)) {
+    		return YES;
+        }
+    }
+	return orig__isDeviceTreePropertyPresent(root, key);
 }
 
 /*CFTypeRef (*orig_MGCopyAnswer)(CFStringRef key);
@@ -49,6 +61,8 @@ CFTypeRef replace_MGCopyAnswer(CFStringRef key)
 __attribute__((constructor)) static void PanoHookInit() {
 	prefDict = [[NSDictionary alloc] initWithContentsOfFile:PREF_PATH];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	%init;
 	MSHookFunction((void *)IORegistryEntryCreateCFProperty, (void *)replaced_registryEntry, (void **)&orig_registryEntry);
+	MSHookFunction((void *)MSFindSymbol(NULL, "_isDeviceTreePropertyPresent"), (void *)replaced__isDeviceTreePropertyPresent, (void **)&orig__isDeviceTreePropertyPresent);
 	//MSHookFunction(MGCopyAnswer,replace_MGCopyAnswer,&orig_MGCopyAnswer);
 }

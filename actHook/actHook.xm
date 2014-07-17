@@ -1,7 +1,7 @@
 #import "../definitions.h"
 #import <substrate.h>
 #import <CoreFoundation/CoreFoundation.h>
-#import <sys/utsname.h>
+#include <sys/sysctl.h>
 
 static NSDictionary *prefDict = nil;
 
@@ -13,25 +13,30 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 
 static NSMutableDictionary *theDict = nil;
 
-static NSString *Model()
+static NSString *Model(const char *typeSpecifier)
 {
-	struct utsname systemInfo;
-	uname(&systemInfo);
-	NSString *modelName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-	return modelName;
+	size_t size;
+	sysctlbyname(typeSpecifier, NULL, &size, NULL, 0);
+	char *answer = (char *)malloc(size);
+	sysctlbyname(typeSpecifier, answer, &size, NULL, 0);
+	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
+	free(answer);
+	return results;
 }
 
 Boolean (*old__ACT_IsPanoramaSupported)();
 
-Boolean replaced__ACT_IsPanoramaSupported() {
+Boolean replaced__ACT_IsPanoramaSupported()
+{
 	return val(prefDict, @"PanoEnabled", NO, BOOLEAN) ? YES : old__ACT_IsPanoramaSupported();
 }
 
 NSMutableDictionary* (*old__ACT_CopyDefaultConfigurationForPanorama)();
 NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama()
 {
-	theDict = [old__ACT_CopyDefaultConfigurationForPanorama() mutableCopy];
-	NSString *model = Model();
+
+	theDict = [[NSDictionary dictionaryWithContentsOfFile:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7 ? [NSString stringWithFormat:@"/%@/", [Model("hw.model") stringByReplacingOccurrencesOfString:@"AP" withString:@""]] : @"/"]] mutableCopy];
+	NSString *model = Model("hw.machine");
 	if (is8MPCamDevice && val(prefDict, @"Pano8MP", NO, BOOLEAN)) {
 		setPanoProperty(theDict, @"ACTFrameWidth", 3264)
 		setPanoProperty(theDict, @"ACTFrameHeight", 2448)
@@ -44,6 +49,7 @@ NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama()
 	setPanoProperty(theDict, @"ACTPanoramaPowerBlurSlope", val(prefDict, @"PanoramaPowerBlurSlope", 16, INT))
 	if (isiOS7)
 		setPanoProperty(theDict, @"ACTPanoramaBPNRMode", val(prefDict, @"BPNR", NO, BOOLEAN) ? 1 : 0)
+	NSLog(@"%@", theDict);
 	return theDict;
 }
 

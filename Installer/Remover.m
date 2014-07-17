@@ -45,39 +45,33 @@
 	NSMutableDictionary *portTypeBack = [[tuningParameters objectForKey:@"PortTypeBack"] mutableCopy];
 	if (portTypeBack == nil) return NO;
     
-	NSString *port = nil;
-	NSMutableDictionary *cameraProperties = nil;
-	for (NSString *portName in [portTypeBack allKeys]) {
-		if ([portName hasPrefix:@"0x"]) {
-			port = portName;
-			break;
-		} else
-			return NO;
-	}
-	cameraProperties = [[portTypeBack objectForKey:port] mutableCopy];
-	
-	#define removeObject(key) \
-		if ([cameraProperties objectForKey:key] != nil) \
+	for (NSString *key in [portTypeBack allKeys]) {
+		NSMutableDictionary *cameraProperties = [[portTypeBack objectForKey:key] mutableCopy];
+
+		#define removeObject(key) \
 			[cameraProperties removeObjectForKey:key];
 
-	if (!isiPad) {
-		removeObject(@"panoramaMaxIntegrationTime")
+		if (!isiPad)
+			removeObject(@"panoramaMaxIntegrationTime")
+		removeObject(@"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition")
+		removeObject(@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
+		removeObject(@"panoramaAEMinGain")
+		removeObject(@"panoramaAEMaxGain")
+		if (isiOS7) {
+			removeObject(@"panoramaAELowerExposureDelta")
+			removeObject(@"panoramaAEUpperExposureDelta")
+			removeObject(@"panoramaAEMaxPerFrameExposureDelta")
+			removeObject(@"PanoramaFaceAEHighKeyCorrection")
+			removeObject(@"PanoramaFaceAELowKeyCorrection")
+		}
+		[portTypeBack setObject:cameraProperties forKey:key];
 	}
-	removeObject(@"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition")
-	removeObject(@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
-	removeObject(@"panoramaAEMinGain")
-	removeObject(@"panoramaAEMaxGain")
-	if (isiOS7) {
-		removeObject(@"panoramaAELowerExposureDelta")
-		removeObject(@"panoramaAEUpperExposureDelta")
-		removeObject(@"panoramaAEMaxPerFrameExposureDelta")
-		removeObject(@"PanoramaFaceAEHighKeyCorrection")
-		removeObject(@"PanoramaFaceAELowKeyCorrection")
+	
+	if (isiOS7)
 		[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] error:nil];
-	} else
+	else
 		[[NSFileManager defaultManager] removeItemAtPath:@"/System/Library/PrivateFrameworks/ACTFramework.framework/firebreak-Configuration.plist" error:nil];
-
-	[portTypeBack setObject:cameraProperties forKey:port];
+	
 	[tuningParameters setObject:portTypeBack forKey:@"PortTypeBack"];
 	[root setObject:tuningParameters forKey:@"TuningParameters"];
 	[root writeToFile:platformPathWithFile atomically:YES];

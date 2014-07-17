@@ -260,7 +260,6 @@ static BOOL padTextHook = NO;
 
 - (void)_setFlashMode:(int)mode force:(BOOL)force
 {
-	%log;
 	if (isPanorama) {
 		MSHookIvar<int>(self, "_cameraMode") = 1;
 		%orig;

@@ -53,33 +53,26 @@
 		if (tuningParameters == nil) return NO;
 		NSMutableDictionary *portTypeBack = [[tuningParameters objectForKey:@"PortTypeBack"] mutableCopy];
 		if (portTypeBack == nil) return NO;
-	 
-		NSString *port = nil;
-		NSMutableDictionary *cameraProperties = nil;
-		for (NSString *portName in [portTypeBack allKeys]) {
-			if ([portName hasPrefix:@"0x"]) {
-				port = portName;
-				break;
-			} else
-				return NO;
-		}
-		cameraProperties = [[portTypeBack objectForKey:port] mutableCopy];
+
+		for (NSString *key in [portTypeBack allKeys]) {
+			NSMutableDictionary *cameraProperties = [[portTypeBack objectForKey:key] mutableCopy];
 		
-		setObject(isiPad ? 17 : 10, @"panoramaMaxIntegrationTime")
-		setObject(4096, @"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition")
-		setObject(1000, @"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
-		setObject(1024, @"panoramaAEMinGain")
-		setObject(4096, @"panoramaAEMaxGain")
+			setObject(isiPad ? 17 : 10, @"panoramaMaxIntegrationTime")
+			setObject(4096, @"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition")
+			setObject(1000, @"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
+			setObject(1024, @"panoramaAEMinGain")
+			setObject(4096, @"panoramaAEMaxGain")
 
-		if (isiOS7) {
-			setObject(65, @"panoramaAELowerExposureDelta")
-			setObject(256, @"panoramaAEUpperExposureDelta")
-			setObject(12, @"panoramaAEMaxPerFrameExposureDelta")
-			setObjectFloat(0.34999999999999998, @"PanoramaFaceAEHighKeyCorrection")
-			setObjectFloat(0.29999999999999999, @"PanoramaFaceAELowKeyCorrection")
+			if (isiOS7) {
+				setObject(65, @"panoramaAELowerExposureDelta")
+				setObject(256, @"panoramaAEUpperExposureDelta")
+				setObject(12, @"panoramaAEMaxPerFrameExposureDelta")
+				setObjectFloat(0.34999999999999998, @"PanoramaFaceAEHighKeyCorrection")
+				setObjectFloat(0.29999999999999999, @"PanoramaFaceAELowKeyCorrection")
+			}
+			[portTypeBack setObject:cameraProperties forKey:key];
 		}
 
-		[portTypeBack setObject:cameraProperties forKey:port];
 		[tuningParameters setObject:portTypeBack forKey:@"PortTypeBack"];
 		[root setObject:tuningParameters forKey:@"TuningParameters"];
 		[root writeToFile:platformPathWithFile atomically:YES];
@@ -138,8 +131,7 @@
 	if (!isiOS7) {
 		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
 		[[NSFileManager defaultManager] removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
-	} else
-		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/PanoHook.dylib" error:nil];
+	}
 	
 	return YES;
 }

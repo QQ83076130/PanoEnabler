@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>title</key>
+    <string>System</string>
+    <key>items</key>
+    <array>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>isStaticText</key>
+			<true/>
+			<key>id</key>
+			<string>LLBPanoDesc</string>
+			<key>label</key>
+			<string>Panorama Low Light Boost</string>
+			<key>footerText</key>
+			<string>Same with "LLBPano" (Enable Panorama Low-light mode or Low Light Boost).
+iPod touch 5G users need to install LLBiPT5 tweak first.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>id</key>
+			<string>LLBPanoSwitch</string>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>LLBPano</string>
+        	<key>label</key>
+        	<string>Low-light mode</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>isStaticText</key>
+			<true/>
+			<key>id</key>
+			<string>PanoDarkFixDesc</string>
+			<key>label</key>
+			<string>Fix Dark issue</string>
+			<key>footerText</key>
+			<string>Change Image Control Mode for Panorama with Photo's that give us no dark.
+For iPod touch 5G users, no need to install LLBiPT5.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>id</key>
+			<string>PanoDarkFixSwitch</string>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>PanoDarkFix</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>isStaticText</key>
+			<true/>
+			<key>label</key>
+			<string>Ability to Toggle Torch</string>
+			<key>id</key>
+			<string>FMDesc</string>
+			<key>footerText</key>
+			<string>Same with "Flashorama" (Enable Flash button to toggle Torch in Panorama mode).
+Usages:
+There are 3 modes of torch mode set in Panorama capture:
+1. Off = Turn off torch
+2. On = Turn on torch
+3. Auto = Turn on torch only when you are capturing Panorama.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>key</key>
+        	<string>FMisOn</string>
+        	<key>id</key>
+			<string>FMSwitch</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Panorama 8 MP</string>
+			<key>id</key>
+			<string>8MP</string>
+			<key>footerText</key>
+			<string>Capture Panorama in 8 megapixels sensor.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>id</key>
+			<string>8MPs</string>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>set</key>
+			<string>setBoolAndKillCam:specifier:</string>
+        	<key>key</key>
+        	<string>Pano8MP</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Panorama BPNR Mode</string>
+			<key>id</key>
+			<string>BPNR</string>
+			<key>footerText</key>
+			<string>The mode was introduced in iPhone 5s.</string>
+		</dict>
+		<dict>
+        	<key>cell</key>
+        	<string>PSSwitchCell</string>
+       		<key>default</key>
+        	<false/>
+        	<key>id</key>
+			<string>BPNRs</string>
+        	<key>defaults</key>
+        	<string>com.PS.actHack</string>
+        	<key>set</key>
+			<string>setBoolAndKillCam:specifier:</string>
+        	<key>key</key>
+        	<string>BPNR</string>
+        	<key>label</key>
+        	<string>Enabled</string>
+        	<key>PostNotification</key>
+        	<string>com.PS.actHack.prefs</string>
+      </dict>
+    </array>
+  </dict>
+</plist>

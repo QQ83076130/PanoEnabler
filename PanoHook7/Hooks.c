@@ -10,7 +10,7 @@ CFTypeRef MGCopyAnswer(CFStringRef KeyToCopy, int __unknown);
 CFTypeRef _MGCopyAnswer(CFStringRef KeyToCopy, int __unknown)
 {
 	CFTypeRef ReturnData;
-    if (!CFStringCompare(KeyToCopy, CFSTR("PanoramaCameraCapability"), 0))
+    if (CFStringCompare(KeyToCopy, CFSTR("PanoramaCameraCapability"), 0) == 0)
         return kCFBooleanTrue;
     ReturnData = MGCopyAnswer(KeyToCopy, __unknown);
     return ReturnData;
