@@ -16,8 +16,8 @@
 			<key>label</key>
 			<string>Panorama Low Light Boost</string>
 			<key>footerText</key>
-			<string>Same with "LLBPano" (Enable Panorama Low-light mode or Low Light Boost).
-iPod touch 5G users need to install LLBiPT5 tweak first.</string>
+			<string>Enable Panorama Low-light mode. (LLBPano)
+LLBiPT5 is need to be installed first for iPod touch 5G.</string>
 		</dict>
 		<dict>
         	<key>cell</key>
@@ -74,9 +74,8 @@ For iPod touch 5G users, no need to install LLBiPT5.</string>
 			<key>id</key>
 			<string>FMDesc</string>
 			<key>footerText</key>
-			<string>Same with "Flashorama" (Enable Flash button to toggle Torch in Panorama mode).
-Usages:
-There are 3 modes of torch mode set in Panorama capture:
+			<string>Allow toggling torch in Panorama mode. (Flashorama)
+Flash mode:
 1. Off = Turn off torch
 2. On = Turn on torch
 3. Auto = Turn on torch only when you are capturing Panorama.</string>
