@@ -26,4 +26,3 @@ IMPORTANT
 ===========
 
 - Thanks for all Beta Testers for this tweak !
-- Doesn't fully working with iOS 7 and non-Panorama-capable devices yet.
