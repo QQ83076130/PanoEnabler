@@ -1,6 +1,6 @@
 #import "../definitions.h"
-#import <substrate.h>
 #import "../PanoMod.h"
+#import <sys/utsname.h>
 
 static BOOL PanoEnabled, PanoDarkFix, bluePanoBtn, FMisOn, LLBPano, Pano8MP, customText, hideArrow, hideLabel, hideLevelBar, panoZoom, PanoGridOn, hideLabelBG, hideGhostImg, BPNR, noArrowTail;
 
@@ -52,16 +52,6 @@ static NSString *Model()
 	NSString *modelName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 	return modelName;
 }
-
-
-%hook AVCaptureFigVideoDevice
-
-- (void)setImageControlMode:(int)mode
-{
-	%orig((PanoDarkFix && mode == 4) ? 1 : mode);
-}
-
-%end
 
 %group FlashoramaCommon
 
@@ -390,9 +380,9 @@ static BOOL padTextHook = NO;
 		return %orig;
 	NSMutableDictionary *liveSourceOptions = [[presetPhoto objectForKey:@"LiveSourceOptions"] mutableCopy];
 	NSDictionary *res = [NSDictionary dictionaryWithObjectsAndKeys:
-    									num(3264), @"Width",
+    									Pano8MP ? @(3264) : @(2592), @"Width",
     									@"420f", @"PixelFormatType",
-    									num(2448), @"Height", nil];
+    									Pano8MP ? @(2448) : @(1936), @"Height", nil];
 	[liveSourceOptions setObject:res forKey:@"Sensor"];
 	[liveSourceOptions setObject:res forKey:@"Capture"];
 	[presetPhoto setObject:liveSourceOptions forKey:@"LiveSourceOptions"];
@@ -406,7 +396,16 @@ static BOOL padTextHook = NO;
 
 %end
 
-%group PanoFPS
+%group Common
+
+%hook AVCaptureFigVideoDevice
+
+- (void)setImageControlMode:(int)mode
+{
+	%orig((PanoDarkFix && mode == 4) ? 1 : mode);
+}
+
+%end
 
 %hook AVCaptureSession
 
@@ -420,16 +419,14 @@ static BOOL padTextHook = NO;
 	if (presetPhoto == nil)
 		return %orig;
 	NSMutableDictionary *liveSourceOptions = [[presetPhoto objectForKey:@"LiveSourceOptions"] mutableCopy];
-	[liveSourceOptions setObject:num(val(prefDict, @"PanoramaMaxFrameRate", 24, INT)) forKey:@"MaxFrameRate"];
-	[liveSourceOptions setObject:num(val(prefDict, @"PanoramaMinFrameRate", 15, INT)) forKey:@"MinFrameRate"];
+	[liveSourceOptions setObject:@(val(prefDict, @"PanoramaMaxFrameRate", 24, INT)) forKey:@"MaxFrameRate"];
+	[liveSourceOptions setObject:@(val(prefDict, @"PanoramaMinFrameRate", 15, INT)) forKey:@"MinFrameRate"];
 	[presetPhoto setObject:liveSourceOptions forKey:@"LiveSourceOptions"];
 	[index0 setObject:presetPhoto forKey:@"AVCaptureSessionPresetPhoto2592x1936"];
 	[avCap replaceObjectAtIndex:0 withObject:index0];
 	[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 	return (NSDictionary *)avRoot;
 }
-
-%end
 
 %end
 
@@ -560,6 +557,8 @@ static BOOL padTextHook = NO;
 
 %end
 
+%end
+
 %ctor {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
@@ -581,10 +580,9 @@ static BOOL padTextHook = NO;
 	}
 	%init(LLBPanoCommon);
 	%init(FlashoramaCommon);
-	if (is8MPCamDevice && Pano8MP) {
+	if (is8MPCamDevice) {
 		%init(Pano8MP);
 	}
-	%init(PanoFPS);
-	%init();
+	%init(Common);
 	[pool drain];
 }
