@@ -7,6 +7,7 @@
 
 #include <objc/runtime.h>
 #include <sys/sysctl.h>
+#import <notify.h>
 
 @interface PSViewController (PanoMod)
 - (void)setView:(id)view;
@@ -42,8 +43,8 @@ Then Customize the interface and properties of Panorama with PanoMod."
   															[self reloadSpecifier:self.targetSpec animated:YES]; \
   															[self reloadSpecifier:self.sliderSpec animated:YES];
 
-#define resetValue(intValue, spec, inputSpec) 	[self setPreferenceValue:[NSNumber numberWithInteger:intValue] specifier:self.spec]; \
-												[self setPreferenceValue:[[NSNumber numberWithInteger:intValue] stringValue] specifier:self.inputSpec]; \
+#define resetValue(intValue, spec, inputSpec) 	[self setPreferenceValue:@(intValue) specifier:self.spec]; \
+												[self setPreferenceValue:[@(intValue) stringValue] specifier:self.inputSpec]; \
 												[self reloadSpecifier:self.spec animated:YES]; \
 												[self reloadSpecifier:self.inputSpec animated:YES];
 
@@ -56,24 +57,35 @@ static void openLink(NSString *url)
 }
 				
 #define rangeFix(min, max) \
-	int value2 = [NSNumber numberWithInteger:[value intValue]].intValue; \
+	int value2 = @([value intValue]).intValue; \
 	if (value2 > max) \
-		value = [NSNumber numberWithInteger:max]; \
+		value = @(max); \
 	else if (value2 < min) \
-		value = [NSNumber numberWithInteger:min]; \
-	else value = [NSNumber numberWithInteger:([value intValue])];
+		value = @(min); \
+	else value = @([value intValue]);
 
 #define rangeFixFloat(min, max) \
-	float value2 = [NSNumber numberWithFloat:[value floatValue]].floatValue; \
+	float value2 = @([value floatValue]).floatValue; \
 	if (value2 > max) \
-		value = [NSNumber numberWithFloat:max]; \
+		value = @(max); \
 	else if (value2 < min) \
-		value = [NSNumber numberWithFloat:min]; \
-	else value = [NSNumber numberWithFloat:(round([value floatValue]*100)/100)];
+		value = @(min); \
+	else value = @(round([value floatValue]*100)/100);
 									
 static void setAvailable(BOOL available, PSSpecifier *spec)
 {
-	[spec setProperty:[NSNumber numberWithBool:available] forKey:@"enabled"];
+	[spec setProperty:@(available) forKey:@"enabled"];
+}
+
+static void update()
+{
+	/*if (isiOS7) {
+		CFPropertyListRef settings = CFPreferencesCopyValue(CFSTR("CameraStreamInfo"), CFSTR("com.apple.celestial"), kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+		CFPreferencesSetValue(CFSTR("CameraStreamInfo"), settings, CFSTR("com.apple.celestial"), kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+		CFPreferencesSynchronize(CFSTR("com.apple.celestial"), kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+	}*/
+	system("killall Camera");
+	notify_post("com.ps.panomod.roothelper");
 }
 
 static NSString *Model()
@@ -97,7 +109,7 @@ static NSString *Model()
 - (void)setBoolAndKillCam:(id)value specifier:(PSSpecifier *)spec
 {
 	orig
-	system("killall Camera");
+	update();
 }
 
 - (NSArray *)specifiers
@@ -559,6 +571,7 @@ static NSString *Model()
 	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d")
 	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d")
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	update();
 }
 
 - (void)selectOption
@@ -612,6 +625,7 @@ static NSString *Model()
 	}
 	orig
 	updateValue(maxWidthSpec, maxWidthSliderSpec, @"Current Width: %d pixels")
+	update();
 }
 
 - (void)setPreviewWidth:(id)value specifier:(PSSpecifier *)spec
@@ -619,6 +633,7 @@ static NSString *Model()
 	rangeFixFloat(100, 576)
 	orig
 	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"Current Width: %.2f pixels")
+	update();
 }
 
 - (void)setPreviewHeight:(id)value specifier:(PSSpecifier *)spec
@@ -626,6 +641,7 @@ static NSString *Model()
 	rangeFixFloat(40, 576)
 	orig
 	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"Current Height: %.2f pixels")
+	update();
 }
 
 
@@ -639,6 +655,7 @@ static NSString *Model()
 	orig
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"Current Framerate: %d FPS")
 	updateValue(minFPSSpec, minFPSSliderSpec, @"Current Framerate: %d FPS")
+	update();
 }
 
 - (void)setMaxFPS:(id)value specifier:(PSSpecifier *)spec
@@ -651,6 +668,7 @@ static NSString *Model()
 	orig
 	updateValue(minFPSSpec, minFPSSliderSpec, @"Current Framerate: %d FPS")
 	updateValue(maxFPSSpec, maxFPSSliderSpec, @"Current Framerate: %d FPS")
+	update();
 }
 
 - (void)setPanoramaBufferRingSize:(id)value specifier:(PSSpecifier *)spec
@@ -658,6 +676,7 @@ static NSString *Model()
 	rangeFix(1, 30)
 	orig
 	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"Current Value: %d")
+	update();
 }
 
 - (void)setPanoramaPowerBlurBias:(id)value specifier:(PSSpecifier *)spec
@@ -665,6 +684,7 @@ static NSString *Model()
 	rangeFix(1, 60)
 	orig
 	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d")
+	update();
 }
 
 - (void)setPanoramaPowerBlurSlope:(id)value specifier:(PSSpecifier *)spec
@@ -672,6 +692,7 @@ static NSString *Model()
 	rangeFix(1, 60)
 	orig
 	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d")
+	update();
 }
 
 - (NSArray *)specifiers
@@ -823,6 +844,12 @@ static NSString *Model()
 
 @implementation PanoSysController
 
+- (void)update:(id)value specifier:(PSSpecifier *)spec
+{
+	orig
+	update();
+}
+
 - (NSArray *)specifiers
 {
 	if (_specifiers == nil) {
@@ -842,7 +869,7 @@ static NSString *Model()
 		}
         
 		NSString *model = Model();
-		if (!isiOS7) {
+		if (!isiOS7 || isiPhone5s) {
 			[specs removeObject:self.BPNRSpec];
 			[specs removeObject:self.BPNRDescSpec];
 		}
