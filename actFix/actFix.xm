@@ -1,6 +1,6 @@
 #import "../definitions.h"
-#import <substrate.h>
 #import "../PanoMod.h"
+#import <substrate.h>
 
 static BOOL shouldHook = NO;
 static BOOL PanoEnabled;
