@@ -4,6 +4,8 @@ declare -a cydia
 cydia=($CYDIA)
 chk=$(uname -m)
 
+launchctl unload /Library/LaunchDaemons/com.ps.panomod.helper.plist
+
 if [[ "$chk" != iPod5* ]] && [[ "$chk" != iPhone4* ]] && [[ "$chk" != iPhone5* ]] && [[ "$chk" != iPhone6* ]];then
 	if [[ $1 == remove ]]; then
    		PanoRemover
