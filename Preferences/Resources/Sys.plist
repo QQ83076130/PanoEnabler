@@ -117,6 +117,8 @@ Flash mode:
         	<string>com.PS.actHack</string>
         	<key>key</key>
         	<string>Pano8MP</string>
+        	<key>set</key>
+        	<string>update:specifier:</string>
         	<key>label</key>
         	<string>Enabled</string>
         	<key>PostNotification</key>
