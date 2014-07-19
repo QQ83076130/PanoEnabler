@@ -25,9 +25,7 @@
 #define PreferencesChangedNotification "com.PS.actHack.prefs"
 #define PREF_PATH @"/var/mobile/Library/Preferences/com.PS.actHack.plist"
 #define val(dict, key, defaultValue, type) ([dict objectForKey:key] ? [[dict objectForKey:key] type] : defaultValue)
-#define num(intValue) [NSNumber numberWithInt:intValue]
-#define FLOAT(floatValue) [NSNumber numberWithFloat:floatValue]
-#define setPanoProperty(dict, key, intValue) [dict setObject:num(intValue) forKey:key];
+#define setIntegerProperty(dict, key, intValue) [dict setObject:@(intValue) forKey:key];
 #define isiOS6 (kCFCoreFoundationVersionNumber == 793.00)
 #define isiOS7 (kCFCoreFoundationVersionNumber >= 847.20)
 #define isiOS70 (isiOS7 && kCFCoreFoundationVersionNumber < 847.23)
