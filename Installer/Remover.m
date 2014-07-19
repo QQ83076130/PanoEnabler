@@ -92,6 +92,7 @@
 		[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
 		[avRoot writeToFile:avSession atomically:YES];
 	}
+	
 	return YES;
 }
 
@@ -111,7 +112,8 @@
 @end
 
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char **argv, char **envp)
+{
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	PanoRemover *remover = [[PanoRemover alloc] init];
 	BOOL success = [remover remove];

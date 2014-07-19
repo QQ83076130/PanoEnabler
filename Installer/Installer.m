@@ -38,12 +38,10 @@
 	NSString *modelFile = [self modelFile];
 	
 	#define setObject(value, key) \
-		if ([cameraProperties objectForKey:key] == nil) \
-			[cameraProperties setObject:num(value) forKey:key];
+		[cameraProperties setObject:@(value) forKey:key];
 
 	#define setObjectFloat(value, key) \
-		if ([cameraProperties objectForKey:key] == nil) \
-			[cameraProperties setObject:FLOAT(value) forKey:key];
+		[cameraProperties setObject:@(value) forKey:key];
 
 	if (isNeedConfigDevice || isNeedConfigDevice7) {
 		NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
@@ -81,18 +79,18 @@
 		if (![[NSFileManager defaultManager] fileExistsAtPath:firebreakFile]) {
 			NSLog(@"Adding firebreak-Configuration.plist to system.");
 			NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
-			setPanoProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? 720 : 1936)
-			setPanoProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? 960 : 2592)
-			setPanoProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800)
-			setPanoProperty(insideDict, @"ACTPanoramaDefaultDirection", 1)
-			setPanoProperty(insideDict, @"ACTPanoramaMaxFrameRate", 15)
-			setPanoProperty(insideDict, @"ACTPanoramaMinFrameRate", 15)
-			setPanoProperty(insideDict, @"ACTPanoramaBufferRingSize", 6) 
-			setPanoProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
-			setPanoProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
-			setPanoProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
+			setIntegerProperty(insideDict, @"ACTFrameHeight", isNeedConfigDevice ? 720 : 1936)
+			setIntegerProperty(insideDict, @"ACTFrameWidth", isNeedConfigDevice ? 960 : 2592)
+			setIntegerProperty(insideDict, @"ACTPanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800)
+			setIntegerProperty(insideDict, @"ACTPanoramaDefaultDirection", 1)
+			setIntegerProperty(insideDict, @"ACTPanoramaMaxFrameRate", 15)
+			setIntegerProperty(insideDict, @"ACTPanoramaMinFrameRate", 15)
+			setIntegerProperty(insideDict, @"ACTPanoramaBufferRingSize", 6) 
+			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
+			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
+			setIntegerProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
 			if (isiOS7) {
-				setPanoProperty(insideDict, @"ACTPanoramaBPNRMode", 0)
+				setIntegerProperty(insideDict, @"ACTPanoramaBPNRMode", 0)
 				NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
         		[[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] withIntermediateDirectories:YES attributes:attr error:nil];
         	}
@@ -115,9 +113,9 @@
 	NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
 	if (isNeedConfigDevice) {
 		NSDictionary *res = [NSDictionary dictionaryWithObjectsAndKeys:
-    									num(960), @"Width",
+    									@960, @"Width",
     									@"420f", @"PixelFormatType",
-    									num(720), @"Height", nil];
+    									@720, @"Height", nil];
 		[liveSourceOptions setObject:res forKey:@"Sensor"];
 		[liveSourceOptions setObject:res forKey:@"Capture"];
 		[liveSourceOptions setObject:res forKey:@"Preview"];
@@ -152,7 +150,8 @@
 @end
 
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char **argv, char **envp)
+{
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	PanoInstaller *installer = [[PanoInstaller alloc] init];
 	BOOL success = [installer install];

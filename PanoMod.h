@@ -1,6 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
-#import <sys/utsname.h>
+#include <substrate.h>
 
 @interface PLCameraController
 @property(assign) AVCaptureDevice *currentDevice;
@@ -11,7 +11,7 @@
 - (void)fm_torch:(int)type;
 @end
 
-@interface PLCameraSettingsView
+@interface PLCameraSettingsView : UIView
 @end
 
 @interface PLIOSurfaceData : NSData
