@@ -207,8 +207,14 @@ static BOOL padTextHook = NO;
 	%orig;
 	PLCameraPanoramaView *panoramaView = MSHookIvar<PLCameraPanoramaView *>(self, "_panoramaView");
 	if (panoramaView != nil) {
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .2*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-			[panoramaView setCaptureDirection:defaultDirection];
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+			[panoramaView _arrowWasTapped:nil];
+			int direction = MSHookIvar<int>(panoramaView, "_direction");
+			if (defaultDirection != direction) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.7*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+					[panoramaView _arrowWasTapped:nil];
+				});
+			}
 		});
 	}
 }
