@@ -90,7 +90,7 @@
 			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
 			setIntegerProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
 			if (isiOS7) {
-				setIntegerProperty(insideDict, @"ACTPanoramaBPNRMode", 0)
+				setIntegerProperty(insideDict, @"ACTPanoramaBPNRMode", 1)
 				NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
         		[[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] withIntermediateDirectories:YES attributes:attr error:nil];
         	}

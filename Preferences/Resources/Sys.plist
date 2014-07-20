@@ -124,6 +124,14 @@ Flash mode:
         	<key>PostNotification</key>
         	<string>com.PS.actHack.prefs</string>
       </dict>
+      <!--<dict>
+      	<key>cell</key>
+      	<string>PSButtonCell</string>
+      	<key>action</key>
+      	<string>fixCelestial:</string>
+      	<key>label</key>
+      	<string>Fix</string>
+      </dict>-->
       <dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
@@ -138,7 +146,7 @@ Flash mode:
         	<key>cell</key>
         	<string>PSSwitchCell</string>
        		<key>default</key>
-        	<false/>
+        	<true/>
         	<key>id</key>
 			<string>BPNRs</string>
         	<key>defaults</key>
