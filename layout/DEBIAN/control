@@ -2,10 +2,10 @@ Author: PoomSmart & Pix3lDemon <poomst@hotmail.com>
 Maintainer: BigBoss <bigboss@thebigboss.org>
 Name: PanoMod
 Package: org.thebigboss.panomod
-Depends: preferenceloader, firmware (>= 5.0), mobilesubstrate, gsc.still-camera
+Depends: preferenceloader, mobilesubstrate, gsc.still-camera, firmware (>= 5.0), firmware (<< 8.0)
 Conflicts: org.thebigboss.flashorama, org.thebigboss.betterpanobutton, org.thebigboss.llbpano, cy+model.iphone (= 2.1)
 Section: Tweaks
-Version: 1.3
+Version: 1.4
 Architecture: iphoneos-arm
 Description: Enable Panorama and customize it.
 Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=panomodDp
