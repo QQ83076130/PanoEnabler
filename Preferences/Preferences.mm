@@ -546,7 +546,7 @@ static NSString *Model()
 {
 	NSString *model = Model();
 	resetValue(isNeedConfigDevice ? 4000 : 10800, maxWidthSliderSpec, maxWidthInputSpec)
-	resetValue((isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
+	resetValue((isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
 	resetValue(15, minFPSSliderSpec, minFPSInputSpec)
 	resetValue((isiPhone5Up || isiPad3or4) ? 5 : 7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
 
@@ -848,6 +848,13 @@ static NSString *Model()
 {
 	orig
 	update();
+}
+
+- (void)fixCelestial:(id)param
+{
+	//CFPropertyListRef settings = CFPreferencesCopyValue(CFSTR("CameraStreamInfo"), CFSTR("com.apple.celestial"), kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+	notify_post("com.ps.panomod.flush");
+	//system("killall mediaserverd");
 }
 
 - (NSArray *)specifiers
