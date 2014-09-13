@@ -106,12 +106,12 @@
 	if (avCap == nil) return NO;
 	NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
 	if (index0 == nil) return NO;
-	NSDictionary *presetPhoto = [index0 objectForKey:@"AVCaptureSessionPresetPhoto"];
-	if (presetPhoto == nil) return NO;
    	
-	NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
-	NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
 	if (isNeedConfigDevice) {
+		NSDictionary *presetPhoto = [index0 objectForKey:@"AVCaptureSessionPresetPhoto"];
+		if (presetPhoto == nil) return NO;
+		NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
+		NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
 		NSDictionary *res = [NSDictionary dictionaryWithObjectsAndKeys:
     									@960, @"Width",
     									@"420f", @"PixelFormatType",
