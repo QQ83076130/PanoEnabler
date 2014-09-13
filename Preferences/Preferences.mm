@@ -132,29 +132,42 @@ static NSString *Model()
 
 @end
 
-@interface BannerCell : PSTableCell <UITextViewDelegate> {
-	UIView *headerImageViewContainer;
-	UIImageView *headerImageView;
+@interface BannerCell : PSTableCell {
+	UILabel *tweakName;
 }
 @end
  
 @implementation BannerCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)identifier specifier:(PSSpecifier *)specifier
-{	
-	if (self == [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier specifier:specifier]) {
-		headerImageViewContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-		headerImageViewContainer.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-			headerImageViewContainer.layer.cornerRadius = 5;
+- (id)initWithSpecifier:(PSSpecifier *)specifier
+{
+	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Banner" specifier:specifier];
+	if (self) {
+		int width = [[UIScreen mainScreen] bounds].size.width;
+		CGRect frame = CGRectMake(0, -10, width, 60);
 
-		headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"banner.png" inBundle:[NSBundle bundleWithPath:@"/Library/PreferenceBundles/PanoPreferences.bundle"]]];
-		headerImageViewContainer.backgroundColor = [UIColor clearColor];
-		headerImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		[headerImageViewContainer addSubview:headerImageView];
-		[self addSubview:headerImageViewContainer];
+		tweakName = [[UILabel alloc] initWithFrame:frame];
+		[tweakName setNumberOfLines:1];
+		tweakName.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+		tweakName.font = [UIFont fontWithName:@"HelveticaNeue" size:60];
+		[tweakName setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.49 alpha:1]];
+		[tweakName setShadowColor:[UIColor whiteColor]];
+		[tweakName setShadowOffset:CGSizeMake(0, 1)];
+		[tweakName setText:@"PanoMod"];
+		[tweakName setBackgroundColor:[UIColor clearColor]];
+		tweakName.textAlignment = NSTextAlignmentCenter;
+		[self addSubview:tweakName];
 	}
-	return self;
+    return self;
+}
+
+- (void)layoutSubviews
+{
+}
+
+- (CGFloat)preferredHeightForWidth:(CGFloat)arg1
+{
+    return 70;
 }
 
 @end
