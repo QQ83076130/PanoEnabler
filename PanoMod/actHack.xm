@@ -53,23 +53,37 @@ static NSString *Model()
 	return modelName;
 }
 
-%group FlashoramaCommon
+static void enableLLB(id self)
+{
+	if (!LLBPano)
+		return;
+	[[self currentDevice] lockForConfiguration:nil];
+	if ([[self currentDevice] isLowLightBoostSupported])
+		[[self currentDevice] setAutomaticallyEnablesLowLightBoostWhenAvailable:YES];
+	[[self currentDevice] unlockForConfiguration];
+}
+
+%group FlashoramaCommonPre8
 
 %hook PLCameraController
 
-%new(v@:)
-- (void)fm_torch:(int)type
+- (void)startPanoramaCapture
 {
-	if ([self.currentDevice hasTorch]) {
-		[self.currentDevice lockForConfiguration:nil];
-		[self.currentDevice setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
-		[self.currentDevice unlockForConfiguration];
+	if (FMisOn) {
+		if (autoOff)
+			[self fm_torch:1];
 	}
+	%orig;
 }
 
 %end
 
 %hook PLCameraView
+
+- (BOOL)_flashButtonShouldBeHidden
+{
+	return FMisOn && isPanorama ? NO : %orig;
+}
 
 - (void)cameraControllerWillStopPanoramaCapture:(id)cameraController
 {
@@ -93,9 +107,22 @@ static NSString *Model()
 	}
 }
 
-- (BOOL)_flashButtonShouldBeHidden
+%end
+
+%end
+
+%group FlashoramaCommon
+
+%hook CAMERACONTROLLER
+
+%new(v@:)
+- (void)fm_torch:(int)type
 {
-	return FMisOn && isPanorama ? NO : %orig;
+	if ([[self currentDevice] hasTorch]) {
+		[[self currentDevice] lockForConfiguration:nil];
+		[[self currentDevice] setTorchMode:((type == 1) ? AVCaptureTorchModeOn : AVCaptureTorchModeOff)];
+		[[self currentDevice] unlockForConfiguration];
+	}
 }
 
 %end
@@ -156,7 +183,7 @@ static NSString *Model()
 
 %end
 
-%group actHackiOS7Pad
+%group actHackiOS7UpPad
 
 static BOOL padTextHook = NO;
 
@@ -170,7 +197,7 @@ static BOOL padTextHook = NO;
 
 %end
 
-%hook PLCameraPanoramaView
+%hook PANORAMAVIEW
 
 - (void)_updateInstructionalText:(NSString *)text
 {
@@ -180,7 +207,7 @@ static BOOL padTextHook = NO;
 
 %end
 
-%hook PLCameraView
+%hook CAMERAVIEW
 
 - (void)_createOrDestroyPanoramaViewIfNecessary
 {
@@ -193,9 +220,9 @@ static BOOL padTextHook = NO;
 
 %end
 
-%group actHackiOS7
+%group actHackiOS7Up
 
-%hook PLCameraView
+%hook CAMERAVIEW
 
 - (BOOL)_shouldHideGridView
 {
@@ -205,14 +232,15 @@ static BOOL padTextHook = NO;
 - (void)_createOrDestroyPanoramaViewIfNecessary
 {
 	%orig;
-	PLCameraPanoramaView *panoramaView = MSHookIvar<PLCameraPanoramaView *>(self, "_panoramaView");
+	id panoramaView = nil;
+	panoramaView = isiOS8 ? (id)MSHookIvar<CAMPanoramaView *>(self, "_panoramaView") : (id)MSHookIvar<PLCameraPanoramaView *>(self, "_panoramaView");
 	if (panoramaView != nil) {
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.7*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
 			[panoramaView _arrowWasTapped:nil];
 			int direction = MSHookIvar<int>(panoramaView, "_direction");
 			if (defaultDirection != direction) {
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.7*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-					[panoramaView _arrowWasTapped:nil];
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+					[(id)panoramaView _arrowWasTapped:nil];
 				});
 			}
 		});
@@ -252,7 +280,37 @@ static BOOL padTextHook = NO;
 
 %group FlashoramaiOS7
 
-%hook PLCameraController
+%hook PLCameraView
+
+- (void)flashButtonModeDidChange:(CAMFlashButton *)change
+{
+	if (!isPanorama) {
+		%orig;
+		return;
+	}
+	PLCameraController *cont = MSHookIvar<PLCameraController* >(self, "_cameraController");
+	MSHookIvar<int>(cont, "_cameraMode") = 1;
+	%orig;
+	MSHookIvar<int>(cont, "_cameraMode") = 3;
+}
+
+%end
+
+%hook CAMFlashButton
+
+- (void)setFlashMode:(int)mode notifyDelegate:(BOOL)arg2
+{
+	%orig;
+	autoOff = (mode == 0);
+}
+
+%end
+
+%end
+
+%group FlashoramaiOS7Up
+
+%hook CAMERACONTROLLER
 
 - (void)_setFlashMode:(int)mode force:(BOOL)force
 {
@@ -266,23 +324,11 @@ static BOOL padTextHook = NO;
 
 %end
 
-%hook PLCameraView
+%hook CAMERAVIEW
 
 - (int)_currentFlashMode
 {
-	return self.cameraMode == 3 ? self.videoFlashMode : %orig;
-}
-
-- (void)flashButtonModeDidChange:(CAMFlashButton *)change
-{
-	if (!isPanorama) {
-		%orig;
-		return;
-	}
-	PLCameraController *cont = MSHookIvar<PLCameraController* >(self, "_cameraController");
-	MSHookIvar<int>(cont, "_cameraMode") = 1;
-	%orig;
-	MSHookIvar<int>(cont, "_cameraMode") = 3;
+	return [self cameraMode] == 3 ? [self videoFlashMode] : %orig;
 }
 
 - (int)_topBarBackgroundStyleForMode:(int)mode
@@ -307,12 +353,43 @@ static BOOL padTextHook = NO;
 
 %end
 
+%end
+
+%group FlashoramaiOS8
+
 %hook CAMFlashButton
 
-- (void)setFlashMode:(int)mode notifyDelegate:(BOOL)arg2
+- (void)setFlashMode:(int)mode
 {
 	%orig;
 	autoOff = (mode == 0);
+}
+
+%end
+
+%hook CAMCameraView
+
+- (void)_capturePanorama
+{
+	if (FMisOn) {
+		if (autoOff)
+			[[%c(CAMCaptureController) sharedInstance] fm_torch:1];
+	}
+	%orig;
+}
+
+%new
+- (void)cameraControllerWillStopPanoramaCapture:(id)cameraController
+{
+	if (FMisOn && autoOff)
+		[self._flashButton setUserInteractionEnabled:YES];
+}
+
+%new
+- (void)cameraControllerDidStartPanoramaCapture:(id)cameraController
+{
+	if (FMisOn && autoOff)
+		[self._flashButton setUserInteractionEnabled:NO];
 }
 
 %end
@@ -340,10 +417,7 @@ static BOOL padTextHook = NO;
 {
 	%orig;
 	if (mode == 2 && device == 0) {
-		[self.currentDevice lockForConfiguration:nil];
-		if ([self.currentDevice isLowLightBoostSupported])
-			[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:YES];
-		[self.currentDevice unlockForConfiguration];
+		enableLLB(self);
 	}
 }
 
@@ -359,13 +433,22 @@ static BOOL padTextHook = NO;
 {
 	%orig;
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .2*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-		if (!LLBPano)
-			return;
-		[self.currentDevice lockForConfiguration:nil];
-		if ([self.currentDevice isLowLightBoostSupported])
-			[self.currentDevice setAutomaticallyEnablesLowLightBoostWhenAvailable:YES];
-		[self.currentDevice unlockForConfiguration];
+		enableLLB(self);
 	});
+}
+
+%end
+
+%end
+
+%group LLBPanoiOS8
+
+%hook CAMCaptureController
+
+- (void)_deviceConfigurationForPanoramaOptions:(NSDictionary *)options captureDevice:(id)device deviceFormat:(id *)format minFrameDuration:(id *)min maxFrameDuration:(id *)max
+{
+	%orig;
+	enableLLB(self);
 }
 
 %end
@@ -436,7 +519,7 @@ static BOOL padTextHook = NO;
 
 %end
 
-%hook PLCameraController
+%hook CAMERACONTROLLER
 
 // Default value is {306, 86}
 // iPad recommended maximum width is 576 px
@@ -450,22 +533,13 @@ static BOOL padTextHook = NO;
 {
 	isPanorama = NO;
 	if (device == 0) {
-		if (isiOS7) {
+		if (isiOS7Up) {
 			if (mode == 3)
 				isPanorama = YES;
 		} else {
 			if (mode == 2)
 				isPanorama = YES;
 		}
-	}
-	%orig;
-}
-
-- (void)startPanoramaCapture
-{
-	if (FMisOn) {
-		if (autoOff)
-			[self fm_torch:1];
 	}
 	%orig;
 }
@@ -477,6 +551,33 @@ static BOOL padTextHook = NO;
 			[self fm_torch:-1];
 	}
 	%orig;
+}
+
+%end
+
+%hook CAMERAVIEW
+
+- (BOOL)_zoomIsAllowed
+{
+	return panoZoom && isPanorama ? YES : %orig;
+}
+
+- (int)_glyphOrientationForCameraOrientation:(int)arg1
+{
+	return (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) ? 1 : %orig;
+}
+
+%end
+
+%end
+
+%group CommonPre8
+
+%hook PLCameraView
+
+- (BOOL)_gridLinesShouldBeHidden
+{
+	return isPanorama && PanoGridOn ? NO : %orig;
 }
 
 %end
@@ -503,49 +604,6 @@ static BOOL padTextHook = NO;
 
 %end
 
-%hook PLCameraView
-
-- (BOOL)_zoomIsAllowed
-{
-	return panoZoom && isPanorama ? YES : %orig;
-}
-
-- (BOOL)_gridLinesShouldBeHidden
-{
-	return isPanorama && PanoGridOn ? NO : %orig;
-}
-
-- (int)_glyphOrientationForCameraOrientation:(int)arg1
-{
-	return (isPanorama && (FMisOn || PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) ? 1 : %orig;
-}
-
-%end
-
-%hook PLCameraLevelView
-
-- (id)initWithFrame:(struct CGRect)frame
-{
-	self = %orig;
-	if (self)
-		[self setHidden:hideLevelBar];
-	return self;
-}
-
-%end
-
-%hook PLCameraPanoramaBrokenArrowView
-
-- (id)initWithFrame:(struct CGRect)frame
-{
-	self = %orig;
-	if (self)
-		[self setHidden:hideArrow];
-	return self;
-}
-
-%end
-
 %hook PLCameraPanoramaTextLabel
 
 - (id)initWithFrame:(struct CGRect)frame
@@ -563,6 +621,63 @@ static BOOL padTextHook = NO;
 
 %end
 
+%hook PLCameraLevelView
+
+- (id)initWithFrame:(struct CGRect)frame
+{
+	self = %orig;
+	if (self)
+		[self setHidden:hideLevelBar];
+	return self;
+}
+
+%end
+
+%end
+
+%group Common8
+
+%hook CAMPanoramaArrowView
+
+- (id)initWithFrame:(struct CGRect)frame
+{
+	self = %orig;
+	if (self)
+		[self setHidden:hideArrow];
+	return self;
+}
+
+%end
+
+%hook CAMPanoramaLabel
+
+- (id)initWithFrame:(struct CGRect)frame
+{
+	self = %orig;
+	if (self)
+		[self setHidden:hideLabel];
+	return self;
+}
+
+- (void)setText:(NSString *)text
+{
+	%orig((customText && myText != nil) ? myText : text);
+}
+
+%end
+
+%hook CAMPanoramaLevelView
+
+- (id)initWithFrame:(struct CGRect)frame
+{
+	self = %orig;
+	if (self)
+		[self setHidden:hideLevelBar];
+	return self;
+}
+
+%end
+
 %end
 
 %ctor {
@@ -570,6 +685,8 @@ static BOOL padTextHook = NO;
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, CFSTR(PreferencesChangedNotification), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	PanoModLoader();
 	NSString *model = Model();
+	Class CameraController = isiOS8 ? objc_getClass("CAMCaptureController") : objc_getClass("PLCameraController");
+	Class CameraView = isiOS8 ? objc_getClass("CAMCameraView") : objc_getClass("PLCameraView");
 	if (isiOS6) {
 		%init(actHackiOS6);
 		%init(FlashoramaiOS6);
@@ -577,18 +694,32 @@ static BOOL padTextHook = NO;
 		%init(LLBPanoiOS6);
 	}
 	else if (isiOS7) {
-		%init(actHackiOS7);
-		if (isiPad) {
-			%init(actHackiOS7Pad);
-		}
 		%init(FlashoramaiOS7);
 		%init(LLBPanoiOS7);
 	}
+	else if (isiOS8) {
+		%init(Common8);
+		%init(FlashoramaiOS8);
+		%init(LLBPanoiOS8);
+	}
+	
+	if (isiOS67) {
+		%init(FlashoramaCommonPre8);
+		%init(CommonPre8);
+	}
+	if (isiOS78) {
+		%init(actHackiOS7Up, CAMERAVIEW = CameraView);
+		%init(FlashoramaiOS7Up, CAMERAVIEW = CameraView, CAMERACONTROLLER = CameraController);
+		if (isiPad) {
+			%init(actHackiOS7UpPad, CAMERAVIEW = CameraView, PANORAMAVIEW = isiOS8 ? objc_getClass("CAMPanoramaView") : objc_getClass("PLCameraPanoramaView"));
+		}
+	}
+
 	%init(LLBPanoCommon);
-	%init(FlashoramaCommon);
+	%init(FlashoramaCommon, CAMERACONTROLLER = CameraController);
 	if (is8MPCamDevice) {
 		%init(Pano8MP);
 	}
-	%init(Common);
+	%init(Common, CAMERAVIEW = CameraView, CAMERACONTROLLER = CameraController);
 	[pool drain];
 }

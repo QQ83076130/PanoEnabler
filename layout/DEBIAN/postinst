@@ -17,3 +17,5 @@ else
 	fi
 	cp /Library/PanoModUI/*.png /System/Library/PrivateFrameworks/PhotoLibrary.framework
 fi
+
+killall RootHelper

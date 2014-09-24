@@ -29,33 +29,39 @@
 		</dict>
       <dict>
       		<key>cell</key>
-      		<string>PSLinkListCell</string>
-      		<key>detail</key>
+      		<string>PSButtonCell</string>
+      		<key>id</key>
       		<string>PanoGuideViewController</string>
       		<key>label</key>
 			<string>ℹ Guide</string>
 			<key>name</key>
 			<string>Guide</string>
+			<key>action</key>
+			<string>showController:</string>
       </dict>
       <dict>
       		<key>cell</key>
-      		<string>PSLinkListCell</string>
-      		<key>detail</key>
+      		<string>PSButtonCell</string>
+      		<key>id</key>
       		<string>PanoFAQViewController</string>
       		<key>label</key>
 			<string>❓ FAQ</string>
 			<key>name</key>
 			<string>FAQ</string>
+			<key>action</key>
+			<string>showController:</string>
       </dict>
       <dict>
       		<key>cell</key>
-      		<string>PSLinkListCell</string>
-      		<key>detail</key>
+      		<string>PSButtonCell</string>
+      		<key>id</key>
       		<string>PanoCreditsViewController</string>
       		<key>label</key>
-			<string>📳 Thanks</string>
+			<string>❤ Thanks</string>
 			<key>name</key>
 			<string>Thanks</string>
+			<key>action</key>
+			<string>showController:</string>
       </dict>
       <dict>
 			<key>cell</key>
@@ -65,27 +71,33 @@
 		</dict>
       <dict>
 			<key>cell</key>
-			<string>PSLinkCell</string>
+			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>🔘 Sliders</string>
-			<key>detail</key>
+			<string>➕ Values</string>
+			<key>id</key>
 			<string>PanoSlidersController</string>
+			<key>action</key>
+			<string>showController:</string>
 		</dict>
 		 <dict>
 			<key>cell</key>
-			<string>PSLinkCell</string>
+			<string>PSButtonCell</string>
 			<key>label</key>
 			<string>🚩 UI</string>
-			<key>detail</key>
+			<key>id</key>
 			<string>PanoUIController</string>
+			<key>action</key>
+			<string>showController:</string>
 		</dict>
 		<dict>
 			<key>cell</key>
-			<string>PSLinkCell</string>
+			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>🚧  System</string>
-			<key>detail</key>
+			<string>⚠ System</string>
+			<key>id</key>
 			<string>PanoSysController</string>
+			<key>action</key>
+			<string>showController:</string>
 		</dict>
       <dict>
         	<key>cell</key>

@@ -23,10 +23,78 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)identifier specifier:(PSSpecifier *)specifier;
 @end
 
-#define kFontSize 14.0f
-#define CELL_CONTENT_MARGIN 20.0f
+@interface BannerCell : PSTableCell {
+	UILabel *tweakName;
+}
+@end
+
+@interface PanoFAQViewController : PSViewController <UITableViewDelegate, UITableViewDataSource>
+- (UITableView *)tableView;
+@end
+
+@interface PanoGuideViewController : PSViewController <UITableViewDelegate, UITableViewDataSource>
+- (UITableView *)tableView;
+@end
+
+@interface PanoCreditsViewController : PSViewController <UITableViewDelegate, UITableViewDataSource>
+- (UITableView *)tableView;
+@end
+
+@interface PanoSlidersController : PSListController <UIActionSheetDelegate> {}
+@property (nonatomic, retain) PSSpecifier *maxWidthSpec;
+@property (nonatomic, retain) PSSpecifier *maxWidthSliderSpec;
+@property (nonatomic, retain) PSSpecifier *maxWidthInputSpec;
+@property (nonatomic, retain) PSSpecifier *previewWidthSpec;
+@property (nonatomic, retain) PSSpecifier *previewWidthSliderSpec;
+@property (nonatomic, retain) PSSpecifier *previewWidthInputSpec;
+@property (nonatomic, retain) PSSpecifier *previewHeightSpec;
+@property (nonatomic, retain) PSSpecifier *previewHeightSliderSpec;
+@property (nonatomic, retain) PSSpecifier *previewHeightInputSpec;
+@property (nonatomic, retain) PSSpecifier *minFPSSpec;
+@property (nonatomic, retain) PSSpecifier *minFPSSliderSpec;
+@property (nonatomic, retain) PSSpecifier *minFPSInputSpec;
+@property (nonatomic, retain) PSSpecifier *maxFPSSpec;
+@property (nonatomic, retain) PSSpecifier *maxFPSSliderSpec;
+@property (nonatomic, retain) PSSpecifier *maxFPSInputSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaBufferRingSizeSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaBufferRingSizeSliderSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaBufferRingSizeInputSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurBiasSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurBiasSliderSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurBiasInputSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurSlopeSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurSlopeSliderSpec;
+@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurSlopeInputSpec;
+@end
+
+@interface PanoUIController : PSListController
+@property (nonatomic, retain) PSSpecifier *hideTextSpec;
+@property (nonatomic, retain) PSSpecifier *hideBGSpec;
+@property (nonatomic, retain) PSSpecifier *customTextSpec;
+@property (nonatomic, retain) PSSpecifier *inputTextSpec;
+@property (nonatomic, retain) PSSpecifier *blueButtonDescSpec;
+@property (nonatomic, retain) PSSpecifier *blueButtonSwitchSpec;
+@property (nonatomic, retain) PSSpecifier *borderSpec;
+@property (nonatomic, retain) PSSpecifier *borderDescSpec;
+@end
+
+@interface PanoSysController : PSListController
+@property (nonatomic, retain) PSSpecifier *LLBPanoDescSpec;
+@property (nonatomic, retain) PSSpecifier *LLBPanoSwitchSpec;
+@property (nonatomic, retain) PSSpecifier *PanoDarkFixDescSpec;
+@property (nonatomic, retain) PSSpecifier *PanoDarkFixSwitchSpec;
+@property (nonatomic, retain) PSSpecifier *FMDescSpec;
+@property (nonatomic, retain) PSSpecifier *FMSwitchSpec;
+@property (nonatomic, retain) PSSpecifier *Pano8MPSpec;
+@property (nonatomic, retain) PSSpecifier *Pano8MPDescSpec;
+@property (nonatomic, retain) PSSpecifier *BPNRSpec;
+@property (nonatomic, retain) PSSpecifier *BPNRDescSpec;
+@end
+
+#define kFontSize 14
+#define CELL_CONTENT_MARGIN 20
 #define PanoModBrief \
-@"Enable Panorama on every unsupported iOS 6 - 7 devices.\n\
+@"Enable Panorama on every unsupported devices.\n\
 Then Customize the interface and properties of Panorama with PanoMod."
 
 #define Id [[spec properties] objectForKey:@"id"]
@@ -36,17 +104,17 @@ Then Customize the interface and properties of Panorama with PanoMod."
 
 
 #define updateValue(targetSpec, sliderSpec, string) 		[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] intValue]] forKey:@"footerText"]; \
-  															[self reloadSpecifier:self.targetSpec animated:YES]; \
-  															[self reloadSpecifier:self.sliderSpec animated:YES];
+  															[self reloadSpecifier:self.targetSpec animated:NO]; \
+  															[self reloadSpecifier:self.sliderSpec animated:NO];
 
 #define updateFloatValue(targetSpec, sliderSpec, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, round([[self readPreferenceValue:self.sliderSpec] floatValue]*100.0)/100.0] forKey:@"footerText"]; \
-  															[self reloadSpecifier:self.targetSpec animated:YES]; \
-  															[self reloadSpecifier:self.sliderSpec animated:YES];
+  															[self reloadSpecifier:self.targetSpec animated:NO]; \
+  															[self reloadSpecifier:self.sliderSpec animated:NO];
 
 #define resetValue(intValue, spec, inputSpec) 	[self setPreferenceValue:@(intValue) specifier:self.spec]; \
 												[self setPreferenceValue:[@(intValue) stringValue] specifier:self.inputSpec]; \
-												[self reloadSpecifier:self.spec animated:YES]; \
-												[self reloadSpecifier:self.inputSpec animated:YES];
+												[self reloadSpecifier:self.spec animated:NO]; \
+												[self reloadSpecifier:self.inputSpec animated:NO];
 
 #define orig	[self setPreferenceValue:value specifier:spec]; \
 				[[NSUserDefaults standardUserDefaults] synchronize];
@@ -90,13 +158,10 @@ static void update()
 
 static NSString *Model()
 {
-	size_t size;
-	sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-	char* answer = (char *)malloc(size);
-	sysctlbyname("hw.machine", answer, &size, NULL, 0);
-	NSString* results = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
-	free(answer);
-	return results;
+	struct utsname systemInfo;
+	uname(&systemInfo);
+	NSString *modelName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+	return modelName;
 }
 
 
@@ -105,6 +170,40 @@ static NSString *Model()
 @end
 
 @implementation actHackPreferenceController
+
+- (id)init
+{
+	if (self == [super init]) {
+		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Love" style:UIBarButtonItemStylePlain target:self action:@selector(love)] autorelease];
+	}
+	return self;
+}
+
+- (void)love
+{
+
+}
+
+- (void)showController:(PSSpecifier *)param
+{
+	Class controllerClass = objc_getClass([[param identifier] UTF8String]);
+	UIViewController *controller = [[[controllerClass alloc] init] autorelease];
+	UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:controller] autorelease];
+	BOOL moreOptions = [controller respondsToSelector:@selector(selectOption)];
+	UIBarButtonItem *rightBtn = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commonDismiss)] autorelease];
+	[[controller navigationItem] setRightBarButtonItem:rightBtn];
+	if (moreOptions) {
+		UIBarButtonItem *leftBtn = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:controller action:@selector(selectOption)] autorelease];
+		[[controller navigationItem] setLeftBarButtonItem:leftBtn];
+	}
+	nav.modalPresentationStyle = 2;
+	[[self navigationController] presentViewController:nav animated:YES completion:nil];
+}
+
+- (void)commonDismiss
+{
+	[[self presentedViewController] dismissViewControllerAnimated:YES completion:nil];
+}
 
 - (void)setBoolAndKillCam:(id)value specifier:(PSSpecifier *)spec
 {
@@ -130,11 +229,6 @@ static NSString *Model()
 	return _specifiers;
 }
 
-@end
-
-@interface BannerCell : PSTableCell {
-	UILabel *tweakName;
-}
 @end
  
 @implementation BannerCell
@@ -170,13 +264,6 @@ static NSString *Model()
     return 70;
 }
 
-@end
-
-@interface PanoFAQViewController : PSViewController
-- (UITableView *)tableView;
-@end
-
-@interface PanoFAQViewController () <UITableViewDelegate, UITableViewDataSource> {}
 @end
 
 @implementation PanoFAQViewController
@@ -252,18 +339,11 @@ static NSString *Model()
 		case 1: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 2: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
 		case 3: [cell.textLabel setText:@"The limitation of hooking methods in iOS 7 causes this."]; break;
-		case 4: [cell.textLabel setText:@"iOS 6.0 - 7.1"]; break;
+		case 4: [cell.textLabel setText:@"iOS 6.0 - 8.0"]; break;
     }
     return cell;
 }
 
-@end
-
-@interface PanoGuideViewController : PSViewController
-- (UITableView *)tableView;
-@end
-
-@interface PanoGuideViewController () <UITableViewDelegate, UITableViewDataSource> {}
 @end
 
 @implementation PanoGuideViewController
@@ -363,13 +443,13 @@ static NSString *Model()
 		case 7:
 			[cell.textLabel setText:@"This is what Panorama talks to you, when you capture Panorama, this function provided some customization including Hide Text, Hide BG (Hide Black translucent background, iOS 6 only) and Custom Text. (Set it to whatever you want)"]; break;
 		case 8:
-			[cell.textLabel setText:@"Enabling ability to zoom in Panorama mode.\nNOTE: This affects on panoramic image in iOS 7"]; break;
+			[cell.textLabel setText:@"Enabling ability to zoom in Panorama mode.\nNOTE: This affects on panoramic image in iOS 7+"]; break;
 		case 9:
 			[cell.textLabel setText:@"Showing grid in Panorama mode."]; break;
 		case 10:
 			[cell.textLabel setText:@"iOS 6 only, like \"Better Pano Button\" that changes your Panorama button color for 4-inches Tall-iDevices to blue."]; break;
   		case 11:
-			[cell.textLabel setText:@"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5 and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" installed first."]; break;
+			[cell.textLabel setText:@"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5, iPhone 5c, and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" installed first."]; break;
 		case 12:
 			[cell.textLabel setText:@"For those iDevices without support Low Light Boost feature, this function will fix the dark issue in the another way and it works for all iDevices and you will see the big different in camera brightness/lighting performance.\nBut reason why Apple limits the brightness is simple, to fix Panorama overbright issue that you can face it in daytime."]; break;
 		case 13:
@@ -377,13 +457,13 @@ static NSString *Model()
 		case 14:
 			[cell.textLabel setText:@"The white arrow that follows you when you move around to capture Panorama, you can hide it or remove its tail animation."]; break;
 		case 15:
-			[cell.textLabel setText:@"Hiding the blue (iOS 6) or yellow (iOS 7) horizontal line at the middle of screen, if you don't want it."]; break;
+			[cell.textLabel setText:@"Hiding the blue (iOS 6) or yellow (iOS 7+) horizontal line at the middle of screen, if you don't want it."]; break;
 		case 16:
 			[cell.textLabel setText:@"iOS 6 only, Hiding the border crops the small Panorama preview, sometimes this function is recommended to enable when you set Panoramic images maximum width into different values."]; break;
 		case 17:
 			[cell.textLabel setText:@"By default, the Panorama sensor resolution is 5 MP, this option can changes the sensor resolution to 8 MP if your device is capable. (iPhone 4S or newer) This makes the panoramic images more clear."]; break;
 		case 18:
-			[cell.textLabel setText:@"iOS 7 only, \"BPNR\" or Auto exposure adjustments during the pan of Panorama capture, was introduced in iPhone 5s, to even out exposure in scenes where brightness varies across the frame."]; break;
+			[cell.textLabel setText:@"iOS 7+, \"BPNR\" or Auto exposure adjustments during the pan of Panorama capture, was introduced in iPhone 5s, to even out exposure in scenes where brightness varies across the frame."]; break;
   	}
 	return cell;
 }
@@ -395,13 +475,6 @@ static NSString *Model()
 	return size.height + CELL_CONTENT_MARGIN;
 }
 
-@end
-
-@interface PanoCreditsViewController : PSViewController
-- (UITableView *)tableView;
-@end
-
-@interface PanoCreditsViewController () <UITableViewDelegate, UITableViewDataSource> {}
 @end
 
 @implementation PanoCreditsViewController
@@ -501,20 +574,20 @@ static NSString *Model()
 	
 	switch (indexPath.row)
 	{
-		addPerson(0, 	@"@PoomSmart (Main Dev)", 	@"Tested: iPod touch 4G, iPod touch 5G, iPhone 4S, iPad 2G (GSM).")
+		addPerson(0, 	@"@PoomSmart (Main Dev)", 		@"Tested: iPod touch 4G, iPod touch 5G, iPhone 4S, iPad 2G (GSM).")
 		addPerson(1, 	@"@Pix3lDemon (Translator)", 	@"Tested: iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G, iPad 3G.")
-		addPerson(2,	@"@BassamKassem1", 	@"Tested: iPhone 4 GSM.")
-		addPerson(3,	@"@H4lfSc0p3R",		@"Tested: iPhone 4 GSM, iPhone 4S, iPod touch 4G.")
-		addPerson(4, 	@"@iPMisterX", 		@"Tested: iPhone 3GS.")
-		addPerson(5,	@"@nenocrack", 		@"Tested: iPhone 4 GSM.")
-		addPerson(6, 	@"@Raemon", 		@"Tested: iPhone 4 GSM, iPad mini 1G (Global).")
-		addPerson(7, 	@"@Ntd123",		@"Tested: iPhone 4 GSM.")
-		addPerson(8, 	@"Liewlom Bunnag",	@"Tested: iPad 2G (Wi-Fi).")
-		addPerson(9, 	@"@Xtoyou",		@"Tested: iPad 3G (Global), iPad mini 2G.")
-		addPerson(10, 	@"@n4te2iver",		@"Tested: iPad 4G (Wi-Fi).")
-		addPerson(11, 	@"@NavehIDL",		@"Tested: iPad mini 1G (Wi-Fi).")
-		addPerson(12, 	@"Srsw Omegax Akrw",	@"Tested: iPad mini 1G (GSM).")
-		addPerson(13,	@"@iPFaHaD",		@"Tested: iPhone 4 GSM.")
+		addPerson(2,	@"@BassamKassem1", 				@"Tested: iPhone 4 GSM.")
+		addPerson(3,	@"@H4lfSc0p3R",					@"Tested: iPhone 4 GSM, iPhone 4S, iPod touch 4G.")
+		addPerson(4, 	@"@iPMisterX", 					@"Tested: iPhone 3GS.")
+		addPerson(5,	@"@nenocrack", 					@"Tested: iPhone 4 GSM.")
+		addPerson(6, 	@"@Raemon", 					@"Tested: iPhone 4 GSM, iPad mini 1G (Global).")
+		addPerson(7, 	@"@Ntd123",						@"Tested: iPhone 4 GSM.")
+		addPerson(8, 	@"Liewlom Bunnag",				@"Tested: iPad 2G (Wi-Fi).")
+		addPerson(9, 	@"@Xtoyou",						@"Tested: iPad 3G (Global), iPad mini 2G.")
+		addPerson(10, 	@"@n4te2iver",					@"Tested: iPad 4G (Wi-Fi).")
+		addPerson(11, 	@"@NavehIDL",					@"Tested: iPad mini 1G (Wi-Fi).")
+		addPerson(12, 	@"Srsw Omegax Akrw",			@"Tested: iPad mini 1G (GSM).")
+		addPerson(13,	@"@iPFaHaD",					@"Tested: iPhone 4 GSM.")
 	}
 	return cell;
 }
@@ -526,34 +599,12 @@ static NSString *Model()
 
 @end
 
-@interface PanoSlidersController : PSListController <UIActionSheetDelegate> {}
-@property (nonatomic, retain) PSSpecifier *maxWidthSpec;
-@property (nonatomic, retain) PSSpecifier *maxWidthSliderSpec;
-@property (nonatomic, retain) PSSpecifier *maxWidthInputSpec;
-@property (nonatomic, retain) PSSpecifier *previewWidthSpec;
-@property (nonatomic, retain) PSSpecifier *previewWidthSliderSpec;
-@property (nonatomic, retain) PSSpecifier *previewWidthInputSpec;
-@property (nonatomic, retain) PSSpecifier *previewHeightSpec;
-@property (nonatomic, retain) PSSpecifier *previewHeightSliderSpec;
-@property (nonatomic, retain) PSSpecifier *previewHeightInputSpec;
-@property (nonatomic, retain) PSSpecifier *minFPSSpec;
-@property (nonatomic, retain) PSSpecifier *minFPSSliderSpec;
-@property (nonatomic, retain) PSSpecifier *minFPSInputSpec;
-@property (nonatomic, retain) PSSpecifier *maxFPSSpec;
-@property (nonatomic, retain) PSSpecifier *maxFPSSliderSpec;
-@property (nonatomic, retain) PSSpecifier *maxFPSInputSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaBufferRingSizeSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaBufferRingSizeSliderSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaBufferRingSizeInputSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurBiasSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurBiasSliderSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurBiasInputSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurSlopeSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurSlopeSliderSpec;
-@property (nonatomic, retain) PSSpecifier *PanoramaPowerBlurSlopeInputSpec;
-@end
-
 @implementation PanoSlidersController
+
+- (NSString *)title
+{
+	return @"Values";
+}
 
 - (void)reset
 {
@@ -610,21 +661,6 @@ static NSString *Model()
 				break;
 		}
 	}
-}
-
-- (void)addBtn
-{
-	UIBarButtonItem *btn = [[UIBarButtonItem alloc]
-        initWithTitle:@"⭕" style:UIBarButtonItemStyleBordered
-        target:self action:@selector(selectOption)];
-	((UINavigationItem *)[super navigationItem]).rightBarButtonItem = btn;
-	[btn release];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-	[super viewWillAppear:animated];
-	[self addBtn];
 }
 
 - (void)setWidth:(id)value specifier:(PSSpecifier *)spec
@@ -765,36 +801,7 @@ static NSString *Model()
 
 @end
 
-@interface PanoUIController : PSListController
-@property (nonatomic, retain) PSSpecifier *hideTextSpec;
-@property (nonatomic, retain) PSSpecifier *hideBGSpec;
-@property (nonatomic, retain) PSSpecifier *customTextSpec;
-@property (nonatomic, retain) PSSpecifier *inputTextSpec;
-@property (nonatomic, retain) PSSpecifier *blueButtonDescSpec;
-@property (nonatomic, retain) PSSpecifier *blueButtonSwitchSpec;
-@property (nonatomic, retain) PSSpecifier *borderSpec;
-@property (nonatomic, retain) PSSpecifier *borderDescSpec;
-@end
-
 @implementation PanoUIController
-
-- (void)hideKeyboard
-{
-	[[super view] endEditing:YES];
-}
-
-- (void)addBtn
-{
-	UIBarButtonItem *hideKBBtn = [[UIBarButtonItem alloc] initWithTitle:@"⏬" style:UIBarButtonItemStyleBordered target:self action:@selector(hideKeyboard)];
-	((UINavigationItem *)[super navigationItem]).rightBarButtonItem = hideKBBtn;
-	[hideKBBtn release];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-	[super viewWillAppear:animated];
-	[self addBtn];
-}
 
 - (void)setTextHide:(id)value specifier:(PSSpecifier *)spec
 {
@@ -827,7 +834,7 @@ static NSString *Model()
 			[specs removeObject:self.borderSpec];
 			[specs removeObject:self.borderDescSpec];
 		}
-		if (!(isiPhone5Up || isiPod5) || isiOS7) {
+		if (!(isiPhone5Up || isiPod5) || isiOS7Up) {
 			[specs removeObject:self.blueButtonDescSpec];
 			[specs removeObject:self.blueButtonSwitchSpec];
 		}
@@ -840,19 +847,6 @@ static NSString *Model()
 	return _specifiers;
 }
 
-@end
-
-@interface PanoSysController : PSListController
-@property (nonatomic, retain) PSSpecifier *LLBPanoDescSpec;
-@property (nonatomic, retain) PSSpecifier *LLBPanoSwitchSpec;
-@property (nonatomic, retain) PSSpecifier *PanoDarkFixDescSpec;
-@property (nonatomic, retain) PSSpecifier *PanoDarkFixSwitchSpec;
-@property (nonatomic, retain) PSSpecifier *FMDescSpec;
-@property (nonatomic, retain) PSSpecifier *FMSwitchSpec;
-@property (nonatomic, retain) PSSpecifier *Pano8MPSpec;
-@property (nonatomic, retain) PSSpecifier *Pano8MPDescSpec;
-@property (nonatomic, retain) PSSpecifier *BPNRSpec;
-@property (nonatomic, retain) PSSpecifier *BPNRDescSpec;
 @end
 
 @implementation PanoSysController
@@ -889,7 +883,7 @@ static NSString *Model()
 		}
         
 		NSString *model = Model();
-		if (!isiOS7 || isiPhone5s) {
+		if (!isiOS7Up || isiPhone5s) {
 			[specs removeObject:self.BPNRSpec];
 			[specs removeObject:self.BPNRDescSpec];
 		}

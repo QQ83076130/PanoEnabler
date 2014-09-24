@@ -2,12 +2,25 @@
 #import <UIKit/UIKit.h>
 #include <substrate.h>
 
+#define isiOS7Up (kCFCoreFoundationVersionNumber > 793.00)
+#define isiOS67 (isiOS6 || isiOS7)
+#define isiOS78 (isiOS7 || isiOS8)
+
 @interface PLCameraController
 @property(assign) AVCaptureDevice *currentDevice;
 @property(assign, nonatomic) int cameraMode;
 @end
 
 @interface PLCameraController (Flashorama)
+- (void)fm_torch:(int)type;
+@end
+
+@interface CAMCaptureController
+@property(assign) AVCaptureDevice *currentDevice;
+@property(assign, nonatomic) int cameraMode;
+@end
+
+@interface CAMCaptureController (Flashorama)
 - (void)fm_torch:(int)type;
 @end
 
@@ -22,8 +35,14 @@
 - (void)_collapseAndSetMode:(int)mode animated:(BOOL)animated;
 @end
 
-@interface PLCameraPanoramaView
+@interface PLCameraPanoramaView : UIView
 - (void)setCaptureDirection:(int)direction;
+- (void)_arrowWasTapped:(id)arg1;
+@end
+
+@interface CAMPanoramaView : UIView
+- (void)setCaptureDirection:(int)direction;
+- (void)_arrowWasTapped:(id)arg1;
 @end
 
 @interface PLCameraSettingsGroupView : UIView
@@ -41,8 +60,15 @@
 @interface PLCameraView
 @property(assign, nonatomic) int cameraMode;
 @property(assign, nonatomic) int videoFlashMode;
-@property(readonly, assign, nonatomic) CAMFlashButton* _flashButton;
-@property(readonly, assign, nonatomic) CAMTopBar* _topBar;
+@property(readonly, assign, nonatomic) CAMFlashButton *_flashButton;
+@property(readonly, assign, nonatomic) CAMTopBar *_topBar;
+@end
+
+@interface CAMCameraView
+@property(assign, nonatomic) int cameraMode;
+@property(assign, nonatomic) int videoFlashMode;
+@property(readonly, assign, nonatomic) CAMFlashButton *_flashButton;
+@property(readonly, assign, nonatomic) CAMTopBar *_topBar;
 @end
 
 @interface UIImage (Addition)

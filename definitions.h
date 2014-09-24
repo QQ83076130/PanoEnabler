@@ -1,10 +1,11 @@
-#import <Foundation/Foundation.h>
+#import "../PS.h"
 
 #define isiPhone4 		[model hasPrefix:@"iPhone3"]
 #define isiPhone4S 		[model hasPrefix:@"iPhone4"]
 #define isiPhone5		[model hasPrefix:@"iPhone5"]
 #define isiPhone5s		[model hasPrefix:@"iPhone6"]
-#define isiPhone5Up		(isiPhone5 || isiPhone5s)
+#define isiPhone6		[model hasPrefix:@"iPhone7"]
+#define isiPhone5Up		(isiPhone5 || isiPhone5s || isiPhone6)
 #define isiPod4			[model hasPrefix:@"iPod4"]
 #define isiPod5 		[model hasPrefix:@"iPod5"]
 #define isiPad			[model hasPrefix:@"iPad"]
@@ -26,9 +27,6 @@
 #define PREF_PATH @"/var/mobile/Library/Preferences/com.PS.actHack.plist"
 #define val(dict, key, defaultValue, type) ([dict objectForKey:key] ? [[dict objectForKey:key] type] : defaultValue)
 #define setIntegerProperty(dict, key, intValue) [dict setObject:@(intValue) forKey:key];
-#define isiOS6 (kCFCoreFoundationVersionNumber == 793.00)
-#define isiOS7 (kCFCoreFoundationVersionNumber >= 847.20)
-#define isiOS70 (isiOS7 && kCFCoreFoundationVersionNumber < 847.23)
 
 #define readBoolOption(prename, name) \
 		name = [[dict objectForKey:prename] boolValue];

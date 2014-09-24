@@ -1,5 +1,6 @@
 #import <substrate.h>
 #import <IOKit/IOKitLib.h>
+#import "../definitions.h"
 
 typedef io_object_t io_registry_entry_t;
 typedef UInt32 IOOptionBits;
@@ -29,6 +30,8 @@ Boolean replaced__isDeviceTreePropertyPresent(const char *root, CFStringRef key)
 __attribute__((constructor)) static void PanoHookInit()
 {
 	%init;
-	MSHookFunction((void *)IORegistryEntryCreateCFProperty, (void *)replaced_registryEntry, (void **)&orig_registryEntry);
-	MSHookFunction((void *)MSFindSymbol(NULL, "_isDeviceTreePropertyPresent"), (void *)replaced__isDeviceTreePropertyPresent, (void **)&orig__isDeviceTreePropertyPresent);
+	if (val([NSDictionary dictionaryWithContentsOfFile:PREF_PATH], @"PanoEnabled", NO, BOOLEAN)) {
+		MSHookFunction((void *)IORegistryEntryCreateCFProperty, (void *)replaced_registryEntry, (void **)&orig_registryEntry);
+		MSHookFunction((void *)MSFindSymbol(NULL, "_isDeviceTreePropertyPresent"), (void *)replaced__isDeviceTreePropertyPresent, (void **)&orig__isDeviceTreePropertyPresent);
+	}
 }

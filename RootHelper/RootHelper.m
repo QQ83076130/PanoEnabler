@@ -61,6 +61,7 @@ BOOL Modify()
 	if (avCap == nil) return NO;
 	NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
 	if (index0 == nil) return NO;
+	
 	NSMutableDictionary *presetPhoto = [[index0 objectForKey:@"AVCaptureSessionPresetPhoto2592x1936"] mutableCopy];
 	if (presetPhoto == nil) return NO;
    	
@@ -90,7 +91,7 @@ NSMutableArray *arrayByFixingPano(NSMutableArray *sensorArray)
 	NSMutableDictionary *dictionaryOfPortTypeBack = [(NSDictionary *)[sensorArray objectAtIndex:0] mutableCopy];
 	NSMutableArray *formatArray = [[dictionaryOfPortTypeBack objectForKey:@"SupportedFormatsArray"] mutableCopy];
 	
-	for (int i=0;i<[formatArray count];i++) {
+	for (int i = 0; i < [formatArray count]; i++) {
 		NSMutableDictionary *formatDict = [[formatArray objectAtIndex:i] mutableCopy];
 		struct utsname systemInfo;
 		uname(&systemInfo);
