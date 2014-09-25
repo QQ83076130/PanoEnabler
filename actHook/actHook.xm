@@ -22,7 +22,7 @@ NSMutableDictionary* (*old__ACT_CopyDefaultConfigurationForPanorama)();
 NSMutableDictionary* replaced__ACT_CopyDefaultConfigurationForPanorama()
 {
 	NSString *preFirebreakPath = @"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist";
-	NSString *firebreakPath = [NSString stringWithFormat:preFirebreakPath, isiOS7 ? [NSString stringWithFormat:@"/%@/", ModelAP()] : @"/"];
+	NSString *firebreakPath = [NSString stringWithFormat:preFirebreakPath, isiOS78 ? [NSString stringWithFormat:@"/%@/", ModelAP()] : @"/"];
 	NSMutableDictionary *firebreakDict = [[NSDictionary dictionaryWithContentsOfFile:firebreakPath] mutableCopy];
 	return firebreakDict;
 }

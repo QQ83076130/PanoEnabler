@@ -4,9 +4,10 @@
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSTableCell.h>
+#import <Social/Social.h>
 
 #include <objc/runtime.h>
-#include <sys/sysctl.h>
+#include <sys/utsname.h>
 #import <notify.h>
 
 @interface PSViewController (PanoMod)
@@ -92,7 +93,7 @@
 @end
 
 #define kFontSize 14
-#define CELL_CONTENT_MARGIN 20
+#define CELL_CONTENT_MARGIN 18
 #define PanoModBrief \
 @"Enable Panorama on every unsupported devices.\n\
 Then Customize the interface and properties of Panorama with PanoMod."
@@ -103,46 +104,69 @@ Then Customize the interface and properties of Panorama with PanoMod."
                 			self.mySpec = [spec retain];
 
 
-#define updateValue(targetSpec, sliderSpec, string) 		[self.targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:self.sliderSpec] intValue]] forKey:@"footerText"]; \
-  															[self reloadSpecifier:self.targetSpec animated:NO]; \
-  															[self reloadSpecifier:self.sliderSpec animated:NO];
+static void updateValue(PSListController *self, PSSpecifier *targetSpec, PSSpecifier *sliderSpec, NSString *string)
+{
+	[targetSpec setProperty:[NSString stringWithFormat:string, [[self readPreferenceValue:sliderSpec] intValue]] forKey:@"footerText"];
+  	[self reloadSpecifier:targetSpec animated:NO];
+  	[self reloadSpecifier:sliderSpec animated:NO];
+}
 
-#define updateFloatValue(targetSpec, sliderSpec, string) 	[self.targetSpec setProperty:[NSString stringWithFormat:string, round([[self readPreferenceValue:self.sliderSpec] floatValue]*100.0)/100.0] forKey:@"footerText"]; \
-  															[self reloadSpecifier:self.targetSpec animated:NO]; \
-  															[self reloadSpecifier:self.sliderSpec animated:NO];
+static void updateFloatValue(PSListController *self, PSSpecifier *targetSpec, PSSpecifier *sliderSpec, NSString *string)
+{
+	[targetSpec setProperty:[NSString stringWithFormat:string, round([[self readPreferenceValue:sliderSpec] floatValue])] forKey:@"footerText"];
+  	[self reloadSpecifier:targetSpec animated:NO];
+  	[self reloadSpecifier:sliderSpec animated:NO];
+}
 
-#define resetValue(intValue, spec, inputSpec) 	[self setPreferenceValue:@(intValue) specifier:self.spec]; \
-												[self setPreferenceValue:[@(intValue) stringValue] specifier:self.inputSpec]; \
-												[self reloadSpecifier:self.spec animated:NO]; \
-												[self reloadSpecifier:self.inputSpec animated:NO];
+static void resetValue(PSListController *self, int intValue, PSSpecifier *spec, PSSpecifier *inputSpec)
+{
+	[self setPreferenceValue:@(intValue) specifier:spec];
+	[self setPreferenceValue:[@(intValue) stringValue] specifier:inputSpec];
+	[self reloadSpecifier:spec animated:NO];
+	[self reloadSpecifier:inputSpec animated:NO];
+}
 
-#define orig	[self setPreferenceValue:value specifier:spec]; \
-				[[NSUserDefaults standardUserDefaults] synchronize];
+static void orig(PSListController *self, id value, PSSpecifier *spec)
+{
+	[self setPreferenceValue:value specifier:spec];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
 				
 static void openLink(NSString *url)
 {
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }
 				
-#define rangeFix(min, max) \
-	int value2 = @([value intValue]).intValue; \
-	if (value2 > max) \
-		value = @(max); \
-	else if (value2 < min) \
-		value = @(min); \
-	else value = @([value intValue]);
+static id rangeFix(int min, int max, id value)
+{
+	id val;
+	int value2 = [value intValue];
+	if (value2 > max)
+		val = @(max);
+	else if (value2 < min)
+		val = @(min);
+	else
+		val = @([value intValue]);
+	return val;
+}
 
-#define rangeFixFloat(min, max) \
-	float value2 = @([value floatValue]).floatValue; \
-	if (value2 > max) \
-		value = @(max); \
-	else if (value2 < min) \
-		value = @(min); \
-	else value = @(round([value floatValue]*100)/100);
+static id rangeFixFloat(float min, float max, id value)
+{
+	id val;
+	float value2 = [value floatValue];
+	if (value2 > max)
+		val = @(max);
+	else if (value2 < min)
+		val = @(min);
+	else
+		val = @(round(value2));
+	return val;
+}
 									
-static void setAvailable(BOOL available, PSSpecifier *spec)
+static void setAvailable(PSListController *self, BOOL available, PSSpecifier *spec)
 {
 	[spec setProperty:@(available) forKey:@"enabled"];
+	[self reloadSpecifier:spec];
 }
 
 static void update()
@@ -174,14 +198,26 @@ static NSString *Model()
 - (id)init
 {
 	if (self == [super init]) {
-		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Love" style:UIBarButtonItemStylePlain target:self action:@selector(love)] autorelease];
+		UIButton *heart = [[UIButton alloc] initWithFrame:CGRectZero];
+		[heart setImage:[UIImage imageNamed:@"Heart" inBundle:[NSBundle bundleWithPath:@"/Library/PreferenceBundles/PanoPreferences.bundle"]] forState:UIControlStateNormal];
+		[heart sizeToFit];
+		[heart addTarget:self action:@selector(love) forControlEvents:UIControlEventTouchUpInside];
+		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:heart] autorelease];
+		[heart release];
 	}
 	return self;
 }
 
 - (void)love
 {
+	SLComposeViewController *twitter = [[SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter] retain];
+	[twitter setInitialText:@"#PanoMod by @PoomSmart is awesome!"];
+	[(UIViewController *)self presentViewController:twitter animated:YES completion:nil];
+}
 
+- (void)donate:(id)param
+{
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:PS_DONATE_URL]];
 }
 
 - (void)showController:(PSSpecifier *)param
@@ -189,11 +225,11 @@ static NSString *Model()
 	Class controllerClass = objc_getClass([[param identifier] UTF8String]);
 	UIViewController *controller = [[[controllerClass alloc] init] autorelease];
 	UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:controller] autorelease];
-	BOOL moreOptions = [controller respondsToSelector:@selector(selectOption)];
+	BOOL moreOptions = [controller respondsToSelector:@selector(reset)];
 	UIBarButtonItem *rightBtn = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commonDismiss)] autorelease];
 	[[controller navigationItem] setRightBarButtonItem:rightBtn];
 	if (moreOptions) {
-		UIBarButtonItem *leftBtn = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:controller action:@selector(selectOption)] autorelease];
+		UIBarButtonItem *leftBtn = [[[UIBarButtonItem alloc] initWithTitle:@"Reset" style:UIBarButtonItemStyleBordered target:controller action:@selector(reset)] autorelease];
 		[[controller navigationItem] setLeftBarButtonItem:leftBtn];
 	}
 	nav.modalPresentationStyle = 2;
@@ -203,12 +239,6 @@ static NSString *Model()
 - (void)commonDismiss
 {
 	[[self presentedViewController] dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)setBoolAndKillCam:(id)value specifier:(PSSpecifier *)spec
-{
-	orig
-	update();
 }
 
 - (NSArray *)specifiers
@@ -350,7 +380,7 @@ static NSString *Model()
 
 - (NSString *)title
 {
-	return @"Guide";
+	return @"Guides";
 }
 
 - (UITableView *)tableView
@@ -574,8 +604,8 @@ static NSString *Model()
 	
 	switch (indexPath.row)
 	{
-		addPerson(0, 	@"@PoomSmart (Main Dev)", 		@"Tested: iPod touch 4G, iPod touch 5G, iPhone 4S, iPad 2G (GSM).")
-		addPerson(1, 	@"@Pix3lDemon (Translator)", 	@"Tested: iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G, iPad 3G.")
+		addPerson(0, 	@"@PoomSmart (Main Developer)", @"Tested: iPod touch 4G, iPod touch 5G, iPhone 4S, iPad 2G (GSM).")
+		addPerson(1, 	@"@Pix3lDemon", 	@"Tested: iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G, iPad 3G.")
 		addPerson(2,	@"@BassamKassem1", 				@"Tested: iPhone 4 GSM.")
 		addPerson(3,	@"@H4lfSc0p3R",					@"Tested: iPhone 4 GSM, iPhone 4S, iPod touch 4G.")
 		addPerson(4, 	@"@iPMisterX", 					@"Tested: iPhone 3GS.")
@@ -606,141 +636,116 @@ static NSString *Model()
 	return @"Values";
 }
 
+- (void)updateCommonValues
+{
+	updateValue(self, self.maxWidthSpec, self.maxWidthSliderSpec, @"Current Width: %d pixels");
+	updateFloatValue(self, self.previewWidthSpec, self.previewWidthSliderSpec, @"Current Width: %.2f pixels");
+	updateFloatValue(self, self.previewHeightSpec, self.previewHeightSliderSpec, @"Current Height: %.2f pixels");
+	updateValue(self, self.minFPSSpec, self.minFPSSliderSpec, @"Current Framerate: %d FPS");
+	updateValue(self, self.maxFPSSpec, self.maxFPSSliderSpec, @"Current Framerate: %d FPS");
+	updateValue(self, self.PanoramaBufferRingSizeSpec, self.PanoramaBufferRingSizeSliderSpec, @"Current Value: %d");
+	updateValue(self, self.PanoramaPowerBlurBiasSpec, self.PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d");
+	updateValue(self, self.PanoramaPowerBlurSlopeSpec, self.PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d");
+}
+
 - (void)reset
 {
 	NSString *model = Model();
-	resetValue(isNeedConfigDevice ? 4000 : 10800, maxWidthSliderSpec, maxWidthInputSpec)
-	resetValue((isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? 20 : 15, maxFPSSliderSpec, maxFPSInputSpec)
-	resetValue(15, minFPSSliderSpec, minFPSInputSpec)
-	resetValue((isiPhone5Up || isiPad3or4) ? 5 : 7, PanoramaBufferRingSizeSliderSpec, PanoramaBufferRingSizeInputSpec)
+	resetValue(self, isNeedConfigDevice ? 4000 : 10800, self.maxWidthSliderSpec, self.maxWidthInputSpec);
+	resetValue(self, (isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
+	resetValue(self, 15, self.minFPSSliderSpec, self.minFPSInputSpec);
+	resetValue(self, (isiPhone5Up || isiPad3or4) ? 5 : 7, self.PanoramaBufferRingSizeSliderSpec, self.PanoramaBufferRingSizeInputSpec);
 
 	if (isiPhone5Up || isiPad3or4 || isiPadMini2G || isiPadAir) {
-		resetValue(15, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
+		resetValue(self, 15, self.PanoramaPowerBlurSlopeSliderSpec, self.PanoramaPowerBlurSlopeInputSpec);
 	} else if (isiPod5 || isiPadMini1G || isiPad2 || isiPod4) {
-		resetValue(13, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
+		resetValue(self, 13, self.PanoramaPowerBlurSlopeSliderSpec, self.PanoramaPowerBlurSlopeInputSpec);
 	} else {
-		resetValue(20, PanoramaPowerBlurSlopeSliderSpec, PanoramaPowerBlurSlopeInputSpec)
+		resetValue(self, 20, self.PanoramaPowerBlurSlopeSliderSpec, self.PanoramaPowerBlurSlopeInputSpec);
 	}
 
-	resetValue(306, previewWidthSliderSpec, previewWidthInputSpec)
-	resetValue(86, previewHeightSliderSpec, previewHeightInputSpec)
-	resetValue(30, PanoramaPowerBlurBiasSliderSpec, PanoramaPowerBlurBiasInputSpec)
+	resetValue(self, 306, self.previewWidthSliderSpec, self.previewWidthInputSpec);
+	resetValue(self, 86, self.previewHeightSliderSpec, self.previewHeightInputSpec);
+	resetValue(self, 30, self.PanoramaPowerBlurBiasSliderSpec, self.PanoramaPowerBlurBiasInputSpec);
 	
-	updateValue(maxWidthSpec, maxWidthSliderSpec, @"Current Width: %d pixels")
-	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"Current Width: %.2f pixels")
-	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"Current Height: %.2f pixels")
-	updateValue(minFPSSpec, minFPSSliderSpec, @"Current Framerate: %d FPS")
-	updateValue(maxFPSSpec, maxFPSSliderSpec, @"Current Framerate: %d FPS")
-	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"Current Value: %d")
-	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d")
-	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d")
+	[self updateCommonValues];
+	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	update();
-}
-
-- (void)selectOption
-{
-	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:
-		@"🔄 Reset",
-		@"⬇ Hide KB",
-		nil];
-	sheet.tag = 95969597;
-	[sheet showInView:self.view];
-	[sheet release];
-}
-
-- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-	if (popup.tag == 95969597) {
-		switch (buttonIndex) {
-			case 0:
-				[self reset];
-				break;
-			case 1:
-				[[super view] endEditing:YES];
-				break;
-		}
-	}
 }
 
 - (void)setWidth:(id)value specifier:(PSSpecifier *)spec
 {
 	NSString *model = Model();
-	if (isSlow) {
-		rangeFix(1000, 4096)
-	}
-	else {
-		rangeFix(3000, 21600)
-	}
-	orig
-	updateValue(maxWidthSpec, maxWidthSliderSpec, @"Current Width: %d pixels")
+	value = isSlow ? rangeFix(1000, 4096, value) : rangeFix(3000, 21600, value);
+	orig(self, value, spec);
+	updateValue(self, self.maxWidthSpec, self.maxWidthSliderSpec, @"Current Width: %d pixels");
 	update();
 }
 
 - (void)setPreviewWidth:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFixFloat(100, 576)
-	orig
-	updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"Current Width: %.2f pixels")
+	value = rangeFixFloat(100, 576, value);
+	orig(self, value, spec);
+	updateFloatValue(self, self.previewWidthSpec, self.previewWidthSliderSpec, @"Current Width: %.2f pixels");
 	update();
 }
 
 - (void)setPreviewHeight:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFixFloat(40, 576)
-	orig
-	updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"Current Height: %.2f pixels")
+	value = rangeFixFloat(40, 576, value);
+	orig(self, value, spec);
+	updateFloatValue(self, self.previewHeightSpec, self.previewHeightSliderSpec, @"Current Height: %.2f pixels");
 	update();
 }
-
 
 - (void)setMinFPS:(id)value specifier:(PSSpecifier *)spec
 {
 	if ([[self readPreferenceValue:self.maxFPSSliderSpec] intValue] < [value intValue]) {
-		resetValue([value intValue], maxFPSSliderSpec, maxFPSInputSpec)
+		resetValue(self, [value intValue], self.maxFPSSliderSpec, self.maxFPSInputSpec);
 	}
 
-	rangeFix(1, 30)
-	orig
-	updateValue(maxFPSSpec, maxFPSSliderSpec, @"Current Framerate: %d FPS")
-	updateValue(minFPSSpec, minFPSSliderSpec, @"Current Framerate: %d FPS")
+	value = rangeFix(1, 30, value);
+	orig(self, value, spec);
+	updateValue(self, self.maxFPSSpec, self.maxFPSSliderSpec, @"Current Framerate: %d FPS");
+	updateValue(self, self.minFPSSpec, self.minFPSSliderSpec, @"Current Framerate: %d FPS");
 	update();
 }
 
 - (void)setMaxFPS:(id)value specifier:(PSSpecifier *)spec
 {
 	if ([[self readPreferenceValue:self.minFPSSliderSpec] intValue] > [value intValue]) {
-		resetValue([value intValue], minFPSSliderSpec, minFPSInputSpec)
+		resetValue(self, [value intValue], self.minFPSSliderSpec, self.minFPSInputSpec);
 	}
 	
-	rangeFix(15, 60)
-	orig
-	updateValue(minFPSSpec, minFPSSliderSpec, @"Current Framerate: %d FPS")
-	updateValue(maxFPSSpec, maxFPSSliderSpec, @"Current Framerate: %d FPS")
+	value = rangeFix(15, 60, value);
+	orig(self, value, spec);
+	updateValue(self, self.minFPSSpec, self.minFPSSliderSpec, @"Current Framerate: %d FPS");
+	updateValue(self, self.maxFPSSpec, self.maxFPSSliderSpec, @"Current Framerate: %d FPS");
 	update();
 }
 
 - (void)setPanoramaBufferRingSize:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(1, 30)
-	orig
-	updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"Current Value: %d")
+	value = rangeFix(1, 30, value);
+	orig(self, value, spec);
+	updateValue(self, self.PanoramaBufferRingSizeSpec, self.PanoramaBufferRingSizeSliderSpec, @"Current Value: %d");
 	update();
 }
 
 - (void)setPanoramaPowerBlurBias:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(1, 60)
-	orig
-	updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d")
+	value = rangeFix(1, 60, value);
+	orig(self, value, spec);
+	updateValue(self, self.PanoramaPowerBlurBiasSpec, self.PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d");
 	update();
 }
 
 - (void)setPanoramaPowerBlurSlope:(id)value specifier:(PSSpecifier *)spec
 {
-	rangeFix(1, 60)
-	orig
-	updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d")
+	value = rangeFix(1, 60, value);
+	orig(self, value, spec);
+	updateValue(self, self.PanoramaPowerBlurSlopeSpec, self.PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d");
 	update();
 }
 
@@ -785,14 +790,7 @@ static NSString *Model()
 			[self.maxWidthSliderSpec setProperty:@3000 forKey:@"min"];
 		}
 
-		updateValue(maxWidthSpec, maxWidthSliderSpec, @"Current Width: %d pixels")
-		updateFloatValue(previewWidthSpec, previewWidthSliderSpec, @"Current Width: %.2f pixels")
-		updateFloatValue(previewHeightSpec, previewHeightSliderSpec, @"Current Height: %.2f pixels")
-		updateValue(minFPSSpec, minFPSSliderSpec, @"Current Framerate: %d FPS")
-		updateValue(maxFPSSpec, maxFPSSliderSpec, @"Current Framerate: %d FPS")
-		updateValue(PanoramaBufferRingSizeSpec, PanoramaBufferRingSizeSliderSpec, @"Current Value: %d")
-		updateValue(PanoramaPowerBlurBiasSpec, PanoramaPowerBlurBiasSliderSpec, @"Current Value: %d")
-		updateValue(PanoramaPowerBlurSlopeSpec, PanoramaPowerBlurSlopeSliderSpec, @"Current Value: %d")
+		[self updateCommonValues];
 				
 		_specifiers = [specs copy];
   	}
@@ -805,11 +803,10 @@ static NSString *Model()
 
 - (void)setTextHide:(id)value specifier:(PSSpecifier *)spec
 {
-	orig
-	setAvailable(![value boolValue], self.customTextSpec);
-	setAvailable(![value boolValue], self.inputTextSpec);
-	[self reloadSpecifier:self.customTextSpec];
-	[self reloadSpecifier:self.inputTextSpec];
+	orig(self, value, spec);
+	BOOL specAvailable = ![value boolValue];
+	setAvailable(self, specAvailable, self.customTextSpec);
+	setAvailable(self, specAvailable, self.inputTextSpec);
 }
 
 - (NSArray *)specifiers
@@ -839,8 +836,9 @@ static NSString *Model()
 			[specs removeObject:self.blueButtonSwitchSpec];
 		}
 		
-		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.customTextSpec);
-		setAvailable(![[self readPreferenceValue:self.hideTextSpec] boolValue], self.inputTextSpec);
+		BOOL specAvailable = ![[self readPreferenceValue:self.hideTextSpec] boolValue];
+		setAvailable(self, specAvailable, self.customTextSpec);
+		setAvailable(self, specAvailable, self.inputTextSpec);
 				
 		_specifiers = [specs copy];
   	}
@@ -853,7 +851,7 @@ static NSString *Model()
 
 - (void)update:(id)value specifier:(PSSpecifier *)spec
 {
-	orig
+	orig(self, value, spec);
 	update();
 }
 
@@ -883,7 +881,7 @@ static NSString *Model()
 		}
         
 		NSString *model = Model();
-		if (!isiOS7Up || isiPhone5s) {
+		if (!isiOS7Up || isiPhone5s || isiPhone6) {
 			[specs removeObject:self.BPNRSpec];
 			[specs removeObject:self.BPNRDescSpec];
 		}

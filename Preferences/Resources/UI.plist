@@ -180,8 +180,7 @@
 			<key>label</key>
 			<string>Blue Button</string>
 			<key>footerText</key>
-			<string>Same with "Better Pano Button" (Change Panorama button to blue).
-Will Kill Camera process automatically to take effect.</string>
+			<string>Same with "Better Pano Button" (Change Panorama button to blue).</string>
 		</dict>
 		<dict>
         	<key>cell</key>
@@ -190,8 +189,6 @@ Will Kill Camera process automatically to take effect.</string>
         	<false/>
         	<key>id</key>
 			<string>blueButtonSwitch</string>
-			<key>set</key>
-			<string>setBoolAndKillCam:specifier:</string>
         	<key>defaults</key>
         	<string>com.PS.actHack</string>
         	<key>key</key>

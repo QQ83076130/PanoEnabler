@@ -16,7 +16,7 @@
 			<key>id</key>
 			<string>MaxWidth</string>
 			<key>footerText</key>
-			<string>Current Width: 10800 pixels</string>
+			<string></string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -70,7 +70,7 @@
 			<key>id</key>
 			<string>PreviewWidth</string>
 			<key>footerText</key>
-			<string>Current Width: 306 pixels</string>
+			<string></string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -124,7 +124,7 @@
 			<key>id</key>
 			<string>PreviewHeight</string>
 			<key>footerText</key>
-			<string>Current Height: 86 pixels</string>
+			<string></string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -178,7 +178,7 @@
 			<key>id</key>
 			<string>MinFrameRate</string>
 			<key>footerText</key>
-			<string>Current Framerate: 15 FPS</string>
+			<string></string>
 		</dict>
        <dict>
 			<key>PostNotification</key>
@@ -232,7 +232,7 @@
 			<key>id</key>
 			<string>MaxFrameRate</string>
 			<key>footerText</key>
-			<string>Current FrameRate: 15 FPS</string>
+			<string></string>
 		</dict>
        <dict>
 			<key>PostNotification</key>
@@ -286,7 +286,7 @@
 			<key>id</key>
 			<string>PanoramaBufferRingSize</string>
 			<key>footerText</key>
-			<string>Current Value: 6</string>
+			<string></string>
 		</dict>
        <dict>
 			<key>PostNotification</key>
@@ -340,7 +340,7 @@
 			<key>id</key>
 			<string>PanoramaPowerBlurBias</string>
 			<key>footerText</key>
-			<string>Current Value: 30</string>
+			<string></string>
 		</dict>
        <dict>
 			<key>PostNotification</key>
@@ -394,7 +394,7 @@
 			<key>id</key>
 			<string>PanoramaPowerBlurSlope</string>
 			<key>footerText</key>
-			<string>Current Value: 16</string>
+			<string></string>
 		</dict>
 		 <dict>
 			<key>PostNotification</key>

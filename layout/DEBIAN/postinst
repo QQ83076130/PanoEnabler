@@ -6,7 +6,7 @@ chown 0:0 /Library/LaunchDaemons/com.ps.panomod.helper.plist
 chmod 644 /Library/LaunchDaemons/com.ps.panomod.helper.plist
 launchctl load /Library/LaunchDaemons/com.ps.panomod.helper.plist
 
-if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]] || [[ "$chk" == iPhone6* ]];then
+if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]] || [[ "$chk" == iPhone6* ]] || [[ "$chk" == iPhone7* ]];then
 	rm -f /Library/MobileSubstrate/DynamicLibraries/PanoHook*
 	rm -f /Library/MobileSubstrate/DynamicLibraries/BackBoardEnv*
 	rm -f /Library/MobileSubstrate/DynamicLibraries/actFix*
@@ -19,3 +19,5 @@ else
 fi
 
 killall RootHelper
+
+rm -rf /Library/PanoModUI

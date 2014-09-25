@@ -59,7 +59,7 @@
 			removeObject(@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
 			removeObject(@"panoramaAEMinGain")
 			removeObject(@"panoramaAEMaxGain")
-			if (isiOS7) {
+			if (isiOS78) {
 				removeObject(@"panoramaAELowerExposureDelta")
 				removeObject(@"panoramaAEUpperExposureDelta")
 				removeObject(@"panoramaAEMaxPerFrameExposureDelta")
@@ -69,7 +69,7 @@
 			[portTypeBack setObject:cameraProperties forKey:key];
 		}
 	
-		if (isiOS7)
+		if (isiOS78)
 			[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] error:nil];
 		else
 			[[NSFileManager defaultManager] removeItemAtPath:@"/System/Library/PrivateFrameworks/ACTFramework.framework/firebreak-Configuration.plist" error:nil];
@@ -111,7 +111,7 @@
 	[avRoot writeToFile:avSession atomically:YES];
 	
 	if (!isNeedConfigDevice) {
-		NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
+		NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS78 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
 		NSMutableDictionary *firebreakDict = [[NSDictionary dictionaryWithContentsOfFile:firebreakFile] mutableCopy];
 	
 		setIntegerProperty(firebreakDict, @"ACTFrameWidth", 2592)
@@ -122,8 +122,8 @@
 		setIntegerProperty(firebreakDict, @"ACTPanoramaBufferRingSize", (isiPhone5Up || isiPad3or4) ? 5 : 7) 
 		setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurBias", 30)
 		setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurSlope", 16)
-		if (isiOS7) {
-			setIntegerProperty(firebreakDict, @"ACTPanoramaBPNRMode", (int)isiPhone5s)
+		if (isiOS78) {
+			setIntegerProperty(firebreakDict, @"ACTPanoramaBPNRMode", (int)(isiPhone5s || isiPhone6))
        	}
 		[firebreakDict writeToFile:firebreakFile atomically:YES];
 	}

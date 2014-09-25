@@ -19,6 +19,8 @@
 #define isSlow			(isiPod4 || isiPhone4)
 #define is8MPCamDevice	(isiPhone4S || isiPhone5Up)
 
+#define isiOS78 (isiOS7 || isiOS8)
+
 #define INT intValue
 #define aFLOAT floatValue
 #define BOOLEAN boolValue

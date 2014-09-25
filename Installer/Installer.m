@@ -61,7 +61,7 @@
 			setObject(1024, @"panoramaAEMinGain")
 			setObject(4096, @"panoramaAEMaxGain")
 
-			if (isiOS7) {
+			if (isiOS78) {
 				setObject(65, @"panoramaAELowerExposureDelta")
 				setObject(256, @"panoramaAEUpperExposureDelta")
 				setObject(12, @"panoramaAEMaxPerFrameExposureDelta")
@@ -75,7 +75,7 @@
 		[root setObject:tuningParameters forKey:@"TuningParameters"];
 		[root writeToFile:platformPathWithFile atomically:YES];
     
-    	NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
+    	NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS78 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
 		if (![[NSFileManager defaultManager] fileExistsAtPath:firebreakFile]) {
 			NSLog(@"Adding firebreak-Configuration.plist to system.");
 			NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
@@ -89,7 +89,7 @@
 			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
 			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
 			setIntegerProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
-			if (isiOS7) {
+			if (isiOS78) {
 				setIntegerProperty(insideDict, @"ACTPanoramaBPNRMode", 1)
 				NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
         		[[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] withIntermediateDirectories:YES attributes:attr error:nil];
@@ -126,9 +126,15 @@
 		[avRoot writeToFile:avSession atomically:YES];
 	}
 	
+	NSFileManager *manager = [NSFileManager defaultManager];
 	if (!isiOS7) {
-		[[NSFileManager defaultManager] removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
-		[[NSFileManager defaultManager] removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
+		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
+		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.plist" error:nil];
+		[manager removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
+	}
+	if (isiOS8) {
+		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/actFix.dylib" error:nil];
+		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/actFix.plist" error:nil];
 	}
 	
 	return YES;

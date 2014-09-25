@@ -4,7 +4,7 @@ ARCHS = armv7 arm64
 
 BUNDLE_NAME = PanoPreferences
 PanoPreferences_FILES = Preferences.mm
-PanoPreferences_FRAMEWORKS = CoreGraphics UIKit
+PanoPreferences_FRAMEWORKS = CoreGraphics Social UIKit
 PanoPreferences_PRIVATE_FRAMEWORKS = Preferences
 PanoPreferences_INSTALL_PATH = /Library/PreferenceBundles
 

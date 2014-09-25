@@ -26,7 +26,7 @@ static void PanoModLoader()
 	readBoolOption(@"hideLabel", hideLabel);
 	readBoolOption(@"hideLevelBar", hideLevelBar);
 	readBoolOption(@"panoZoom", panoZoom);
-	readBoolOption(@"PanoGridOn", PanoGridOn);
+	readBoolOption(@"panoGrid", PanoGridOn);
 	readBoolOption(@"hideLabelBG", hideLabelBG);
 	readBoolOption(@"hideGhostImg", hideGhostImg);
 	readBoolOption(@"BPNR", BPNR);

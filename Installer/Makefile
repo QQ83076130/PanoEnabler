@@ -1,7 +1,8 @@
 GO_EASY_ON_ME = 1
+ARCHS = armv7 armv7s arm64
 
 include ../theos/makefiles/common.mk
-export ARCHS = armv7 armv7s arm64
+
 TOOL_NAME = PanoInstaller PanoRemover
 
 PanoInstaller_FILES = Installer.m

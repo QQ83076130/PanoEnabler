@@ -33,11 +33,13 @@
       		<key>id</key>
       		<string>PanoGuideViewController</string>
       		<key>label</key>
-			<string>ℹ Guide</string>
+			<string>ℹ Guides</string>
 			<key>name</key>
-			<string>Guide</string>
+			<string>Guides</string>
 			<key>action</key>
 			<string>showController:</string>
+			<key>alignment</key>
+			<integer>1</integer>
       </dict>
       <dict>
       		<key>cell</key>
@@ -50,6 +52,8 @@
 			<string>FAQ</string>
 			<key>action</key>
 			<string>showController:</string>
+			<key>alignment</key>
+			<integer>1</integer>
       </dict>
       <dict>
       		<key>cell</key>
@@ -62,6 +66,8 @@
 			<string>Thanks</string>
 			<key>action</key>
 			<string>showController:</string>
+			<key>alignment</key>
+			<integer>1</integer>
       </dict>
       <dict>
 			<key>cell</key>
@@ -78,6 +84,8 @@
 			<string>PanoSlidersController</string>
 			<key>action</key>
 			<string>showController:</string>
+			<key>alignment</key>
+			<integer>1</integer>
 		</dict>
 		 <dict>
 			<key>cell</key>
@@ -88,6 +96,8 @@
 			<string>PanoUIController</string>
 			<key>action</key>
 			<string>showController:</string>
+			<key>alignment</key>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -98,6 +108,8 @@
 			<string>PanoSysController</string>
 			<key>action</key>
 			<string>showController:</string>
+			<key>alignment</key>
+			<integer>1</integer>
 		</dict>
       <dict>
         	<key>cell</key>
@@ -106,8 +118,6 @@
         	<false/>
         	<key>id</key>
 			<string>PanoEnabled</string>
-			<key>set</key>
-			<string>setBoolAndKillCam:specifier:</string>
         	<key>defaults</key>
         	<string>com.PS.actHack</string>
         	<key>key</key>
@@ -117,6 +127,20 @@
         	<key>PostNotification</key>
         	<string>com.PS.actHack.prefs</string>
       </dict>
+      <dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>☕ Donate</string>
+			<key>action</key>
+			<string>donate:</string>
+			<key>alignment</key>
+			<integer>1</integer>
+		</dict>
       <dict>
         <key>cell</key>
         <string>PSGroupCell</string>

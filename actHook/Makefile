@@ -1,4 +1,5 @@
 ARCHS = armv7 arm64
+SDKVERSION = 7.0
 
 include ../theos/makefiles/common.mk
 

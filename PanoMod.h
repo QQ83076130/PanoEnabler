@@ -2,7 +2,6 @@
 #import <UIKit/UIKit.h>
 #include <substrate.h>
 
-#define isiOS7Up (kCFCoreFoundationVersionNumber > 793.00)
 #define isiOS67 (isiOS6 || isiOS7)
 #define isiOS78 (isiOS7 || isiOS8)
 
