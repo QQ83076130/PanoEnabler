@@ -1,4 +1,5 @@
 #import "../definitions.h"
+#import "../PanoMod.h"
 #import <UIKit/UIKit.h>
 #import <Preferences/PSViewController.h>
 #import <Preferences/PSListController.h>
@@ -41,7 +42,7 @@
 - (UITableView *)tableView;
 @end
 
-@interface PanoSlidersController : PSListController <UIActionSheetDelegate> {}
+@interface PanoSlidersController : PSListController
 @property (nonatomic, retain) PSSpecifier *maxWidthSpec;
 @property (nonatomic, retain) PSSpecifier *maxWidthSliderSpec;
 @property (nonatomic, retain) PSSpecifier *maxWidthInputSpec;
@@ -93,10 +94,10 @@
 @end
 
 #define kFontSize 14
-#define CELL_CONTENT_MARGIN 18
+#define CELL_CONTENT_MARGIN 25
 #define PanoModBrief \
 @"Enable Panorama on every unsupported devices.\n\
-Then Customize the interface and properties of Panorama with PanoMod."
+Then Customize the interface and properties of panorama with PanoMod."
 
 #define Id [[spec properties] objectForKey:@"id"]
 
@@ -130,6 +131,26 @@ static void orig(PSListController *self, id value, PSSpecifier *spec)
 {
 	[self setPreferenceValue:value specifier:spec];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+static CGFloat cellHeight(id self, UITableView *tableView, NSString *string)
+{
+	CGSize size;
+	CGSize maxSize = CGSizeMake(tableView.frame.size.width, MAXFLOAT);
+	UIFont *font = [UIFont systemFontOfSize:kFontSize];
+	if ([string respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)]) {
+		NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+		[style setLineBreakMode:NSLineBreakByWordWrapping];
+		[style setAlignment:NSTextAlignmentLeft];
+		NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:style};
+		size = [string boundingRectWithSize:maxSize options:NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+	} else {
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+		size = [string sizeWithFont:font constrainedToSize:maxSize lineBreakMode:NSLineBreakByWordWrapping];
+		#pragma clang diagnostic pop
+	}
+	return ceilf(size.height);
 }
 				
 static void openLink(NSString *url)
@@ -211,7 +232,7 @@ static NSString *Model()
 {
 	SLComposeViewController *twitter = [[SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter] retain];
 	[twitter setInitialText:@"#PanoMod by @PoomSmart is awesome!"];
-	[(UIViewController *)self presentViewController:twitter animated:YES completion:nil];
+	[[self navigationController] presentViewController:twitter animated:YES completion:nil];
 }
 
 - (void)donate:(id)param
@@ -290,7 +311,7 @@ static NSString *Model()
 
 - (CGFloat)preferredHeightForWidth:(CGFloat)arg1
 {
-    return 70;
+    return isiOS6 ? 90 : 70;
 }
 
 @end
@@ -499,9 +520,7 @@ static NSString *Model()
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	CGSize constraint = CGSizeMake([tableView frame].size.width - (CELL_CONTENT_MARGIN * 2), MAXFLOAT);
-	CGSize size = [[[[self tableView:tableView cellForRowAtIndexPath:indexPath] textLabel] text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
-	return size.height + CELL_CONTENT_MARGIN;
+	return cellHeight(self, tableView, [self tableView:tableView cellForRowAtIndexPath:indexPath].textLabel.text) + CELL_CONTENT_MARGIN;
 }
 
 @end
@@ -623,7 +642,7 @@ static NSString *Model()
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 65.0f;
+	return cellHeight(self, tableView, [self tableView:tableView cellForRowAtIndexPath:indexPath].detailTextLabel.text) + CELL_CONTENT_MARGIN + kFontSize;
 }
 
 @end
