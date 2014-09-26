@@ -32,7 +32,7 @@ static void PanoModLoader()
 	readBoolOption(@"BPNR", BPNR);
 	readBoolOption(@"Pano8MP", Pano8MP);
 	readBoolOption(@"noArrowTail", noArrowTail);
-	readIntOption(@"defaultDirection", defaultDirection, 1);
+	readIntOption(@"defaultDirection", defaultDirection, 0);
 	readIntOption(@"PreviewWidth", PreviewWidth, 306);
 	readIntOption(@"PreviewHeight", PreviewHeight, 86);
 
@@ -492,29 +492,6 @@ static BOOL padTextHook = NO;
 - (void)setImageControlMode:(int)mode
 {
 	%orig((PanoDarkFix && mode == 4) ? 1 : mode);
-}
-
-%end
-
-%hook AVCaptureSession
-
-+ (NSDictionary *)avCaptureSessionPlist
-{
-	NSDictionary *prefDict = [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
-	NSMutableDictionary *avRoot = [%orig mutableCopy];
-	NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
-	NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
-	NSMutableDictionary *presetPhoto = [[index0 objectForKey:@"AVCaptureSessionPresetPhoto2592x1936"] mutableCopy];
-	if (presetPhoto == nil)
-		return %orig;
-	NSMutableDictionary *liveSourceOptions = [[presetPhoto objectForKey:@"LiveSourceOptions"] mutableCopy];
-	[liveSourceOptions setObject:@(val(prefDict, @"PanoramaMaxFrameRate", 24, INT)) forKey:@"MaxFrameRate"];
-	[liveSourceOptions setObject:@(val(prefDict, @"PanoramaMinFrameRate", 15, INT)) forKey:@"MinFrameRate"];
-	[presetPhoto setObject:liveSourceOptions forKey:@"LiveSourceOptions"];
-	[index0 setObject:presetPhoto forKey:@"AVCaptureSessionPresetPhoto2592x1936"];
-	[avCap replaceObjectAtIndex:0 withObject:index0];
-	[avRoot setObject:avCap forKey:@"AVCaptureDevices"];
-	return (NSDictionary *)avRoot;
 }
 
 %end

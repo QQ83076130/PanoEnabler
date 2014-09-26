@@ -209,6 +209,23 @@ static NSString *Model()
 	return modelName;
 }
 
+static NSDictionary *prefDict()
+{
+	return [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
+}
+
+static int integerValueForKey(NSString *key, int defaultValue)
+{
+	return prefDict()[key] ? [prefDict()[key] intValue] : defaultValue;
+}
+
+static void writeIntegerValueForKey(int value, NSString *key)
+{
+	NSMutableDictionary *dict = [prefDict() mutableCopy] ?: [NSMutableDictionary dictionary];
+	[dict setObject:@(value) forKey:key];
+	[dict writeToFile:PREF_PATH atomically:YES];
+}
+
 
 @interface actHackPreferenceController : PSListController
 @property (nonatomic, retain) PSSpecifier *PanoEnabledSpec;
@@ -813,6 +830,54 @@ static NSString *Model()
 		_specifiers = [specs copy];
   	}
 	return _specifiers;
+}
+
+@end
+
+@interface PanoDirectionCell : PSTableCell
+@end
+
+@implementation PanoDirectionCell
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(id)identifier specifier:(PSSpecifier *)specifier
+{
+	if (self == [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier specifier:specifier]) {
+		UISegmentedControl *directions = [[[UISegmentedControl alloc] initWithItems:@[@"Left", @"Right"]] autorelease];
+		[directions addTarget:self action:@selector(directionAction:) forControlEvents:UIControlEventValueChanged];
+		directions.selectedSegmentIndex = integerValueForKey(@"defaultDirection", 0);
+		[self setAccessoryView:directions];
+	}
+	return self;
+}
+
+- (void)directionAction:(UISegmentedControl *)segment
+{
+	writeIntegerValueForKey(segment.selectedSegmentIndex, @"defaultDirection");
+}
+
+- (SEL)action
+{
+	return nil;
+}
+
+- (id)target
+{
+	return nil;
+}
+
+- (SEL)cellAction
+{
+	return nil;
+}
+
+- (id)cellTarget
+{
+	return nil;
+}
+
+- (void)dealloc
+{
+	[super dealloc];
 }
 
 @end

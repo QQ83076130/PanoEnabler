@@ -18,11 +18,11 @@
 		</dict>
 		 <dict>
 			<key>cell</key>
-			<string>PSLinkListCell</string>
+			<string>PSLinkCell</string>
 			<key>defaults</key>
 			<string>com.PS.actHack</string>
-			<key>detail</key>
-			<string>PSListItemsController</string>
+			<key>cellClass</key>
+			<string>PanoDirectionCell</string>
 			<key>key</key>
 			<string>defaultDirection</string>
 			<key>label</key>
@@ -36,8 +36,8 @@
 			</array>
 			<key>validValues</key>
 			<array>
+				<integer>0</integer>
 				<integer>1</integer>
-				<integer>2</integer>
 			</array>
 		</dict>
 		<dict>
