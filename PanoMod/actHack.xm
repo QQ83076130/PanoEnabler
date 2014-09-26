@@ -584,6 +584,14 @@ static BOOL padTextHook = NO;
 
 %hook PLCameraPanoramaBrokenArrowView
 
+- (id)initWithFrame:(struct CGRect)frame
+{
+	self = %orig;
+	if (self)
+		[self setHidden:hideArrow];
+	return self;
+}
+
 - (CGPathRef)_newTailPiecesPathOfWidth:(float *)width
 {
 	return noArrowTail ? nil : %orig;
@@ -637,6 +645,21 @@ static BOOL padTextHook = NO;
 
 %group Common8
 
+%hook CAMCameraView
+
+- (BOOL)_shouldHideGridView
+{
+	if (isPanorama && PanoGridOn) {
+		MSHookIvar<int>([%c(CAMCaptureController) sharedInstance], "_cameraMode") = 0;
+		BOOL r = %orig;
+		MSHookIvar<int>([%c(CAMCaptureController) sharedInstance], "_cameraMode") = 3;
+		return r;
+	}
+	return %orig;
+}
+
+%end
+
 %hook CAMPanoramaArrowView
 
 - (id)initWithFrame:(struct CGRect)frame
@@ -645,6 +668,24 @@ static BOOL padTextHook = NO;
 	if (self)
 		[self setHidden:hideArrow];
 	return self;
+}
+
+- (CGPathRef)_newTailPiecesPathOfWidth:(float *)width
+{
+	return noArrowTail ? nil : %orig;
+}
+
+%end
+
+%hook CAMPanoramaView
+
+- (void)updateUI
+{
+	%orig;
+	UIView *labelBG = MSHookIvar<UIView *>(self, "_instructionalTextBackground");
+	UIImageView *ghostImg = MSHookIvar<UIImageView *>(self, "_previewGhostImageView");
+	[labelBG setHidden:hideLabelBG];
+	[ghostImg setHidden:hideGhostImg];
 }
 
 %end

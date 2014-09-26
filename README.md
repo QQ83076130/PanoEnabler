@@ -25,4 +25,4 @@ Tested in iOS 6.0 - 7.1
 IMPORTANT
 ===========
 
-- Thanks for all Beta Testers for this tweak !
+- Thanks to all Beta Testers for this tweak !

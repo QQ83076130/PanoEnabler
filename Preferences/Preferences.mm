@@ -198,12 +198,11 @@ static NSString *Model()
 - (id)init
 {
 	if (self == [super init]) {
-		UIButton *heart = [[UIButton alloc] initWithFrame:CGRectZero];
+		UIButton *heart = [[[UIButton alloc] initWithFrame:CGRectZero] autorelease];
 		[heart setImage:[UIImage imageNamed:@"Heart" inBundle:[NSBundle bundleWithPath:@"/Library/PreferenceBundles/PanoPreferences.bundle"]] forState:UIControlStateNormal];
 		[heart sizeToFit];
 		[heart addTarget:self action:@selector(love) forControlEvents:UIControlEventTouchUpInside];
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:heart] autorelease];
-		[heart release];
 	}
 	return self;
 }
@@ -605,7 +604,7 @@ static NSString *Model()
 	switch (indexPath.row)
 	{
 		addPerson(0, 	@"@PoomSmart (Main Developer)", @"Tested: iPod touch 4G, iPod touch 5G, iPhone 4S, iPad 2G (GSM).")
-		addPerson(1, 	@"@Pix3lDemon", 	@"Tested: iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G, iPad 3G.")
+		addPerson(1, 	@"@Pix3lDemon", 				@"Tested: iPhone 3GS, iPhone 4, iPod touch 4G, iPad 2G, iPad 3G.")
 		addPerson(2,	@"@BassamKassem1", 				@"Tested: iPhone 4 GSM.")
 		addPerson(3,	@"@H4lfSc0p3R",					@"Tested: iPhone 4 GSM, iPhone 4S, iPod touch 4G.")
 		addPerson(4, 	@"@iPMisterX", 					@"Tested: iPhone 3GS.")
