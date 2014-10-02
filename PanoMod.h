@@ -69,7 +69,3 @@
 @property(readonly, assign, nonatomic) CAMFlashButton *_flashButton;
 @property(readonly, assign, nonatomic) CAMTopBar *_topBar;
 @end
-
-@interface UIImage (Addition)
-+ (UIImage *)imageNamed:(NSString *)name inBundle:(NSBundle *)bundle;
-@end

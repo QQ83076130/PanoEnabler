@@ -249,7 +249,8 @@ static void writeIntegerValueForKey(int value, NSString *key)
 {
 	SLComposeViewController *twitter = [[SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter] retain];
 	[twitter setInitialText:@"#PanoMod by @PoomSmart is awesome!"];
-	[[self navigationController] presentViewController:twitter animated:YES completion:nil];
+	if (twitter != nil)
+		[[self navigationController] presentViewController:twitter animated:YES completion:nil];
 }
 
 - (void)donate:(id)param
@@ -844,6 +845,10 @@ static void writeIntegerValueForKey(int value, NSString *key)
 	if (self == [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier specifier:specifier]) {
 		UISegmentedControl *directions = [[[UISegmentedControl alloc] initWithItems:@[@"Left", @"Right"]] autorelease];
 		[directions addTarget:self action:@selector(directionAction:) forControlEvents:UIControlEventValueChanged];
+		if (!isiOS7Up) {
+			CGRect frame = directions.frame;
+			[directions setFrame:CGRectMake(frame.origin.x, frame.origin.y, 115, 30)];
+		}
 		directions.selectedSegmentIndex = integerValueForKey(@"defaultDirection", 0);
 		[self setAccessoryView:directions];
 	}

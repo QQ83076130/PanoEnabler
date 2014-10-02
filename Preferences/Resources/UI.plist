@@ -18,7 +18,7 @@
 		</dict>
 		 <dict>
 			<key>cell</key>
-			<string>PSLinkCell</string>
+			<string>PSTableCell</string>
 			<key>defaults</key>
 			<string>com.PS.actHack</string>
 			<key>cellClass</key>

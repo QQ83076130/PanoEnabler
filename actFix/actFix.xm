@@ -30,26 +30,20 @@ MSHook(id, PLCreateThumbnailsFromJPEGData, PLIOSurfaceData *jpegData, id r2, id 
 
 %end
 
-%group iOS70
+%group iOS7
 
 %hook PLImageUtilities
 
-+ (BOOL)generateThumbnailsFromJPEGData:(PLIOSurfaceData *)jpegData inputSize:(CGSize)size preCropLargeThumbnailSize:(CGSize)size3 postCropLargeThumbnailSize:(CGSize)size4 preCropSmallThumbnailSize:(CGSize)size5 postCropSmallThumbnailSize:(CGSize)size6 outSmallThumbnailImageRef:(CGImageRef *)ref outLargeThumbnailImageRef:(CGImageRef *)ref8 outLargeThumbnailJPEGData:(id *)data generateFiltersBlock:(id)block
-{
-	if (shouldHook)
-		hook(jpegData);
-	return %orig;
-}
-
-%end
-
-%end
-
-%group iOS71
-
-%hook PLImageUtilities
-
-+ (BOOL)generateThumbnailsFromJPEGData:(PLIOSurfaceData *)jpegData inputSize:(CGSize)size preCropLargeThumbnailSize:(CGSize)size3
++ (BOOL)generateThumbnailsFromJPEGData:(PLIOSurfaceData *)jpegData
+		inputSize:(CGSize)size
+		preCropLargeThumbnailSize:(CGSize)size3
+		postCropLargeThumbnailSize:(CGSize)size4
+		preCropSmallThumbnailSize:(CGSize)size5
+		postCropSmallThumbnailSize:(CGSize)size6
+		outSmallThumbnailImageRef:(CGImageRef *)ref
+		outLargeThumbnailImageRef:(CGImageRef *)ref8
+		outLargeThumbnailJPEGData:(id *)data
+		generateFiltersBlock:(id)block
 {
 	if (shouldHook)
 		hook(jpegData);
@@ -84,11 +78,8 @@ MSHook(id, PLCreateThumbnailsFromJPEGData, PLIOSurfaceData *jpegData, id r2, id 
 		%init(iOS6);
 		MSHookFunction((void *)MSFindSymbol(NULL, "_PLCreateThumbnailsFromJPEGData"), (void *)$PLCreateThumbnailsFromJPEGData, (void **)&_PLCreateThumbnailsFromJPEGData);
 	}
-	else if (isiOS70) {
-		%init(iOS70);
-	}
-	else if (isiOS71) {
-		%init(iOS71);
+	else if (isiOS7) {
+		%init(iOS7);
 	}
 	[pool drain];
 }
