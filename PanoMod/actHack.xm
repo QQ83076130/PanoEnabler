@@ -174,8 +174,29 @@ static void enableLLB(id self)
 - (id)initWithFrame:(CGRect)frame centerYOffset:(float)offset panoramaPreviewScale:(float)scale panoramaPreviewSize:(CGSize)size
 {
 	self = %orig;
+	if (self != nil) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+			int direction = MSHookIvar<int>(self, "_direction");
+			int trueDirection = direction - 1;
+			if (defaultDirection != trueDirection) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+					[self _arrowWasTapped:nil];
+				});
+			}
+		});
+	}
+	return self;
+}
+
+%end
+
+%hook PLCameraPanoramaBrokenArrowView
+
+- (id)initWithFrame:(struct CGRect)frame
+{
+	self = %orig;
 	if (self)
-		[self setCaptureDirection:defaultDirection];
+		MSHookIvar<UIImageView *>(self, "_arrowTailGlow").hidden = noArrowTail;
 	return self;
 }
 
@@ -235,12 +256,12 @@ static BOOL padTextHook = NO;
 	id panoramaView = nil;
 	panoramaView = isiOS8 ? (id)MSHookIvar<CAMPanoramaView *>(self, "_panoramaView") : (id)MSHookIvar<PLCameraPanoramaView *>(self, "_panoramaView");
 	if (panoramaView != nil) {
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.7*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-			[panoramaView _arrowWasTapped:nil];
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
 			int direction = MSHookIvar<int>(panoramaView, "_direction");
-			if (defaultDirection != direction) {
+			int trueDirection = direction - 1;
+			if (defaultDirection != trueDirection) {
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-					[(id)panoramaView _arrowWasTapped:nil];
+					[panoramaView _arrowWasTapped:nil];
 				});
 			}
 		});
@@ -564,8 +585,9 @@ static BOOL padTextHook = NO;
 - (id)initWithFrame:(struct CGRect)frame
 {
 	self = %orig;
-	if (self)
+	if (self) {
 		[self setHidden:hideArrow];
+	}
 	return self;
 }
 

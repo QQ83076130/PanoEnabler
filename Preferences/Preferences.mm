@@ -587,33 +587,33 @@ static void writeIntegerValueForKey(int value, NSString *key)
 	switch (indexPath.row)
 	{
 		case 0:
-			openLink(@"https://twitter.com/PoomSmart"); break;
+			openLink(PS_TWITTER_URL); break;
 		case 1:
-			openLink(@"https://twitter.com/Pix3lDemon"); break;
+			openLink(@"twitter://user?screen_name=Pix3lDemon"); break;
 		case 2:
-			openLink(@"https://twitter.com/BassamKassem1"); break;
+			openLink(@"twitter://user?screen_name=BassamKassem1"); break;
 		case 3:
-			openLink(@"https://twitter.com/H4lfSc0p3R"); break;
+			openLink(@"twitter://user?screen_name=H4lfSc0p3R"); break;
 		case 4:
-			openLink(@"https://twitter.com/iPMisterX"); break;
+			openLink(@"twitter://user?screen_name=iPMisterX"); break;
 		case 5:
-			openLink(@"https://twitter.com/nenocrack"); break;
+			openLink(@"twitter://user?screen_name=nenocrack"); break;
 		case 6:
-			openLink(@"https://twitter.com/Raem0n"); break;
+			openLink(@"twitter://user?screen_name=Raem0n"); break;
 		case 7:
-			openLink(@"https://twitter.com/NTD123"); break;
+			openLink(@"twitter://user?screen_name=NTD123"); break;
 		case 8:
 			openLink(@"https://www.facebook.com/itenb?fref=ts"); break;
 		case 9:
-			openLink(@"https://twitter.com/xtoyou"); break;
+			openLink(@"twitter://user?screen_name=xtoyou"); break;
 		case 10:
-			openLink(@"https://twitter.com/n4te2iver"); break;
+			openLink(@"twitter://user?screen_name=n4te2iver"); break;
 		case 11:
-			openLink(@"https://twitter.com/NavehIDL"); break;
+			openLink(@"twitter://user?screen_name=NavehIDL"); break;
 		case 12:
 			openLink(@"https://www.facebook.com/omkung?fref=ts"); break;
 		case 13:
-			openLink(@"https://twitter.com/iPFaHaD"); break;
+			openLink(@"twitter://user?screen_name=iPFaHaD"); break;
 	}
 }
 
@@ -858,6 +858,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 - (void)directionAction:(UISegmentedControl *)segment
 {
 	writeIntegerValueForKey(segment.selectedSegmentIndex, @"defaultDirection");
+	notify_post(PreferencesChangedNotification);
 }
 
 - (SEL)action

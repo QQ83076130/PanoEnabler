@@ -10,6 +10,7 @@ CFTypeRef MGCopyAnswer(CFStringRef KeyToCopy);
 CFTypeRef _MGCopyAnswer(CFStringRef KeyToCopy)
 {
 	CFTypeRef ReturnData;
+	//q4cLktMwtrx8dCJAQTeqTg
     if (CFStringCompare(KeyToCopy, CFSTR("PanoramaCameraCapability"), 0) == 0)
         return kCFBooleanTrue;
     ReturnData = MGCopyAnswer(KeyToCopy);
@@ -18,6 +19,7 @@ CFTypeRef _MGCopyAnswer(CFStringRef KeyToCopy)
 
 DYLD_INTERPOSE(_MGCopyAnswer, MGCopyAnswer)
 
-int main () {
+int main ()
+{
 	return 0;
 }
