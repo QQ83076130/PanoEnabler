@@ -1,4 +1,3 @@
-#import "../definitions.h"
 #import "../PanoMod.h"
 #import <substrate.h>
 #import <sys/utsname.h>
@@ -20,12 +19,12 @@ static void hook(PLIOSurfaceData *jpegData)
 
 %group iOS6
 
-extern "C" id PLCreateThumbnailsFromJPEGData(PLIOSurfaceData *, id, id, BOOL);
-MSHook(id, PLCreateThumbnailsFromJPEGData, PLIOSurfaceData *jpegData, id r2, id r3, BOOL r4)
+id (*orig_PLCreateThumbnailsFromJPEGData)(PLIOSurfaceData *, id, id, BOOL);
+id replaced_PLCreateThumbnailsFromJPEGData(PLIOSurfaceData *jpegData, id r2, id r3, BOOL r4)
 {
 	if (shouldHook)
 		hook(jpegData);
-	return _PLCreateThumbnailsFromJPEGData(jpegData, r2, r3, r4);
+	return orig_PLCreateThumbnailsFromJPEGData(jpegData, r2, r3, r4);
 }
 
 %end
@@ -71,12 +70,13 @@ MSHook(id, PLCreateThumbnailsFromJPEGData, PLIOSurfaceData *jpegData, id r2, id 
 
 %end
 
-%ctor {
+%ctor
+{
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	%init(Common);
 	if (isiOS6) {
 		%init(iOS6);
-		MSHookFunction((void *)MSFindSymbol(NULL, "_PLCreateThumbnailsFromJPEGData"), (void *)$PLCreateThumbnailsFromJPEGData, (void **)&_PLCreateThumbnailsFromJPEGData);
+		MSHookFunction((void *)MSFindSymbol(NULL, "_PLCreateThumbnailsFromJPEGData"), (void *)replaced_PLCreateThumbnailsFromJPEGData, (void **)&orig_PLCreateThumbnailsFromJPEGData);
 	}
 	else if (isiOS7) {
 		%init(iOS7);

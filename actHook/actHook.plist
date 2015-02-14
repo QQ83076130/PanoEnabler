@@ -1,1 +1,1 @@
-{ Filter = { Bundles = ( "com.apple.ACTFramework" ); }; }
+{ Filter = { Bundles = ( "com.apple.camera", "com.apple.springboard" ); }; }

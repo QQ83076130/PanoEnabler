@@ -3,7 +3,7 @@ SDKVERSION = 6.0
 ARCHS = armv7
 
 TWEAK_NAME = actFix
-actFix_FILES = actFix.xm
+actFix_FILES = Tweak.xm
 actFix_FRAMEWORKS = UIKit
 
 include ../theos/makefiles/common.mk

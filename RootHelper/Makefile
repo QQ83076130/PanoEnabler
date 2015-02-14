@@ -1,5 +1,5 @@
 GO_EASY_ON_ME = 1
-ARCHS = armv7 armv7s arm64
+ARCHS = armv7 arm64
 
 TOOL_NAME = RootHelper
 

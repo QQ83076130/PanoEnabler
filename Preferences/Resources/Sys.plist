@@ -16,7 +16,7 @@
 			<key>label</key>
 			<string>Panorama Low Light Boost</string>
 			<key>footerText</key>
-			<string>Enable Panorama Low-light mode. (LLBPano)
+			<string>Enable Panorama Low-light mode.
 LLBiPT5 is need to be installed first for iPod touch 5G.</string>
 		</dict>
 		<dict>
@@ -27,13 +27,11 @@ LLBiPT5 is need to be installed first for iPod touch 5G.</string>
         	<key>id</key>
 			<string>LLBPanoSwitch</string>
         	<key>defaults</key>
-        	<string>com.PS.actHack</string>
+        	<string>com.PS.LLBPano</string>
         	<key>key</key>
-        	<string>LLBPano</string>
+        	<string>LLBPanoEnabled</string>
         	<key>label</key>
         	<string>Low-light mode</string>
-        	<key>PostNotification</key>
-        	<string>com.PS.actHack.prefs</string>
       </dict>
       <dict>
 			<key>cell</key>
@@ -74,7 +72,7 @@ For iPod touch 5G users, no need to install LLBiPT5.</string>
 			<key>id</key>
 			<string>FMDesc</string>
 			<key>footerText</key>
-			<string>Allow toggling torch in Panorama mode. (Flashorama)
+			<string>Allow torch in Panorama mode.
 Flash mode:
 1. Off = Turn off torch
 2. On = Turn on torch
@@ -84,17 +82,17 @@ Flash mode:
         	<key>cell</key>
         	<string>PSSwitchCell</string>
        		<key>default</key>
-        	<false/>
+        	<true/>
         	<key>defaults</key>
-        	<string>com.PS.actHack</string>
+        	<string>com.PS.Flashorama</string>
         	<key>key</key>
-        	<string>FMisOn</string>
+        	<string>FMEnabled</string>
         	<key>id</key>
 			<string>FMSwitch</string>
         	<key>label</key>
         	<string>Enabled</string>
         	<key>PostNotification</key>
-        	<string>com.PS.actHack.prefs</string>
+        	<string>com.PS.Flashorama.settingschanged</string>
       </dict>
       <dict>
 			<key>cell</key>

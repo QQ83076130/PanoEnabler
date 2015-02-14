@@ -17,10 +17,11 @@ Supported Devices
 - iPad 3
 - iPad 4
 - iPad Air
+- iPad Air 2
 - iPad mini 1G
 - iPad mini 2G
 
-Tested in iOS 6.0 - 7.1
+Tested in iOS 6.0 - 8.1
 
 IMPORTANT
 ===========

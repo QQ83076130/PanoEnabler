@@ -1,4 +1,3 @@
-#import "../definitions.h"
 #import "../PanoMod.h"
 #import <UIKit/UIKit.h>
 #import <Preferences/PSViewController.h>
@@ -11,6 +10,14 @@
 #include <sys/utsname.h>
 #import <notify.h>
 
+static NSString *Model()
+{
+	struct utsname systemInfo;
+	uname(&systemInfo);
+	NSString *modelName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+	return modelName;
+}
+
 @interface PSViewController (PanoMod)
 - (void)setView:(id)view;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
@@ -22,6 +29,7 @@
 @end
 
 @interface PSTableCell (PanoMod)
+@property(retain, nonatomic) UIView *accessoryView;
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)identifier specifier:(PSSpecifier *)specifier;
 @end
 
@@ -99,7 +107,7 @@
 @"Enable Panorama on every unsupported devices.\n\
 Then Customize the interface and properties of panorama with PanoMod."
 
-#define Id [[spec properties] objectForKey:@"id"]
+#define Id [spec identifier]
 
 #define getSpec(mySpec, string)	if ([Id isEqualToString:string]) \
                 			self.mySpec = [spec retain];
@@ -140,8 +148,8 @@ static CGFloat cellHeight(id self, UITableView *tableView, NSString *string)
 	UIFont *font = [UIFont systemFontOfSize:kFontSize];
 	if ([string respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)]) {
 		NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-		[style setLineBreakMode:NSLineBreakByWordWrapping];
-		[style setAlignment:NSTextAlignmentLeft];
+		style.lineBreakMode = NSLineBreakByWordWrapping;
+		style.alignment = NSTextAlignmentLeft;
 		NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:style};
 		size = [string boundingRectWithSize:maxSize options:NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
 	} else {
@@ -201,14 +209,6 @@ static void update()
 	notify_post("com.ps.panomod.roothelper");
 }
 
-static NSString *Model()
-{
-	struct utsname systemInfo;
-	uname(&systemInfo);
-	NSString *modelName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-	return modelName;
-}
-
 static NSDictionary *prefDict()
 {
 	return [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
@@ -251,6 +251,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 	[twitter setInitialText:@"#PanoMod by @PoomSmart is awesome!"];
 	if (twitter != nil)
 		[[self navigationController] presentViewController:twitter animated:YES completion:nil];
+	[twitter release];
 }
 
 - (void)donate:(id)param
@@ -265,10 +266,10 @@ static void writeIntegerValueForKey(int value, NSString *key)
 	UINavigationController *nav = [[[UINavigationController alloc] initWithRootViewController:controller] autorelease];
 	BOOL moreOptions = [controller respondsToSelector:@selector(reset)];
 	UIBarButtonItem *rightBtn = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commonDismiss)] autorelease];
-	[[controller navigationItem] setRightBarButtonItem:rightBtn];
+	[controller navigationItem].rightBarButtonItem = rightBtn;
 	if (moreOptions) {
 		UIBarButtonItem *leftBtn = [[[UIBarButtonItem alloc] initWithTitle:@"Reset" style:UIBarButtonItemStyleBordered target:controller action:@selector(reset)] autorelease];
-		[[controller navigationItem] setLeftBarButtonItem:leftBtn];
+		[controller navigationItem].leftBarButtonItem = leftBtn;
 	}
 	nav.modalPresentationStyle = 2;
 	[[self navigationController] presentViewController:nav animated:YES completion:nil];
@@ -289,7 +290,8 @@ static void writeIntegerValueForKey(int value, NSString *key)
 		}
         
 		NSString *model = Model();
-		if (isiPhone4S || isiPhone5Up || isiPod5)
+		BOOL panoDevice = isiPhone4S || isiPhone5Up || isiPod5 || isiPadAir2;
+		if (panoDevice || isiOS8Up)
 			[specs removeObject:self.PanoEnabledSpec];
 	
 		_specifiers = [specs copy];
@@ -305,18 +307,18 @@ static void writeIntegerValueForKey(int value, NSString *key)
 {
 	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Banner" specifier:specifier];
 	if (self) {
-		int width = [[UIScreen mainScreen] bounds].size.width;
-		CGRect frame = CGRectMake(0, -10, width, 60);
+		NSInteger width = [[UIScreen mainScreen] bounds].size.width;
+		CGRect frame = CGRectMake(0.0f, -10.0f, width, 60.0f);
 
 		tweakName = [[UILabel alloc] initWithFrame:frame];
-		[tweakName setNumberOfLines:1];
+		tweakName.numberOfLines = 1;
 		tweakName.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-		tweakName.font = [UIFont fontWithName:@"HelveticaNeue" size:60];
-		[tweakName setTextColor:[UIColor colorWithRed:.4 green:.4 blue:.49 alpha:1]];
-		[tweakName setShadowColor:[UIColor whiteColor]];
-		[tweakName setShadowOffset:CGSizeMake(0, 1)];
-		[tweakName setText:@"PanoMod"];
-		[tweakName setBackgroundColor:[UIColor clearColor]];
+		tweakName.font = [UIFont fontWithName:@"HelveticaNeue" size:60.0f];
+		tweakName.textColor = [UIColor colorWithRed:0.4f green:0.4f blue:0.49f alpha:1.0f];
+		tweakName.shadowColor = [UIColor whiteColor];
+		tweakName.shadowOffset = CGSizeMake(0.0f, 1.0f);
+		tweakName.text = @"PanoMod";
+		tweakName.backgroundColor = [UIColor clearColor];
 		tweakName.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:tweakName];
 	}
@@ -329,7 +331,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 
 - (CGFloat)preferredHeightForWidth:(CGFloat)arg1
 {
-    return isiOS6 ? 90 : 70;
+    return isiOS6 ? 90.0f : 70.0f;
 }
 
 @end
@@ -395,10 +397,10 @@ static void writeIntegerValueForKey(int value, NSString *key)
     
 	if (cell == nil) {
 		cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"PanoFAQCell"] autorelease];
-		[cell.textLabel setNumberOfLines:0];
-		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-		[cell.textLabel setFont:[UIFont systemFontOfSize:kFontSize]];
-		[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+		cell.textLabel.numberOfLines = 0;
+		cell.textLabel.backgroundColor = [UIColor clearColor];
+		cell.textLabel.font = [UIFont systemFontOfSize:kFontSize];
+		cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	}
     
 	switch (indexPath.section)
@@ -407,7 +409,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 		case 1: [cell.textLabel setText:@"This issue related with AE or Auto Exposure of Panorama, if you lock AE (Long tap the camera preview) will temporary fix the issue."]; break;
 		case 2: [cell.textLabel setText:@"This issue related with memory and performance."]; break;
 		case 3: [cell.textLabel setText:@"The limitation of hooking methods in iOS 7 causes this."]; break;
-		case 4: [cell.textLabel setText:@"iOS 6.0 - 8.0"]; break;
+		case 4: [cell.textLabel setText:@"iOS 6.0 - 8.1"]; break;
     }
     return cell;
 }
@@ -488,50 +490,50 @@ static void writeIntegerValueForKey(int value, NSString *key)
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
     if (cell == nil) {
     	cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident] autorelease];
-    	[cell.textLabel setNumberOfLines:0];
-    	[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-    	[cell.textLabel setFont:[UIFont systemFontOfSize:kFontSize]];
-        [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    	cell.textLabel.numberOfLines = 0;
+    	cell.textLabel.backgroundColor = [UIColor clearColor];
+    	cell.textLabel.font = [UIFont systemFontOfSize:kFontSize];
+        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     }
 	switch (indexPath.section) {
 		case 0:
-			[cell.textLabel setText:@"We will explain each option how they work."]; break;
+			cell.textLabel.text = @"We will explain each option how they work."; break;
 		case 1:
-			[cell.textLabel setText:@"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama."]; break;
+			cell.textLabel.text = @"Only available if iDevice doesn't support Panorama by default, by injecting some code that tell Camera this device supported Panorama."; break;
 		case 2:
-			[cell.textLabel setText:@"Adjust the maximum panoramic image width."]; break;
+			cell.textLabel.text = @"Adjust the maximum panoramic image width."; break;
  		case 3:
-			[cell.textLabel setText:@"Adjust the Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."]; break;
+			cell.textLabel.text = @"Adjust the Panorama Preview sizes in the middle, default value, 306 pixel Width and 86 pixel Height.\nKeep in mind that this function doesn’t work well with iPads when Preview Width is more than the original value."; break;
 		case 4:
-			[cell.textLabel setText:@"Adjust the FPS of Panorama, but keep in mind in that don’t set it too high or too low or you may face the pink preview issue or camera crashing."]; break;
+			cell.textLabel.text = @"Adjust the FPS of Panorama, but keep in mind in that don’t set it too high or too low or you may face the pink preview issue or camera crashing."; break;
 		case 5:
-			[cell.textLabel setText:@"Some Panorama properties, just included them if you want to play around."]; break;
+			cell.textLabel.text = @"Some Panorama properties, just included them if you want to play around."; break;
 		case 6:
-			[cell.textLabel setText:@"Set the default arrow direction when you enter Panorama mode."]; break;
+			cell.textLabel.text = @"Set the default arrow direction when you enter Panorama mode."; break;
 		case 7:
-			[cell.textLabel setText:@"This is what Panorama talks to you, when you capture Panorama, this function provided some customization including Hide Text, Hide BG (Hide Black translucent background, iOS 6 only) and Custom Text. (Set it to whatever you want)"]; break;
+			cell.textLabel.text = @"This is what Panorama talks to you, when you capture Panorama, this function provided some customization including Hide Text, Hide BG (Hide Black translucent background, iOS 6 only) and Custom Text. (Set it to whatever you want)"; break;
 		case 8:
-			[cell.textLabel setText:@"Enabling ability to zoom in Panorama mode.\nNOTE: This affects on panoramic image in iOS 7+"]; break;
+			cell.textLabel.text = @"Enabling ability to zoom in Panorama mode.\nNOTE: This affects on panoramic image in iOS 7+"; break;
 		case 9:
-			[cell.textLabel setText:@"Showing grid in Panorama mode."]; break;
+			cell.textLabel.text = @"Showing grid in Panorama mode."; break;
 		case 10:
-			[cell.textLabel setText:@"iOS 6 only, like \"Better Pano Button\" that changes your Panorama button color for 4-inches Tall-iDevices to blue."]; break;
+			cell.textLabel.text = @"iOS 6 only, like \"Better Pano Button\" that changes your Panorama button color for 4-inches Tall-iDevices to blue."; break;
   		case 11:
-			[cell.textLabel setText:@"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5, iPhone 5c, and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" installed first."]; break;
+			cell.textLabel.text = @"Like \"LLBPano\", works only in Low Light Boost-capable iDevices or only iPhone 5, iPhone 5c, and iPod touch 5G, fix dark issue using Low Light Boost method.\nFor iPod touch 5G users, you must have tweak \"LLBiPT5\" installed first."; break;
 		case 12:
-			[cell.textLabel setText:@"For those iDevices without support Low Light Boost feature, this function will fix the dark issue in the another way and it works for all iDevices and you will see the big different in camera brightness/lighting performance.\nBut reason why Apple limits the brightness is simple, to fix Panorama overbright issue that you can face it in daytime."]; break;
+			cell.textLabel.text = @"For those iDevices without support Low Light Boost feature, this function will fix the dark issue in the another way and it works for all iDevices and you will see the big different in camera brightness/lighting performance.\nBut reason why Apple limits the brightness is simple, to fix Panorama overbright issue that you can face it in daytime."; break;
 		case 13:
-			[cell.textLabel setText:@"Like \"Flashorama\" that allows you to toggle torch using Flash button in Panorama mode.\nSupported for iPhone or iPod with LED-Flash capable."]; break;
+			cell.textLabel.text = @"Like \"Flashorama\" that allows you to toggle torch using Flash button in Panorama mode.\nSupported for iPhone or iPod with LED-Flash capable."; break;
 		case 14:
-			[cell.textLabel setText:@"The white arrow that follows you when you move around to capture Panorama, you can hide it or remove its tail animation."]; break;
+			cell.textLabel.text = @"The white arrow that follows you when you move around to capture Panorama, you can hide it or remove its tail animation."; break;
 		case 15:
-			[cell.textLabel setText:@"Hiding the blue (iOS 6) or yellow (iOS 7+) horizontal line at the middle of screen, if you don't want it."]; break;
+			cell.textLabel.text = @"Hiding the blue (iOS 6) or yellow (iOS 7+) horizontal line at the middle of screen, if you don't want it."; break;
 		case 16:
-			[cell.textLabel setText:@"iOS 6 only, Hiding the border crops the small Panorama preview, sometimes this function is recommended to enable when you set Panoramic images maximum width into different values."]; break;
+			cell.textLabel.text = @"iOS 6 only, Hiding the border crops the small Panorama preview, sometimes this function is recommended to enable when you set Panoramic images maximum width into different values."; break;
 		case 17:
-			[cell.textLabel setText:@"By default, the Panorama sensor resolution is 5 MP, this option can changes the sensor resolution to 8 MP if your device is capable. (iPhone 4S or newer) This makes the panoramic images more clear."]; break;
+			cell.textLabel.text = @"By default, the Panorama sensor resolution is 5 MP, this option can changes the sensor resolution to 8 MP if your device is capable. (iPhone 4S or newer) This makes the panoramic images more clear."; break;
 		case 18:
-			[cell.textLabel setText:@"iOS 7+, \"BPNR\" or Auto exposure adjustments during the pan of Panorama capture, was introduced in iPhone 5s, to even out exposure in scenes where brightness varies across the frame."]; break;
+			cell.textLabel.text = @"iOS 7+, \"BPNR\" or Auto exposure adjustments during the pan of Panorama capture, was introduced in iPhone 5s, to even out exposure in scenes where brightness varies across the frame."; break;
   	}
 	return cell;
 }
@@ -625,9 +627,9 @@ static void writeIntegerValueForKey(int value, NSString *key)
 		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident] autorelease];
 		cell.textLabel.numberOfLines = 0;
 		cell.detailTextLabel.numberOfLines = 0;
-		[cell.textLabel setBackgroundColor:[UIColor clearColor]];
-		[cell.textLabel setFont:[UIFont boldSystemFontOfSize:kFontSize + 2]];
-		[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+		cell.textLabel.backgroundColor = [UIColor clearColor];
+		cell.textLabel.font = [UIFont boldSystemFontOfSize:kFontSize + 2];
+		cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	}
 	
 	#define addPerson(numCase, TextLabel, DetailTextLabel) \
@@ -688,11 +690,11 @@ static void writeIntegerValueForKey(int value, NSString *key)
 {
 	NSString *model = Model();
 	resetValue(self, isNeedConfigDevice ? 4000 : 10800, self.maxWidthSliderSpec, self.maxWidthInputSpec);
-	resetValue(self, (isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
+	resetValue(self, (isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadAir2 || isiPadMini2G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
 	resetValue(self, 15, self.minFPSSliderSpec, self.minFPSInputSpec);
 	resetValue(self, (isiPhone5Up || isiPad3or4) ? 5 : 7, self.PanoramaBufferRingSizeSliderSpec, self.PanoramaBufferRingSizeInputSpec);
 
-	if (isiPhone5Up || isiPad3or4 || isiPadMini2G || isiPadAir) {
+	if (isiPhone5Up || isiPad3or4 || isiPadMini2G || isiPadAir || isiPadAir2) {
 		resetValue(self, 15, self.PanoramaPowerBlurSlopeSliderSpec, self.PanoramaPowerBlurSlopeInputSpec);
 	} else if (isiPod5 || isiPadMini1G || isiPad2 || isiPod4) {
 		resetValue(self, 13, self.PanoramaPowerBlurSlopeSliderSpec, self.PanoramaPowerBlurSlopeInputSpec);
@@ -847,10 +849,10 @@ static void writeIntegerValueForKey(int value, NSString *key)
 		[directions addTarget:self action:@selector(directionAction:) forControlEvents:UIControlEventValueChanged];
 		if (!isiOS7Up) {
 			CGRect frame = directions.frame;
-			[directions setFrame:CGRectMake(frame.origin.x, frame.origin.y, 115, 30)];
+			directions.frame = CGRectMake(frame.origin.x, frame.origin.y, 115, 30);
 		}
 		directions.selectedSegmentIndex = integerValueForKey(@"defaultDirection", 0);
-		[self setAccessoryView:directions];
+		self.accessoryView = directions;
 	}
 	return self;
 }
@@ -858,7 +860,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 - (void)directionAction:(UISegmentedControl *)segment
 {
 	writeIntegerValueForKey(segment.selectedSegmentIndex, @"defaultDirection");
-	notify_post(PreferencesChangedNotification);
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), PreferencesChangedNotification, NULL, NULL, YES);
 }
 
 - (SEL)action

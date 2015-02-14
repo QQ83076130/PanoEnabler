@@ -1,4 +1,4 @@
-#import "../definitions.h"
+#import "../PanoMod.h"
 #include <sys/sysctl.h>
 
 @interface PanoRemover : NSObject

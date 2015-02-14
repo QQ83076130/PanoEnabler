@@ -1,4 +1,4 @@
-#import "../definitions.h"
+#import "../PanoMod.h"
 #include <sys/sysctl.h>
 
 @interface PanoInstaller : NSObject
@@ -89,7 +89,7 @@
 			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurBias", 30)
 			setIntegerProperty(insideDict, @"ACTPanoramaPowerBlurSlope", 16)
 			setIntegerProperty(insideDict, @"ACTPanoramaSliceWidth", 240)
-			if (isiOS78) {
+			if (isiOS7Up) {
 				setIntegerProperty(insideDict, @"ACTPanoramaBPNRMode", 1)
 				NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
         		[[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] withIntermediateDirectories:YES attributes:attr error:nil];
@@ -130,7 +130,6 @@
 	if (!isiOS7) {
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.plist" error:nil];
-		[manager removeItemAtPath:@"/usr/lib/PanoHook7.dylib" error:nil];
 	}
 	if (isiOS8) {
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/actFix.dylib" error:nil];
