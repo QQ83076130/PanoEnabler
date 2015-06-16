@@ -47,13 +47,13 @@
 		NSString *platformPathWithFile = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/CameraSetup.plist", modelFile];
 		NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
 		if (root == nil) return NO;
-		NSMutableDictionary *tuningParameters = [[root objectForKey:@"TuningParameters"] mutableCopy];
+		NSMutableDictionary *tuningParameters = [root[@"TuningParameters"] mutableCopy];
 		if (tuningParameters == nil) return NO;
-		NSMutableDictionary *portTypeBack = [[tuningParameters objectForKey:@"PortTypeBack"] mutableCopy];
+		NSMutableDictionary *portTypeBack = [tuningParameters[@"PortTypeBack"] mutableCopy];
 		if (portTypeBack == nil) return NO;
 
 		for (NSString *key in [portTypeBack allKeys]) {
-			NSMutableDictionary *cameraProperties = [[portTypeBack objectForKey:key] mutableCopy];
+			NSMutableDictionary *cameraProperties = [portTypeBack[key] mutableCopy];
 		
 			setObject(isiPad ? 17 : 10, @"panoramaMaxIntegrationTime")
 			setObject(4096, @"panoramaAEGainThresholdForFlickerZoneIntegrationTimeTransition")
@@ -102,16 +102,16 @@
     NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
     NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
     if (avRoot == nil) return NO;
-    NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
+    NSMutableArray *avCap = [avRoot[@"AVCaptureDevices"] mutableCopy];
 	if (avCap == nil) return NO;
-	NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
+	NSMutableDictionary *index0 = [avCap[0] mutableCopy];
 	if (index0 == nil) return NO;
    	
 	if (isNeedConfigDevice) {
-		NSDictionary *presetPhoto = [index0 objectForKey:@"AVCaptureSessionPresetPhoto"];
+		NSDictionary *presetPhoto = index0[@"AVCaptureSessionPresetPhoto"];
 		if (presetPhoto == nil) return NO;
 		NSMutableDictionary *presetPhotoToAdd = [presetPhoto mutableCopy];
-		NSMutableDictionary *liveSourceOptions = [[presetPhotoToAdd objectForKey:@"LiveSourceOptions"] mutableCopy];
+		NSMutableDictionary *liveSourceOptions = [presetPhotoToAdd[@"LiveSourceOptions"] mutableCopy];
 		NSDictionary *res = [NSDictionary dictionaryWithObjectsAndKeys:
     									@960, @"Width",
     									@"420f", @"PixelFormatType",

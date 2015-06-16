@@ -95,7 +95,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 
 %hook CAMPanoramaArrowView
 
-- (id)initWithFrame:(struct CGRect)frame
+- (id)initWithFrame:(CGRect)frame
 {
 	self = %orig;
 	if (self)
@@ -125,7 +125,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 
 %hook CAMPanoramaLabel
 
-- (id)initWithFrame:(struct CGRect)frame
+- (id)initWithFrame:(CGRect)frame
 {
 	self = %orig;
 	if (self)
@@ -152,7 +152,8 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 
 %end
 
-%ctor {
+%ctor
+{
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, PreferencesChangedNotification, NULL, CFNotificationSuspensionBehaviorCoalesce);
 	PanoModLoader();

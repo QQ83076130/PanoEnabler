@@ -8,7 +8,6 @@ launchctl load /Library/LaunchDaemons/com.ps.panomod.helper.plist
 
 if [[ "$chk" == iPod5* ]] || [[ "$chk" == iPhone4* ]] || [[ "$chk" == iPhone5* ]] || [[ "$chk" == iPhone6* ]] || [[ "$chk" == iPhone7* ]] || [[ "$chk" == iPad5* ]];then
 	rm -f /Library/MobileSubstrate/DynamicLibraries/PanoHook*
-	rm -f /Library/MobileSubstrate/DynamicLibraries/BackBoardEnv*
 	rm -f /Library/MobileSubstrate/DynamicLibraries/actFix*
 else
 	if [[ "$chk" == iPad* ]];then

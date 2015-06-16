@@ -18,21 +18,6 @@ static NSString *Model()
 	return modelName;
 }
 
-@interface PSViewController (PanoMod)
-- (void)setView:(id)view;
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
-@end
-
-@interface UITableViewCell (PanoMod)
-- (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString *)identifier;
-@end
-
-@interface PSTableCell (PanoMod)
-@property(retain, nonatomic) UIView *accessoryView;
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)identifier specifier:(PSSpecifier *)specifier;
-@end
-
 @interface BannerCell : PSTableCell {
 	UILabel *tweakName;
 }
@@ -852,7 +837,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 			directions.frame = CGRectMake(frame.origin.x, frame.origin.y, 115, 30);
 		}
 		directions.selectedSegmentIndex = integerValueForKey(@"defaultDirection", 0);
-		self.accessoryView = directions;
+		[self setAccessoryView:directions];
 	}
 	return self;
 }

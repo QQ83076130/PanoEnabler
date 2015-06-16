@@ -42,13 +42,13 @@
 
 		NSMutableDictionary *root = [[NSDictionary dictionaryWithContentsOfFile:platformPathWithFile] mutableCopy];
 		if (root == nil) return NO;
-		NSMutableDictionary *tuningParameters = [[root objectForKey:@"TuningParameters"] mutableCopy];
+		NSMutableDictionary *tuningParameters = [root[@"TuningParameters"] mutableCopy];
 		if (tuningParameters == nil) return NO;
-		NSMutableDictionary *portTypeBack = [[tuningParameters objectForKey:@"PortTypeBack"] mutableCopy];
+		NSMutableDictionary *portTypeBack = [tuningParameters[@"PortTypeBack"] mutableCopy];
 		if (portTypeBack == nil) return NO;
     
 		for (NSString *key in [portTypeBack allKeys]) {
-			NSMutableDictionary *cameraProperties = [[portTypeBack objectForKey:key] mutableCopy];
+			NSMutableDictionary *cameraProperties = [portTypeBack[key] mutableCopy];
 
 			#define removeObject(key) \
 				[cameraProperties removeObjectForKey:key];
@@ -82,17 +82,17 @@
 	NSString *avSession = [NSString stringWithFormat:@"/System/Library/Frameworks/MediaToolbox.framework/%@/AVCaptureSession.plist", modelFile];
 	NSMutableDictionary *avRoot = [[NSMutableDictionary dictionaryWithContentsOfFile:avSession] mutableCopy];
    	if (avRoot == nil) return NO;
-	NSMutableArray *avCap = [[avRoot objectForKey:@"AVCaptureDevices"] mutableCopy];
+	NSMutableArray *avCap = [avRoot[@"AVCaptureDevices"] mutableCopy];
    	if (avCap == nil) return NO;
-   	NSMutableDictionary *index0 = [[avCap objectAtIndex:0] mutableCopy];
+   	NSMutableDictionary *index0 = [avCap[0] mutableCopy];
    	if (index0 == nil) return NO;
-   	NSMutableDictionary *preset = [[index0 objectForKey:@"AVCaptureSessionPresetPhoto2592x1936"] mutableCopy];
+   	NSMutableDictionary *preset = [index0[@"AVCaptureSessionPresetPhoto2592x1936"] mutableCopy];
    	if (preset == nil) return isNeedConfigDevice;
 
 	if (isNeedConfigDevice)
 		[index0 removeObjectForKey:@"AVCaptureSessionPresetPhoto2592x1936"];
 	else {
-		NSMutableDictionary *liveSourceOptions = [[preset objectForKey:@"LiveSourceOptions"] mutableCopy];
+		NSMutableDictionary *liveSourceOptions = [preset[@"LiveSourceOptions"] mutableCopy];
 		[liveSourceOptions setObject:(isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? @(20) : @(15) forKey:@"MaxFrameRate"];
 		[liveSourceOptions setObject:@15 forKey:@"MinFrameRate"];
 		if (is8MPCamDevice) {
@@ -117,13 +117,13 @@
 		setIntegerProperty(firebreakDict, @"ACTFrameWidth", 2592)
 		setIntegerProperty(firebreakDict, @"ACTFrameHeight", 1936)
 		setIntegerProperty(firebreakDict, @"ACTPanoramaMaxWidth", 10800)
-		setIntegerProperty(firebreakDict, @"ACTPanoramaMaxFrameRate", (isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadMini2G) ? 20 : 15)
+		setIntegerProperty(firebreakDict, @"ACTPanoramaMaxFrameRate", (isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadAir2 || isiPadMini2G) ? 20 : 15)
 		setIntegerProperty(firebreakDict, @"ACTPanoramaMinFrameRate", 15)
 		setIntegerProperty(firebreakDict, @"ACTPanoramaBufferRingSize", (isiPhone5Up || isiPad3or4) ? 5 : 7) 
 		setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurBias", 30)
 		setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurSlope", 16)
 		if (isiOS78) {
-			setIntegerProperty(firebreakDict, @"ACTPanoramaBPNRMode", (int)(isiPhone5s || isiPhone6))
+			setIntegerProperty(firebreakDict, @"ACTPanoramaBPNRMode", (int)(isiPhone5s || isiPhone6 || isiPadAir2))
        	}
 		[firebreakDict writeToFile:firebreakFile atomically:YES];
 	}
