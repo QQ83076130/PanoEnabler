@@ -115,7 +115,7 @@
         	<key>cell</key>
         	<string>PSSwitchCell</string>
        		<key>default</key>
-        	<false/>
+        	<true/>
         	<key>id</key>
 			<string>PanoEnabled</string>
         	<key>defaults</key>

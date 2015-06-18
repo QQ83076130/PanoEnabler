@@ -43,7 +43,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 		if (settings) {
 			PLCameraSettingsView *settingsView = MSHookIvar<PLCameraSettingsView *>(self, "_settingsView");
 			MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_panoramaGroup").hidden = isPanorama;
-			MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_hdrGroup").accessorySwitch.enabled = !isPanorama;
+			((UISwitch *)MSHookIvar<PLCameraSettingsGroupView *>(settingsView, "_hdrGroup").accessorySwitch).enabled = !isPanorama;
 		}
 	}
 }

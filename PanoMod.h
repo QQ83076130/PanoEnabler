@@ -17,6 +17,7 @@
 #define isiPadMini1G	([model hasPrefix:@"iPad2"] && !isiPad2)
 #define isiPadMini2G	([model isEqualToString:@"iPad4,4"] || [model isEqualToString:@"iPad4,5"])
 #define isiPad3or4 		[model hasPrefix:@"iPad3"]
+#define isiPad4			([model isEqualToString:@"iPad3,4"] || [model isEqualToString:@"iPad3,5"] || [model isEqualToString:@"iPad3,6"])
 #define isiPadAir		[model hasPrefix:@"iPad4"]
 #define isiPadAir2		[model hasPrefix:@"iPad5"]
 #define isNeedConfigDevice 	(isiPad2 || isiPod4 || isiPhone4)

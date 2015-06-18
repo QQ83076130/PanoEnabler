@@ -21,7 +21,7 @@ CFPropertyListRef hax_MGCopyAnswer(CFStringRef key)
 
 %ctor
 {
-	if (val([NSDictionary dictionaryWithContentsOfFile:PREF_PATH], @"PanoEnabled", NO, BOOLEAN)) {
+	if (val([NSDictionary dictionaryWithContentsOfFile:PREF_PATH], @"PanoEnabled", YES, BOOLEAN)) {
 		const char *gest = "/usr/lib/libMobileGestalt.dylib";
 		if (dlopen(gest, RTLD_LAZY) != NULL) {
 			MSImageRef ref = MSGetImageByName(gest);

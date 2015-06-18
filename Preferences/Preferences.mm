@@ -268,31 +268,28 @@ static void writeIntegerValueForKey(int value, NSString *key)
 - (NSArray *)specifiers
 {
 	if (_specifiers == nil) {
-		NSMutableArray *specs = [[NSMutableArray arrayWithArray:[self loadSpecifiersFromPlistName:@"PanoPreferences" target:self]] retain];
-		
+		NSMutableArray *specs = [NSMutableArray arrayWithArray:[self loadSpecifiersFromPlistName:@"PanoPreferences" target:self]];
 		for (PSSpecifier *spec in specs) {
 			getSpec(PanoEnabledSpec, @"PanoEnabled")
 		}
-        
 		NSString *model = Model();
 		BOOL panoDevice = isiPhone4S || isiPhone5Up || isiPod5 || isiPadAir2;
-		if (panoDevice || isiOS8Up)
+		if (panoDevice)
 			[specs removeObject:self.PanoEnabledSpec];
-	
 		_specifiers = [specs copy];
-  	}
+	}
 	return _specifiers;
 }
 
 @end
- 
+
 @implementation BannerCell
 
 - (id)initWithSpecifier:(PSSpecifier *)specifier
 {
 	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Banner" specifier:specifier];
 	if (self) {
-		NSInteger width = [[UIScreen mainScreen] bounds].size.width;
+		CGFloat width = 320.0f;
 		CGRect frame = CGRectMake(0.0f, -10.0f, width, 60.0f);
 
 		tweakName = [[UILabel alloc] initWithFrame:frame];
@@ -675,7 +672,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 {
 	NSString *model = Model();
 	resetValue(self, isNeedConfigDevice ? 4000 : 10800, self.maxWidthSliderSpec, self.maxWidthInputSpec);
-	resetValue(self, (isiPhone4S || isiPhone5Up || isiPad3or4 || isiPadAir || isiPadAir2 || isiPadMini2G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
+	resetValue(self, (isiPhone4S || isiPhone5Up || isiPad4 || isiPadAir || isiPadAir2 || isiPadMini2G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
 	resetValue(self, 15, self.minFPSSliderSpec, self.minFPSInputSpec);
 	resetValue(self, (isiPhone5Up || isiPad3or4) ? 5 : 7, self.PanoramaBufferRingSizeSliderSpec, self.PanoramaBufferRingSizeInputSpec);
 
