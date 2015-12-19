@@ -29,62 +29,47 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	PanoModLoader();
 }
 
-#define isPanorama (self.cameraMode == 3)
+#define isPanorama (self._currentMode == 3)
 
-%hook CAMCameraView
+%hook CAMCaptureCapabilities
 
-- (void)_createOrDestroyPanoramaViewIfNecessary
+- (float)maximumVideoZoomFactorForMode:(int)mode device:(int)device
+{
+	return panoZoom && mode == 3 ? %orig(0, device) : %orig;
+}
+
+%end
+
+%hook CAMViewfinderViewController
+
+- (void)_createPanoramaViewControllerIfNecessary
 {
 	%orig;
-	CAMPanoramaView *panoramaView = MSHookIvar<CAMPanoramaView *>(self, "_panoramaView");
+	CAMPanoramaViewController *panoramaViewController = MSHookIvar<CAMPanoramaViewController *>(self, "__panoramaViewController");
+	CAMPanoramaView *panoramaView = (CAMPanoramaView *)(panoramaViewController.view);
 	if (panoramaView != nil) {
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
 			int direction = MSHookIvar<int>(panoramaView, "_direction");
 			int trueDirection = direction - 1;
 			if (defaultDirection != trueDirection) {
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5*NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-					[panoramaView _arrowWasTapped:nil];
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+					[panoramaViewController _handleDirectionChange:nil];
 				});
 			}
 		});
 	}
 }
 
-- (BOOL)_zoomIsAllowed
+- (BOOL)_shouldCreateGridViewForMode:(int)mode
 {
-	return panoZoom && isPanorama ? YES : %orig;
-}
-
-- (int)_glyphOrientationForCameraOrientation:(int)arg1
-{
-	return (isPanorama && (PanoGridOn || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) ? 1 : %orig;
-}
-
-- (BOOL)_shouldHideGridView
-{
-	if (isPanorama && PanoGridOn) {
-		MSHookIvar<int>([%c(CAMCaptureController) sharedInstance], "_cameraMode") = 0;
-		BOOL r = %orig;
-		MSHookIvar<int>([%c(CAMCaptureController) sharedInstance], "_cameraMode") = 3;
-		return r;
-	}
-	return %orig;
+	return mode == 3 ? PanoGridOn : %orig;
 }
 
 %end
 
-%hook CAMPadApplicationSpec
+%hook CAMPanoramaUtilities
 
-- (BOOL)shouldCreatePanoramaView
-{
-	return YES;
-}
-
-%end
-
-%hook CAMCaptureController
-
-- (CGSize)panoramaPreviewSize
+- (CGSize)previewSize
 {
 	return CGSizeMake(PreviewWidth, PreviewHeight);
 }

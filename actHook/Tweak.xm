@@ -42,7 +42,7 @@ NSMutableDictionary *replaced__ACT_CopyDefaultConfigurationForPanorama()
 		setIntegerProperty(firebreakDict, @"ACTFrameHeight", is8MP ? 2448 : 1936)
 	}
 	setIntegerProperty(firebreakDict, @"ACTPanoramaMaxWidth", val(prefDict, @"PanoramaMaxWidth", isNeedConfigDevice ? 4000 : 10800, INT))
-	setIntegerProperty(firebreakDict, @"ACTPanoramaMaxFrameRate", val(prefDict, @"PanoramaMaxFrameRate", (isiPhone4S || isiPhone5Up || isiPad4 || isiPadAir || isiPadAir2 || isiPadMini2G) ? 20 : 15, INT))
+	setIntegerProperty(firebreakDict, @"ACTPanoramaMaxFrameRate", val(prefDict, @"PanoramaMaxFrameRate", (isiPhone4S || isiPhone5Up || isiPadAir || isiPadAir2 || isiPadMini2G || isiPadMini3G) ? 20 : 15, INT))
 	setIntegerProperty(firebreakDict, @"ACTPanoramaMinFrameRate", val(prefDict, @"PanoramaMinFrameRate", 15, INT))
 	setIntegerProperty(firebreakDict, @"ACTPanoramaBufferRingSize", val(prefDict, @"PanoramaBufferRingSize", 6, INT)) 
 	setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurBias", val(prefDict, @"PanoramaPowerBlurBias", 30, INT))

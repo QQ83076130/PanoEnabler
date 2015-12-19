@@ -3,3 +3,5 @@ obj
 _
 theos
 .theos
+debs/*
+*.deb

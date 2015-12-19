@@ -149,6 +149,8 @@
 
 int main(int argc, char **argv, char **envp)
 {
+	if (isiOS9Up)
+		return 0;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	PanoRemover *remover = [[PanoRemover alloc] init];
 	BOOL success = [remover remove];

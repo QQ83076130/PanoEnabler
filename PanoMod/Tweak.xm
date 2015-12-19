@@ -78,7 +78,9 @@ static NSString *Model()
 		%init(Pano8MP);
 	}
 	%init(PanoDarkFix);
-	if (isiOS8Up)
+	if (isiOS9Up)
+		dlopen("/Library/Application Support/PanoMod/actHackiOS9.dylib", RTLD_LAZY);
+	else if (isiOS8)
 		dlopen("/Library/Application Support/PanoMod/actHackiOS8.dylib", RTLD_LAZY);
 	else if (isiOS7)
 		dlopen("/Library/Application Support/PanoMod/actHackiOS7.dylib", RTLD_LAZY);

@@ -126,17 +126,22 @@
 		[avRoot writeToFile:avSession atomically:YES];
 	}
 	
+	[self removeFiles];
+	
+	return YES;
+}
+
+- (void)removeFiles
+{
 	NSFileManager *manager = [NSFileManager defaultManager];
 	if (!isiOS7) {
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.dylib" error:nil];
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/BackBoardEnv7.plist" error:nil];
 	}
-	if (isiOS8) {
+	if (isiOS8Up) {
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/actFix.dylib" error:nil];
 		[manager removeItemAtPath:@"/Library/MobileSubstrate/DynamicLibraries/actFix.plist" error:nil];
 	}
-	
-	return YES;
 }
 
 - (BOOL)install

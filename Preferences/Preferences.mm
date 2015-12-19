@@ -672,7 +672,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 {
 	NSString *model = Model();
 	resetValue(self, isNeedConfigDevice ? 4000 : 10800, self.maxWidthSliderSpec, self.maxWidthInputSpec);
-	resetValue(self, (isiPhone4S || isiPhone5Up || isiPad4 || isiPadAir || isiPadAir2 || isiPadMini2G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
+	resetValue(self, (isiPhone4S || isiPhone5Up || isiPadAir || isiPadAir2 || isiPadMini2G || isiPadMini3G) ? 20 : 15, self.maxFPSSliderSpec, self.maxFPSInputSpec);
 	resetValue(self, 15, self.minFPSSliderSpec, self.minFPSInputSpec);
 	resetValue(self, (isiPhone5Up || isiPad3or4) ? 5 : 7, self.PanoramaBufferRingSizeSliderSpec, self.PanoramaBufferRingSizeInputSpec);
 
@@ -899,7 +899,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 		}
         
 		NSString *model = Model();
-		if (isiOS7) {
+		if (isiOS7Up) {
 			[specs removeObject:self.hideBGSpec];
 			[specs removeObject:self.borderSpec];
 			[specs removeObject:self.borderDescSpec];
