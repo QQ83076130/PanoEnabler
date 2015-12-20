@@ -10,7 +10,8 @@
 #define isiPhone5s		[model hasPrefix:@"iPhone6"]
 #define isiPhone6		[model isEqualToString:@"iPhone7,2"]
 #define isiPhone6Plus	[model isEqualToString:@"iPhone7,1"]
-#define isiPhone5Up		(isiPhone5 || isiPhone5s || isiPhone6 || isiPhone6Plus)
+#define isiPhone6ss		[model hasPrefix:@"iPhone8"]
+#define isiPhone5Up		(isiPhone5 || isiPhone5s || isiPhone6 || isiPhone6Plus || isiPhone6ss)
 #define isiPod4			[model hasPrefix:@"iPod4"]
 #define isiPod5 		[model hasPrefix:@"iPod5"]
 #define isiPad			[model hasPrefix:@"iPad"]

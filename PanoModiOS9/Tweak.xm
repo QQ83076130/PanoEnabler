@@ -69,7 +69,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 
 %hook CAMPanoramaUtilities
 
-- (CGSize)previewSize
++ (CGSize)previewSize
 {
 	return CGSizeMake(PreviewWidth, PreviewHeight);
 }

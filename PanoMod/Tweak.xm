@@ -74,7 +74,7 @@ static NSString *Model()
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, PreferencesChangedCallback, PreferencesChangedNotification, NULL, CFNotificationSuspensionBehaviorCoalesce);
 	PanoModLoader();
 	NSString *model = Model();
-	if (is8MPCamDevice) {
+	if (is8MPCamDevice && !isiOS9Up) {
 		%init(Pano8MP);
 	}
 	%init(PanoDarkFix);
@@ -88,4 +88,3 @@ static NSString *Model()
 		dlopen("/Library/Application Support/PanoMod/actHackiOS6.dylib", RTLD_LAZY);
 	[pool drain];
 }
-

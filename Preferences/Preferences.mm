@@ -954,7 +954,7 @@ static void writeIntegerValueForKey(int value, NSString *key)
 		}
         
 		NSString *model = Model();
-		if (!isiOS7Up || isiPhone5s || isiPhone6) {
+		if (!isiOS7Up || isiPhone5s || isiPhone6 || isiPhone6ss) {
 			[specs removeObject:self.BPNRSpec];
 			[specs removeObject:self.BPNRDescSpec];
 		}

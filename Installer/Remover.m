@@ -59,7 +59,7 @@
 			removeObject(@"panoramaAEIntegrationTimeForUnityGainToMinGainTransition")
 			removeObject(@"panoramaAEMinGain")
 			removeObject(@"panoramaAEMaxGain")
-			if (isiOS78) {
+			if (isiOS7Up) {
 				removeObject(@"panoramaAELowerExposureDelta")
 				removeObject(@"panoramaAEUpperExposureDelta")
 				removeObject(@"panoramaAEMaxPerFrameExposureDelta")
@@ -69,7 +69,7 @@
 			[portTypeBack setObject:cameraProperties forKey:key];
 		}
 	
-		if (isiOS78)
+		if (isiOS7Up)
 			[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework/%@", modelFile] error:nil];
 		else
 			[[NSFileManager defaultManager] removeItemAtPath:@"/System/Library/PrivateFrameworks/ACTFramework.framework/firebreak-Configuration.plist" error:nil];
@@ -111,7 +111,7 @@
 	[avRoot writeToFile:avSession atomically:YES];
 	
 	if (!isNeedConfigDevice) {
-		NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS78 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
+		NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7Up ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
 		NSMutableDictionary *firebreakDict = [[NSDictionary dictionaryWithContentsOfFile:firebreakFile] mutableCopy];
 	
 		setIntegerProperty(firebreakDict, @"ACTFrameWidth", 2592)
@@ -122,7 +122,7 @@
 		setIntegerProperty(firebreakDict, @"ACTPanoramaBufferRingSize", (isiPhone5Up || isiPad3or4) ? 5 : 7) 
 		setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurBias", 30)
 		setIntegerProperty(firebreakDict, @"ACTPanoramaPowerBlurSlope", 16)
-		if (isiOS78) {
+		if (isiOS7Up) {
 			setIntegerProperty(firebreakDict, @"ACTPanoramaBPNRMode", (int)(isiPhone5s || isiPhone6 || isiPadAir2))
        	}
 		[firebreakDict writeToFile:firebreakFile atomically:YES];
@@ -145,7 +145,6 @@
 }
 
 @end
-
 
 int main(int argc, char **argv, char **envp)
 {

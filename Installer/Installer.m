@@ -75,7 +75,7 @@
 		[root setObject:tuningParameters forKey:@"TuningParameters"];
 		[root writeToFile:platformPathWithFile atomically:YES];
     
-    	NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS78 ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
+    	NSString *firebreakFile = [NSString stringWithFormat:@"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist", isiOS7Up ? [NSString stringWithFormat:@"/%@/", modelFile] : @"/"];
 		if (![[NSFileManager defaultManager] fileExistsAtPath:firebreakFile]) {
 			NSLog(@"Adding firebreak-Configuration.plist to system.");
 			NSMutableDictionary *insideDict = [[NSMutableDictionary alloc] init];
@@ -158,7 +158,6 @@
 }
 
 @end
-
 
 int main(int argc, char **argv, char **envp)
 {

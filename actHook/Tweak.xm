@@ -31,9 +31,9 @@ NSMutableDictionary *replaced__ACT_CopyDefaultConfigurationForPanorama()
 {
 	NSMutableDictionary *orig = old__ACT_CopyDefaultConfigurationForPanorama();
 	NSString *preFirebreakPath = @"/System/Library/PrivateFrameworks/ACTFramework.framework%@firebreak-Configuration.plist";
-	NSString *firebreakPath = [NSString stringWithFormat:preFirebreakPath, isiOS78 ? [NSString stringWithFormat:@"/%@/", ModelAP()] : @"/"];
+	NSString *firebreakPath = [NSString stringWithFormat:preFirebreakPath, isiOS7Up ? [NSString stringWithFormat:@"/%@/", ModelAP()] : @"/"];
 	NSDictionary *prefDict = [NSDictionary dictionaryWithContentsOfFile:PREF_PATH];
-	NSMutableDictionary *firebreakDict = [[NSMutableDictionary dictionary] mutableCopy];
+	NSMutableDictionary *firebreakDict = [[NSDictionary dictionary] mutableCopy];
 	[firebreakDict addEntriesFromDictionary:orig != nil ? orig : [NSDictionary dictionaryWithContentsOfFile:firebreakPath]];
 	NSString *model = Model();
 	if (is8MPCamDevice) {
@@ -55,7 +55,5 @@ NSMutableDictionary *replaced__ACT_CopyDefaultConfigurationForPanorama()
 
 %ctor
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	MSHookFunction((NSMutableDictionary *)MSFindSymbol(NULL, "_ACT_CopyDefaultConfigurationForPanorama"), (NSMutableDictionary *)replaced__ACT_CopyDefaultConfigurationForPanorama, (NSMutableDictionary **)&old__ACT_CopyDefaultConfigurationForPanorama);
-	[pool drain];
 }
